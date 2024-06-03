@@ -62,6 +62,7 @@ const setUser = (event: Event) => {
 }
 
 const randomizeSheet = () => {
+    //Todo add fetch bingoItems from database
     const sheetArray = Array.from({ length: 50 }, (_, i) => i + 1) //creates an array from 1 to 50
     const shuffledArray = sheetArray.sort(() => Math.random() - 0.5) //shuffles the array
     testSheet.value = shuffledArray
