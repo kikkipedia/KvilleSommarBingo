@@ -13,39 +13,38 @@
         <div class="bingoSheet"><!-- will hide this later-->
             <table>
                 <tr>
-                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1)">{{ doc.item }}</td>
+                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc in row2" :key="doc.id">{{ doc.item }}</td>
+                    <td v-for="doc, index in row2" :key="doc.id" @click="bingoClick(index, 2, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc in row3" :key="doc.id">{{ doc.item }}</td>
+                    <td v-for="doc, index in row3" :key="doc.id" @click="bingoClick(index, 3, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc in row4" :key="doc.id">{{ doc.item }}</td>
+                    <td v-for="doc, index in row4" :key="doc.id" @click="bingoClick(index, 4, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc in row5" :key="doc.id">{{ doc.item }}</td>
+                    <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
                 </tr>
             </table>
+            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo! !</div>
         </div>
         <button @click="randomizeSheet">Generera ny bricka</button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheetToDb, getBingoItems, setRows } from '@/db';
+import { saveNewSheetToDb, getBingoItems } from '@/db';
 import { useBingoStore } from '@/stores/counter';
-import { set } from 'firebase/database';
 
 const user = ref()
 const showForm = ref(false)
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref()
-const testSheet = ref<any[]>([]) //numer as array
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const row1 = ref<BingoItem[]>([]) //These should later BingoItems
 const row2 = ref<BingoItem[]>([])
@@ -57,7 +56,6 @@ const row7 = ref<number[]>([])
 const row8 = ref<number[]>([])
 const row9 = ref<number[]>([])
 const row10 = ref<number[]>([])
-const checkedNumbers = ref<number[]>([]) //numbers checked by user
 
 const store = useBingoStore()
 
@@ -69,7 +67,12 @@ const setUser = (event: Event) => {
 }
 
 const randomizeSheet = async () => {
-    //Todo add fetch bingoItems from database
+    //empty rows
+    store.srow1 = []
+    store.srow2 = []
+    store.srow3 = []
+    store.srow4 = []
+    store.srow5 = []
     const items = await getBingoItems()
     bingoItems.value = items
 
@@ -114,8 +117,12 @@ const saveNewSheet = async () => {
 
 }
 
-const bingoClick = (index: number, row: number) => {
-    //push index to checkedNumbers
+const bingoClick = (index: number, row: number, id: string )=> {
+    //change background color of clicked cell
+    const cell = document.getElementsByClassName(id);
+    cell[0].setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
+
+    //push index to store rows
     if(row == 1){
         store.srow1.push(index)
     }
@@ -144,7 +151,43 @@ onMounted(() => {
     }
 })
 
-//watch for empty row
+//watch for full row in store
+
+watch(() => store.srow1.length, (srow1) => {
+    if(store.srow1.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow2.length, (srow2) => {
+    if(store.srow2.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow3.length, (srow3) => {
+    if(store.srow3.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow4.length, (srow4) => {
+    if(store.srow4.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow5.length, (srow5) => {
+    if(store.srow5.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
 
 </script>
 
@@ -162,7 +205,7 @@ onMounted(() => {
 table {
     width: 100%;
     border-collapse: collapse;
-    border: 3px solid #6200ea;
+    border: 3px solid white;
     
 }
 
@@ -170,10 +213,20 @@ td {
     font-size: 10px;
     color: #6200ea;
     background-color: white;
-    border: 3px solid #6200ea;
+    border: 2px solid #6200ea;
     height: 70px;
     text-align: center;
     cursor: pointer;
     font-weight: bold;
+}
+
+.bingoYes {
+    background-color: #6200ea;
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 20px;
+    margin-top: 1rem;
 }
 </style>
