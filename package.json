@@ -11,12 +11,15 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "firebase": "^10.12.2",
     "firebase-admin": "^12.1.1",
     "pinia": "^2.1.7",
+    "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
-    "vuefire": "^3.1.23"
+    "vuefire": "^3.1.23",
+    "vuetify": "^3.6.0-beta.0.0"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

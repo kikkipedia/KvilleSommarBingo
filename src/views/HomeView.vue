@@ -102,6 +102,8 @@ const randomizeSheet = async () => {
     // row8.value = testSheet.value.slice(35, 40)
     // row9.value = testSheet.value.slice(40, 45)
     // row10.value = testSheet.value.slice(45, 50)
+
+    saveNewSheet()
 }
 
 

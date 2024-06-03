@@ -1,32 +1,83 @@
 <template>
       <nav>
         <ul>
-            <li class="logo">Kvilles Sommarbingo <span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span></li>
-            <li><img src="./assets/info.svg"></li>
-            <li><img src="./assets/statistics.svg"></li>
+            <router-link to="/"><li class="logo">Kvilles Sommarbingo <span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span></li></router-link>
+            <li><img src="./assets/info.svg" @click="openInfo = true"></li>
+            <li><img src="./assets/statistics.svg" @click="openStats = true"></li>
         </ul>
     </nav>
     <div class="main">
+      <v-dialog v-model="openInfo" width="90%">
+        <v-toolbar>
+          <v-btn
+            icon="mdi-close"
+            @click="openInfo = false"
+          ></v-btn>
+
+          <v-toolbar-title>Information</v-toolbar-title>
+
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-card>
+          <v-card-text>
+            <p>Hej {{ name }}, här kommer lite information om spelet.</p>
+            <p>Spelet går ut på att samla ihop en rad av de olika händelser/personer som finns på din bricka. Nedan beskrivs de som kan vara mindre informativa.</p>
+            <p>Lycka till!</p>
+            <div v-for="item in descriptions">
+              <h4 v-if="item.description != null">{{ item.item }}</h4>
+              <p v-if="item.description != null">{{ item.description }}</p>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="openStats" width="90%">
+        <v-toolbar>
+          <v-btn
+            icon="mdi-close"
+            @click="openStats = false"
+          ></v-btn>
+
+          <v-toolbar-title>Statistik</v-toolbar-title>
+
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-card>
+          <v-card-text>
+            <p>Här kommer statistik att visas</p>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <RouterView />
     </div>
     <footer>
-        <p>© 2024 Kvilles Sommarbingo. Idé: Sikas. Kod: Kicki & Danne. GitHub repo</p>
+        <p>© 2024 Kvilles Sommarbingo. Idé: Sikas. Kod: Kicki & Danne. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p>
     </footer>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { useBingoStore } from './stores/counter';
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
+import {getBingoItems} from './db'
+import { type BingoItem } from './types';
 
 const store = useBingoStore()
 const name = ref('')
+
+const openInfo = ref(false)
+const openStats = ref(false)
+const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 
 //get name from store
 watch(() => store.name, (nam) => {
     name.value = nam
 })
 
+onMounted(async () => {
+  const items = await getBingoItems()
+  descriptions.value = items
+})
 
 </script>
 
@@ -65,6 +116,12 @@ li.logo {
   cursor: pointer;
 }
 
+a {
+  text-decoration: none;
+  color: #EB00D7;
+
+}
+
 li a:hover:not(.active) {
   background-color: #111;
 }
@@ -97,5 +154,17 @@ footer {
     color: rgb(10, 150, 125);
     font-family: 'Courier New', Courier, monospace;
     text-align: middle;
+}
+
+h4 {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #EB00D7;
+  padding-top: 5px
+}
+
+p {
+  font-size: 0.8rem;
+  color: #333;
 }
 </style>
