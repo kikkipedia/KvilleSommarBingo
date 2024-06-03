@@ -51,7 +51,7 @@
       <RouterView />
     </div>
     <footer>
-        <p>© 2024 Kvilles Sommarbingo. Idé: Sikas. Kod: Kicki & Danne. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the GitHub repo</a></p>
+        <p>© 2024 Kvilles Sommarbingo. Idé: Sikas. Kod: Kicki & Danne. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p>
     </footer>
 </template>
 
