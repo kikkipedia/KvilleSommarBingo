@@ -1,15 +1,6 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 
-// export const useCounterStore = defineStore('counter', () => {
-//   const count = ref(0)
-//   const doubleCount = computed(() => count.value * 2)
-//   function increment() {
-//     count.value++
-//   }
-
-//   return { count, doubleCount, increment }
-// })
 
 export const useBingoStore = defineStore('bingoStore', () => {
   const name = ref ('')
@@ -18,5 +9,15 @@ export const useBingoStore = defineStore('bingoStore', () => {
     name.value = newName
   }
 
-  return { name, setName }
+  // this is for watcher checking if the row is complete
+  const srow1 = ref<number[]>([])
+  const srow2 = ref<number[]>([])
+  const srow3 = ref<number[]>([])
+  const srow4 = ref<number[]>([])
+  const srow5 = ref<number[]>([])
+
+  
+  
+
+  return { name, setName, srow1, srow2, srow3, srow4, srow5}
 })

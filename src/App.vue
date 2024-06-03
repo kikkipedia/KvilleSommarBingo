@@ -1,7 +1,7 @@
 <template>
       <nav>
         <ul>
-            <li class="logo">Kvilles Sommarbingo</li>
+            <li class="logo">Kvilles Sommarbingo <span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span></li>
             <li><img src="./assets/info.svg"></li>
             <li><img src="./assets/statistics.svg"></li>
         </ul>
@@ -34,8 +34,9 @@ watch(() => store.name, (nam) => {
 nav {
     display: flex;
     justify-content: space-between;
-    background-color: #eea1d3;
+    background-color: white;
     width: 100% !important;
+    color: #EB00D7;
 }
 ul {
   list-style-type: none;
@@ -61,7 +62,6 @@ li.logo {
   font-weight: 900;
   font-size: 1.5rem;
   font-style: normal;
-  color: #5062eb;
   cursor: pointer;
 }
 
@@ -76,6 +76,8 @@ li a:hover:not(.active) {
 .main {
   padding: 20px;
   background-color: white;
+  margin: 10px;
+  height: 100% !important;
 }
 
 footer {
@@ -86,7 +88,14 @@ footer {
     padding: 1rem;
     font-size: 0.8rem;
     color: #333;
-    border-top: 1px solid #eea1d3;
-    background-color: bisque;
+    border-top: 1px solid #EB00D7;
+    background-color: white;
     }
+
+.symbol {
+    font-size: 1rem;
+    color: rgb(10, 150, 125);
+    font-family: 'Courier New', Courier, monospace;
+    text-align: middle;
+}
 </style>

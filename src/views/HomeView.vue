@@ -7,49 +7,55 @@
                 <button type="submit">Spara</button>
             </form>
         </div>
-        <div v-else>
+        <div v-else> 
             <h2>Välkommen {{ user }}</h2>
-            <p><span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span></p>
         </div>
-        <div class="bingoSheet" v-if="bingoId">
-            {{ row1 }} <br/>
-            {{ row2 }} <br/>
-            {{ row3 }} <br/>
-            {{ row4 }} <br/>
-            {{ row5 }} <br/>
-            {{ row6 }} <br/>
-            {{ row7 }} <br/>
-            {{ row8 }} <br/>
-            {{ row9 }} <br/>
-            {{ row10 }} <br/>
+        <div class="bingoSheet"><!-- will hide this later-->
+            <table>
+                <tr>
+                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row2" :key="doc.id" @click="bingoClick(index, 2, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row3" :key="doc.id" @click="bingoClick(index, 3, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row4" :key="doc.id" @click="bingoClick(index, 4, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                </tr>
+            </table>
+            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo! !</div>
         </div>
-        <button @click="getNewSheet">Generera ny bricka</button>
+        <button @click="randomizeSheet">Generera ny bricka</button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { BingoSheet } from '@/types';
+import { onMounted, ref, watch } from 'vue'
+import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheet } from '@/db';
+import { saveNewSheetToDb, getBingoItems } from '@/db';
 import { useBingoStore } from '@/stores/counter';
 
 const user = ref()
 const showForm = ref(false)
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref()
-const testSheet = ref<number[]>([]) //numer as array
-const row1 = ref<number[]>([]) //These should later BingoItems
-const row2 = ref<number[]>([])
-const row3 = ref<number[]>([])
-const row4 = ref<number[]>([])
-const row5 = ref<number[]>([])
+const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
+const row1 = ref<BingoItem[]>([]) //These should later BingoItems
+const row2 = ref<BingoItem[]>([])
+const row3 = ref<BingoItem[]>([])
+const row4 = ref<BingoItem[]>([])
+const row5 = ref<BingoItem[]>([])
 const row6 = ref<number[]>([])
 const row7 = ref<number[]>([])
 const row8 = ref<number[]>([])
 const row9 = ref<number[]>([])
 const row10 = ref<number[]>([])
-const checkedNumbers = ref<number[]>([]) //numbers checked by user
 
 const store = useBingoStore()
 
@@ -58,37 +64,80 @@ const setUser = (event: Event) => {
     localStorage.setItem('user', user.value)
     showForm.value = false
     store.setName(user.value)
-    //getNewSheet() //right now only generates on button click
 }
 
-const randomizeSheet = () => {
-    //Todo add fetch bingoItems from database
-    const sheetArray = Array.from({ length: 50 }, (_, i) => i + 1) //creates an array from 1 to 50
-    const shuffledArray = sheetArray.sort(() => Math.random() - 0.5) //shuffles the array
-    testSheet.value = shuffledArray
-    row1.value = testSheet.value.slice(0, 5) //slices the array into rows
-    row2.value = testSheet.value.slice(5, 10)
-    row3.value = testSheet.value.slice(10, 15)
-    row4.value = testSheet.value.slice(15, 20)
-    row5.value = testSheet.value.slice(20, 25)
-    row6.value = testSheet.value.slice(25, 30)
-    row7.value = testSheet.value.slice(30, 35)
-    row8.value = testSheet.value.slice(35, 40)
-    row9.value = testSheet.value.slice(40, 45)
-    row10.value = testSheet.value.slice(45, 50)
-    return shuffledArray
-}
+const randomizeSheet = async () => {
+    //empty rows
+    store.srow1 = []
+    store.srow2 = []
+    store.srow3 = []
+    store.srow4 = []
+    store.srow5 = []
+    const items = await getBingoItems()
+    bingoItems.value = items
 
-const getNewSheet = async () => {
-    const query = {
-        name: user.value,
-        bingoSheet: randomizeSheet(), //TODO: implement randomizeSheet from BingoItems as json
-        timeStarted: new Date().toLocaleString('sv-SE'),
-        bingo: false
+    const shuffledArray = bingoItems.value.sort(() => Math.random() - 0.5) //shuffles the array
+    //add shuffeled array to bingoSheet.items
+    const name = user.value
+    const timeStarted = new Date().toLocaleString('sv-SE')
+    const bingo = false
+    const bingoSheet2 = {name, timeStarted, bingo, items: []}
+    if(shuffledArray.length){
+        for(var post in shuffledArray){
+            //@ts-ignore
+            //push all items to bingoSheet2
+            bingoSheet2.items.push(shuffledArray[post])
+        }
     }
-    bingoId.value = await saveNewSheet(query) //saves the sheet to the database
+    bingoSheet.value = bingoSheet2
+    
+
+    row1.value = bingoSheet.value?.items?.slice(0, 5) //slices the array into rows
+    row2.value = bingoSheet.value?.items?.slice(5, 10)
+    row3.value = bingoSheet.value?.items?.slice(10, 15)
+    row4.value = bingoSheet.value?.items?.slice(15, 20)
+    row5.value = bingoSheet.value?.items?.slice(20, 25)
+    // row6.value = testSheet.value.slice(25, 30) //we dont have 50 items yet
+    // row7.value = testSheet.value.slice(30, 35)
+    // row8.value = testSheet.value.slice(35, 40)
+    // row9.value = testSheet.value.slice(40, 45)
+    // row10.value = testSheet.value.slice(45, 50)
+}
+
+
+const saveNewSheet = async () => {
+    // const query = {
+    //     name: user.value,
+    //     bingoSheet: randomizeSheet(),
+    //     timeStarted: new Date().toLocaleString('sv-SE'),
+    //     bingo: false
+    // }
+    bingoId.value = await saveNewSheetToDb(bingoSheet.value) //saves the sheet to the database
     localStorage.setItem('bingoId', bingoId.value) //saves the id to local storage
 
+}
+
+const bingoClick = (index: number, row: number, id: string )=> {
+    //change background color of clicked cell
+    const cell = document.getElementsByClassName(id);
+    cell[0].setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
+
+    //push index to store rows
+    if(row == 1){
+        store.srow1.push(index)
+    }
+    else if(row == 2){
+        store.srow2.push(index)
+    }
+    else if(row == 3){
+        store.srow3.push(index)
+    }
+    else if(row == 4){
+        store.srow4.push(index)
+    }
+    else if(row == 5){
+        store.srow5.push(index)
+    }
 }
 
 onMounted(() => {
@@ -102,22 +151,82 @@ onMounted(() => {
     }
 })
 
+//watch for full row in store
+
+watch(() => store.srow1.length, (srow1) => {
+    if(store.srow1.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow2.length, (srow2) => {
+    if(store.srow2.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow3.length, (srow3) => {
+    if(store.srow3.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow4.length, (srow4) => {
+    if(store.srow4.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow5.length, (srow5) => {
+    if(store.srow5.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+
 </script>
 
 <style scoped>
-.symbol {
-    font-size: 1.5rem;
-    color: #c71887;
-    font-family: 'Courier New', Courier, monospace;
-    text-align: top;
-}
 
 .bingoSheet {
-    border: 2px solid #4054ef;
+    border: 3px solid #6200ea;
     border-radius: 20px;
     padding: 1rem;
     margin: 1rem 0;
     min-height: 500px;
+    background-color: #6200ea;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid white;
+    
+}
+
+td {
+    font-size: 10px;
+    color: #6200ea;
+    background-color: white;
+    border: 2px solid #6200ea;
+    height: 70px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.bingoYes {
+    background-color: #6200ea;
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 20px;
+    margin-top: 1rem;
+}
 </style>
