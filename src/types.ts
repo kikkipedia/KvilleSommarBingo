@@ -2,18 +2,17 @@
 
 export type BingoItem = {
     id: string;
-    title: string;
+    item: string;
     description: string;
-    checked: boolean;
-    totalchecks: number;
+    checked: number;
     //maybe add array of coordinates seen?
     };
 
 export type BingoSheet = {
-  id: string;
+  //id: string; needs to be returned from firebase
   name: string;
   items: BingoItem[];
-  timeStarted: number;  
+  timeStarted: string;  
   bingo: boolean;
 };
 
