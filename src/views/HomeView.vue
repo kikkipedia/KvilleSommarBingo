@@ -1,13 +1,15 @@
 <template>
     <div>
-        <div v-if="showForm"> <!-- Register name if not in local storage-->
-            <form @submit="setUser">
-                <label for="user">Ange ditt namn:</label>
-                <input type="text" id="user" v-model="user">
-                <button type="submit">Spara</button>
-            </form>
+        <div v-if="showForm" class="form"> <!-- Register name if not already in local storage-->
+            <v-form @submit.prevent>
+                <v-text-field
+                    v-model="user"
+                    label="Namn"
+                ></v-text-field>
+                <v-btn color="#EB00D7" class="mt-2" type="submit" block @click="setUser">Registrera</v-btn>
+                </v-form>
         </div>
-        <div v-else> 
+        <div v-else class="welcome"> 
             <h2>Välkommen {{ user }}</h2>
             <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }}</p> <!-- ev ta bort? Men bra om man vill återställa-->
         </div>
@@ -40,8 +42,20 @@
             </table>
             <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
         </div>
-        <div class="btn-container" v-show="bingoId == ''">
-            <button @click="randomizeSheet">Generera ny bricka</button>
+        <div class="btn-container" v-show="bingoId != ''">
+            <p>Image here??</p>
+            <br/>
+            <v-btn
+                color="#EB00D7"
+                size="x-large"
+                :loading="loading"
+                @click="randomizeSheet"
+            >
+                Generera bricka!
+                <template v-slot:loader>
+                    <v-progress-linear indeterminate></v-progress-linear>
+                </template>
+            </v-btn>
         </div>
     </div>
 </template>
@@ -51,9 +65,10 @@ import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
 import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount, saveNewUser, updateUserScore, fetchUserByName } from '@/db';
-import { useBingoStore } from '@/stores/counter';
+import { useBingoStore } from '@/stores/index';
 
 const user = ref()
+const loading = ref(false)
 const showForm = ref(false) //visible if local storage is empty
 const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
@@ -76,6 +91,7 @@ const store = useBingoStore()
 
 const setUser = async (event: Event) => {
     event.preventDefault()
+    //todo check if user exists in db
     localStorage.setItem('user', user.value)
     showForm.value = false
     store.setName(user.value)
@@ -84,6 +100,7 @@ const setUser = async (event: Event) => {
 }
 
 const randomizeSheet = async () => {
+    loading.value = true
     //empty rows
     store.srow1 = []
     store.srow2 = []
@@ -130,6 +147,7 @@ const randomizeSheet = async () => {
 const saveNewSheet = async () => {
     bingoId.value = await saveNewSheetToDb(bingoSheet.value) 
     localStorage.setItem('bingoId', bingoId.value) //saves the id to local storage
+    loading.value = false
 }
 
 //when clicking on a bingo sheet cell
@@ -300,7 +318,7 @@ watch(() => bingoSheet.value?.bingo, async () => {
 .bingoSheet {
     border: 3px solid #6200ea;
     border-radius: 20px;
-    padding: 1rem;
+    padding: 0.5rem;
     margin: 1rem 0;
     min-height: 500px;
     background-color: #6200ea;
@@ -308,8 +326,7 @@ watch(() => bingoSheet.value?.bingo, async () => {
 
 table {
     width: 100%;
-    border-collapse: collapse;
-    border: 3px solid white;
+    
     
 }
 
@@ -337,5 +354,21 @@ td {
 .bingoId {
     font-size: 0.7rem;
     color: rgb(10, 150, 125);
+}
+
+.btn-container {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.welcome {
+    text-align: center;
+}
+
+.form {
+    text-align: center;
+    max-width: 50%;
+    margin: 0 auto;
 }
 </style>

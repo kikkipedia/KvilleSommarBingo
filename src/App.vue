@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { useBingoStore } from './stores/counter';
+import { useBingoStore } from './stores';
 import { watch, ref, onMounted } from 'vue';
 import {getBingoItems} from './db'
 import { type BingoItem } from './types';
