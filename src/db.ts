@@ -53,4 +53,20 @@ const fetchUserById = async (id) => {
   }
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb };
+
+
+//TODO test this function
+const updateBingoItemCount = async (id) => {
+  const docRef = doc(db, "bingoItems", id);
+  let countBefore = await getDoc(docRef);
+  countBefore = countBefore.data().count;
+  const newCount = countBefore + 1;
+ //update only one field in doc
+  await setDoc(docRef, {
+    count: newCount
+  }, { merge: true });
+  console.log("Document updated with ID: ", docRef.id);
+  return docRef.id;
+}
+
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount };

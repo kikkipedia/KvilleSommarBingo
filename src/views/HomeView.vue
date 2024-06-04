@@ -50,7 +50,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheetToDb, getBingoItems, updateSheetInDb } from '@/db';
+import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount } from '@/db';
 import { useBingoStore } from '@/stores/counter';
 
 const user = ref()
@@ -123,12 +123,13 @@ const randomizeSheet = async () => {
     saveNewSheet()
 }
 
-
+//saves the sheet to the database
 const saveNewSheet = async () => {
-    bingoId.value = await saveNewSheetToDb(bingoSheet.value) //saves the sheet to the database
+    bingoId.value = await saveNewSheetToDb(bingoSheet.value) 
     localStorage.setItem('bingoId', bingoId.value) //saves the id to local storage
 }
 
+//when clicking on a bingo sheet cell
 const bingoClick = (index: number, row: number, id: string )=> {
     //check if already checked, then uncheck and remove from store row
     const checker1 = document.getElementsByClassName(id);
@@ -136,6 +137,7 @@ const bingoClick = (index: number, row: number, id: string )=> {
     if(checker2 == "checked"){
         checker1[0]?.setAttribute("style", "background-color:white; color: #6200ea; border: 2px solid #6200ea;");
         checker1[0]?.setAttribute("id", "unchecked");
+        //TODO remove count from db
         if(row == 1){
             store.srow1.pop()
         }
@@ -167,6 +169,7 @@ const bingoClick = (index: number, row: number, id: string )=> {
     else if (checker2 == "unchecked"){
         checker1[0]?.setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
         checker1[0]?.setAttribute("id", "checked");
+        updateBingoItemCount(id) //updates the item in the database
         //push index to store rows
         if(row == 1){
             store.srow1.push(index)
