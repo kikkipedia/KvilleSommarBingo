@@ -50,7 +50,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount, saveNewUser, updateUserScore } from '@/db';
+import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount, saveNewUser, updateUserScore, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/counter';
 
 const user = ref()
@@ -280,13 +280,18 @@ watch(() => store.srow8.length, (srow8) => {
 })
 
 //watch for bingo in bingoSheet
-watch(() => bingoSheet.value?.bingo, (bingo) => {
+watch(() => bingoSheet.value?.bingo, async () => {
     if(bingoSheet.value?.bingo){
         updateSheetInDb(bingoSheet.value, bingoId.value)
-        updateUserScore(userId.value)//userid
-        
+        if(userId.value != ''){
+            updateUserScore(userId.value)//userid
+        }
+        else {
+            console.log("No user id")
+            const user = await fetchUserByName(localStorage.getItem('user'))
+            updateUserScore(user)
     }
-})
+}})
 
 </script>
 

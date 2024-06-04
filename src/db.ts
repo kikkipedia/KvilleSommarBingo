@@ -52,7 +52,6 @@ const updateUserScore = async (id) => {
   return docRef.id;
 }
 
-
 const fetchUserById = async (id) => {
   const docRef = doc(db, "users", id);
   const docSnap = await getDoc(docRef);
@@ -62,6 +61,19 @@ const fetchUserById = async (id) => {
     // docSnap.data() will be undefined in this case
     console.log("No such document!");
   }
+}
+
+const fetchUserByName = async (name) => {
+  const querySnapshot = await getDocs(collection(db, "users"));
+  let user = null;
+  //find user by name
+  querySnapshot.forEach((doc) => {
+    if (doc.data().name === name) {
+      user = doc.id;
+    }
+  });
+  return user;
+
 }
 
 const updateBingoItemCount = async (id) => {
@@ -77,4 +89,4 @@ const updateBingoItemCount = async (id) => {
   return docRef.id;
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore };
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName };
