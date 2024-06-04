@@ -10,7 +10,7 @@
         <div v-else> 
             <h2>Välkommen {{ user }}</h2>
         </div>
-        <div class="bingoSheet"><!-- will hide this later-->
+        <div class="bingoSheet" v-show="bingoId">
             <table>
                 <tr>
                     <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
@@ -26,6 +26,15 @@
                 </tr>
                 <tr>
                     <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row6" :key="doc.id" @click="bingoClick(index, 6, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row7" :key="doc.id" @click="bingoClick(index, 7, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row8" :key="doc.id" @click="bingoClick(index, 8, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
             </table>
             <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
@@ -45,16 +54,16 @@ const user = ref()
 const showForm = ref(false) //visible if local storage is empty
 const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
-const bingoId = ref()
+const bingoId = ref() //id for bingoSheet, stored in localStorage
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
-const row1 = ref<BingoItem[]>([]) //These should later BingoItems
+const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
 const row3 = ref<BingoItem[]>([])
 const row4 = ref<BingoItem[]>([])
 const row5 = ref<BingoItem[]>([])
-const row6 = ref<number[]>([])
-const row7 = ref<number[]>([])
-const row8 = ref<number[]>([])
+const row6 = ref<BingoItem[]>([])
+const row7 = ref<BingoItem[]>([])
+const row8 = ref<BingoItem[]>([])
 const row9 = ref<number[]>([])
 const row10 = ref<number[]>([])
 
@@ -74,6 +83,9 @@ const randomizeSheet = async () => {
     store.srow3 = []
     store.srow4 = []
     store.srow5 = []
+    store.srow6 = []
+    store.srow7 = []
+    store.srow8 = []
     const items = await getBingoItems()
     bingoItems.value = items
 
@@ -98,10 +110,10 @@ const randomizeSheet = async () => {
     row3.value = bingoSheet.value?.items?.slice(10, 15)
     row4.value = bingoSheet.value?.items?.slice(15, 20)
     row5.value = bingoSheet.value?.items?.slice(20, 25)
-    // row6.value = testSheet.value.slice(25, 30) //we dont have 50 items yet
-    // row7.value = testSheet.value.slice(30, 35)
-    // row8.value = testSheet.value.slice(35, 40)
-    // row9.value = testSheet.value.slice(40, 45)
+    row6.value = bingoSheet.value?.items?.slice(25, 30) 
+    row7.value = bingoSheet.value?.items?.slice(30, 35)
+    row8.value = bingoSheet.value?.items?.slice(35, 40)
+    // row9.value = testSheet.value.slice(40, 45) //we dont have 50 items yet
     // row10.value = testSheet.value.slice(45, 50)
 
     saveNewSheet()
@@ -135,6 +147,18 @@ const bingoClick = (index: number, row: number, id: string )=> {
         else if(row == 5){
             store.srow5.pop()
         }
+        else if(row == 6){
+            store.srow6.pop()
+        }
+        else if(row == 7){
+            store.srow7.pop()
+        }
+        else if(row == 8){
+            store.srow8.pop()
+        }
+        else {
+            alert("Error. Kontakta Danne eller Kicki")
+        }
     }
     else if (checker2 == "unchecked"){
         checker1[0]?.setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
@@ -154,6 +178,18 @@ const bingoClick = (index: number, row: number, id: string )=> {
         }
         else if(row == 5){
             store.srow5.push(index)
+        }
+        else if(row == 6){
+            store.srow6.push(index)
+        }
+        else if(row == 7){
+            store.srow7.push(index)
+        }
+        else if(row == 8){
+            store.srow8.push(index)
+        }
+        else {
+            alert("Error. Kontakta Danne eller Kicki")
         }
     }
 }
@@ -201,6 +237,27 @@ watch(() => store.srow4.length, (srow4) => {
 })
 watch(() => store.srow5.length, (srow5) => {
     if(store.srow5.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow6.length, (srow6) => {
+    if(store.srow6.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow7.length, (srow7) => {
+    if(store.srow7.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow8.length, (srow8) => {
+    if(store.srow8.length == 5){
         if(bingoSheet.value){
             bingoSheet.value.bingo = true
         }

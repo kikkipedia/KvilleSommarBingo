@@ -51,7 +51,8 @@
       <RouterView />
     </div>
     <footer>
-        <p>© 2024 Kvilles Sommarbingo. Idé: Sikas. Kod: Kicki & Danne. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p>
+        <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
+        <p>Idé av Sikas. Kod av Kicki & Danne.</p>
     </footer>
 </template>
 
@@ -87,7 +88,7 @@ nav {
     background-color: white;
     width: 100% !important;
     color: #EB00D7;
-    height: auto;
+    height: 60px;
     margin: auto;
 }
 ul {
@@ -134,16 +135,18 @@ li a:hover:not(.active) {
 .main {
   padding: 20px;
   background-color: white;
+  border: #6200ea 3px solid;
   margin: 10px;
-  height: 100% !important;
+  min-height: calc(100vh - 120px - 1rem) !important;
 }
 
 footer {
   text-align: center;
   position: fixed;
   bottom: 0;
+  height: 60px;
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
   font-size: 0.8rem;
   color: #333;
   background-color: white;

@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 
@@ -15,9 +15,11 @@ export const useBingoStore = defineStore('bingoStore', () => {
   const srow3 = ref<number[]>([])
   const srow4 = ref<number[]>([])
   const srow5 = ref<number[]>([])
-
+  const srow6 = ref<number[]>([])
+  const srow7 = ref<number[]>([])
+  const srow8 = ref<number[]>([])
   
   
 
-  return { name, setName, srow1, srow2, srow3, srow4, srow5}
+  return { name, setName, srow1, srow2, srow3, srow4, srow5, srow6, srow7, srow8}
 })
