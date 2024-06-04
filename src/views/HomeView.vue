@@ -3,10 +3,11 @@
         <div v-if="showForm" class="form"> <!-- Register name if not already in local storage-->
             <v-form @submit.prevent>
                 <v-text-field
+                    :rules="[rules.required]"
                     v-model="user"
                     label="Namn"
                 ></v-text-field>
-                <v-btn color="#EB00D7" class="mt-2" type="submit" block @click="setUser">Registrera</v-btn>
+                <v-btn :disabled="!user" color="#EB00D7" class="mt-2" type="submit" block @click="setUser">Registrera</v-btn>
                 </v-form>
         </div>
         <div v-else class="welcome"> 
@@ -68,6 +69,13 @@ import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount,
 import { useBingoStore } from '@/stores/index';
 
 const user = ref()
+interface Rules {
+    required: (value: any) => boolean | string;
+}
+
+const rules: Rules = {
+    required: (value) => !!value || 'Field is required',
+};
 const loading = ref(false)
 const showForm = ref(false) //visible if local storage is empty
 const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
@@ -367,6 +375,7 @@ td {
 }
 
 .form {
+    padding-top: 1rem;
     text-align: center;
     max-width: 50%;
     margin: 0 auto;
