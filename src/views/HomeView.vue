@@ -28,7 +28,7 @@
                     <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
             </table>
-            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo! !</div>
+            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
         </div>
         <button @click="randomizeSheet">Generera ny bricka</button>
     </div>
@@ -38,7 +38,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheetToDb, getBingoItems } from '@/db';
+import { saveNewSheetToDb, getBingoItems, updateSheetInDb } from '@/db';
 import { useBingoStore } from '@/stores/counter';
 
 const user = ref()
@@ -204,6 +204,14 @@ watch(() => store.srow5.length, (srow5) => {
         if(bingoSheet.value){
             bingoSheet.value.bingo = true
         }
+    }
+})
+
+//watch for bingo in bingoSheet
+watch(() => bingoSheet.value?.bingo, (bingo) => {
+    if(bingoSheet.value?.bingo){
+        updateSheetInDb(bingoSheet.value, bingoId.value)
+        
     }
 })
 
