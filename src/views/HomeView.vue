@@ -1,36 +1,63 @@
 <template>
     <div>
-        <div v-if="showForm"> <!-- Register name if not in local storage-->
-            <form @submit="setUser">
-                <label for="user">Ange ditt namn:</label>
-                <input type="text" id="user" v-model="user">
-                <button type="submit">Spara</button>
-            </form>
+        <div v-if="showForm" class="form"> <!-- Register name if not already in local storage-->
+            <v-form @submit.prevent>
+                <v-text-field
+                    :rules="[rules.required]"
+                    v-model="user"
+                    label="Namn"
+                ></v-text-field>
+                <v-btn :disabled="!user" color="#EB00D7" class="mt-2" type="submit" block @click="setUser">Registrera</v-btn>
+                </v-form>
         </div>
-        <div v-else> 
+        <div v-else class="welcome"> 
             <h2>Välkommen {{ user }}</h2>
+            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }}</p> <!-- ev ta bort? Men bra om man vill återställa-->
         </div>
-        <div class="bingoSheet"><!-- will hide this later-->
+        <div class="bingoSheet" v-show="bingoId">
             <table>
                 <tr>
-                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row2" :key="doc.id" @click="bingoClick(index, 2, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row2" :key="doc.id" @click="bingoClick(index, 2, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row3" :key="doc.id" @click="bingoClick(index, 3, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row3" :key="doc.id" @click="bingoClick(index, 3, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row4" :key="doc.id" @click="bingoClick(index, 4, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row4" :key="doc.id" @click="bingoClick(index, 4, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row6" :key="doc.id" @click="bingoClick(index, 6, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row7" :key="doc.id" @click="bingoClick(index, 7, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row8" :key="doc.id" @click="bingoClick(index, 8, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
             </table>
-            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo! !</div>
+            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
         </div>
-        <button @click="randomizeSheet">Generera ny bricka</button>
+        <div class="btn-container" v-show="bingoId != ''">
+            <p>Image here??</p>
+            <br/>
+            <v-btn
+                color="#EB00D7"
+                size="x-large"
+                :loading="loading"
+                @click="randomizeSheet"
+            >
+                Generera bricka!
+                <template v-slot:loader>
+                    <v-progress-linear indeterminate></v-progress-linear>
+                </template>
+            </v-btn>
+        </div>
     </div>
 </template>
 
@@ -38,42 +65,60 @@
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheetToDb, getBingoItems } from '@/db';
-import { useBingoStore } from '@/stores/counter';
+import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount, saveNewUser, updateUserScore, fetchUserByName } from '@/db';
+import { useBingoStore } from '@/stores/index';
 
 const user = ref()
-const showForm = ref(false)
+interface Rules {
+    required: (value: any) => boolean | string;
+}
+
+const rules: Rules = {
+    required: (value) => !!value || 'Field is required',
+};
+const loading = ref(false)
+const showForm = ref(false) //visible if local storage is empty
+const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
-const bingoId = ref()
+const bingoId = ref('') //id for bingoSheet, stored in localStorage
+const userId = ref('') //id for user, stored in localStorage
+const showButton = ref(true) //show button to get new sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
-const row1 = ref<BingoItem[]>([]) //These should later BingoItems
+const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
 const row3 = ref<BingoItem[]>([])
 const row4 = ref<BingoItem[]>([])
 const row5 = ref<BingoItem[]>([])
-const row6 = ref<number[]>([])
-const row7 = ref<number[]>([])
-const row8 = ref<number[]>([])
-const row9 = ref<number[]>([])
-const row10 = ref<number[]>([])
+const row6 = ref<BingoItem[]>([])
+const row7 = ref<BingoItem[]>([])
+const row8 = ref<BingoItem[]>([])
+//const row9 = ref<number[]>([]) //TODO: add more rows
+//const row10 = ref<number[]>([])
 
 const store = useBingoStore()
 
-const setUser = (event: Event) => {
+const setUser = async (event: Event) => {
     event.preventDefault()
+    //todo check if user exists in db
     localStorage.setItem('user', user.value)
     showForm.value = false
     store.setName(user.value)
+    userId.value = await saveNewUser(user.value)
+    localStorage.setItem('userId', userId.value)
 }
 
 const randomizeSheet = async () => {
+    loading.value = true
     //empty rows
     store.srow1 = []
     store.srow2 = []
     store.srow3 = []
     store.srow4 = []
     store.srow5 = []
-    const items = await getBingoItems()
+    store.srow6 = []
+    store.srow7 = []
+    store.srow8 = []
+    const items = await getBingoItems() //fetch drom database
     bingoItems.value = items
 
     const shuffledArray = bingoItems.value.sort(() => Math.random() - 0.5) //shuffles the array
@@ -97,48 +142,91 @@ const randomizeSheet = async () => {
     row3.value = bingoSheet.value?.items?.slice(10, 15)
     row4.value = bingoSheet.value?.items?.slice(15, 20)
     row5.value = bingoSheet.value?.items?.slice(20, 25)
-    // row6.value = testSheet.value.slice(25, 30) //we dont have 50 items yet
-    // row7.value = testSheet.value.slice(30, 35)
-    // row8.value = testSheet.value.slice(35, 40)
-    // row9.value = testSheet.value.slice(40, 45)
+    row6.value = bingoSheet.value?.items?.slice(25, 30) 
+    row7.value = bingoSheet.value?.items?.slice(30, 35)
+    row8.value = bingoSheet.value?.items?.slice(35, 40)
+    // row9.value = testSheet.value.slice(40, 45) //we dont have 50 items yet
     // row10.value = testSheet.value.slice(45, 50)
 
     saveNewSheet()
 }
 
-
+//saves the sheet to the database
 const saveNewSheet = async () => {
-    // const query = {
-    //     name: user.value,
-    //     bingoSheet: randomizeSheet(),
-    //     timeStarted: new Date().toLocaleString('sv-SE'),
-    //     bingo: false
-    // }
-    bingoId.value = await saveNewSheetToDb(bingoSheet.value) //saves the sheet to the database
+    bingoId.value = await saveNewSheetToDb(bingoSheet.value) 
     localStorage.setItem('bingoId', bingoId.value) //saves the id to local storage
-
+    loading.value = false
 }
 
+//when clicking on a bingo sheet cell
 const bingoClick = (index: number, row: number, id: string )=> {
-    //change background color of clicked cell
-    const cell = document.getElementsByClassName(id);
-    cell[0].setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
-
-    //push index to store rows
-    if(row == 1){
-        store.srow1.push(index)
+    //check if already checked, then uncheck and remove from store row
+    const checker1 = document.getElementsByClassName(id);
+    const checker2 = checker1[0]?.getAttribute("id")
+    if(checker2 == "checked"){
+        checker1[0]?.setAttribute("style", "background-color:white; color: #6200ea; border: 2px solid #6200ea;");
+        checker1[0]?.setAttribute("id", "unchecked");
+        //TODO remove count from db
+        if(row == 1){
+            store.srow1.pop()
+        }
+        else if(row == 2){
+            store.srow2.pop()
+        }
+        else if(row == 3){
+            store.srow3.pop()
+        }
+        else if(row == 4){
+            store.srow4.pop()
+        }
+        else if(row == 5){
+            store.srow5.pop()
+        }
+        else if(row == 6){
+            store.srow6.pop()
+        }
+        else if(row == 7){
+            store.srow7.pop()
+        }
+        else if(row == 8){
+            store.srow8.pop()
+        }
+        else {
+            alert("Error. Kontakta Danne eller Kicki")
+        }
     }
-    else if(row == 2){
-        store.srow2.push(index)
-    }
-    else if(row == 3){
-        store.srow3.push(index)
-    }
-    else if(row == 4){
-        store.srow4.push(index)
-    }
-    else if(row == 5){
-        store.srow5.push(index)
+    else if (checker2 == "unchecked"){
+        checker1[0]?.setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
+        checker1[0]?.setAttribute("id", "checked");
+        updateBingoItemCount(id) //updates the item in the database
+        //push index to store rows
+        if(row == 1){
+            store.srow1.push(index)
+        }
+        else if(row == 2){
+            store.srow2.push(index)
+        }
+        else if(row == 3){
+            store.srow3.push(index)
+        }
+        else if(row == 4){
+            store.srow4.push(index)
+        }
+        else if(row == 5){
+            store.srow5.push(index)
+        }
+        else if(row == 6){
+            store.srow6.push(index)
+        }
+        else if(row == 7){
+            store.srow7.push(index)
+        }
+        else if(row == 8){
+            store.srow8.push(index)
+        }
+        else {
+            alert("Error. Kontakta Danne eller Kicki")
+        }
     }
 }
 
@@ -153,8 +241,13 @@ onMounted(() => {
     }
 })
 
-//watch for full row in store
+watch(() => bingoId.value, (bingoId) => {
+    if(bingoId){
+        showButton.value = false
+    }
+})
 
+//watch for full row in store
 watch(() => store.srow1.length, (srow1) => {
     if(store.srow1.length == 5){
         if(bingoSheet.value){
@@ -190,6 +283,41 @@ watch(() => store.srow5.length, (srow5) => {
         }
     }
 })
+watch(() => store.srow6.length, (srow6) => {
+    if(store.srow6.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow7.length, (srow7) => {
+    if(store.srow7.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+watch(() => store.srow8.length, (srow8) => {
+    if(store.srow8.length == 5){
+        if(bingoSheet.value){
+            bingoSheet.value.bingo = true
+        }
+    }
+})
+
+//watch for bingo in bingoSheet
+watch(() => bingoSheet.value?.bingo, async () => {
+    if(bingoSheet.value?.bingo){
+        updateSheetInDb(bingoSheet.value, bingoId.value)
+        if(userId.value != ''){
+            updateUserScore(userId.value)//userid
+        }
+        else {
+            console.log("No user id")
+            const user = await fetchUserByName(localStorage.getItem('user'))
+            updateUserScore(user)
+    }
+}})
 
 </script>
 
@@ -198,7 +326,7 @@ watch(() => store.srow5.length, (srow5) => {
 .bingoSheet {
     border: 3px solid #6200ea;
     border-radius: 20px;
-    padding: 1rem;
+    padding: 0.5rem;
     margin: 1rem 0;
     min-height: 500px;
     background-color: #6200ea;
@@ -206,8 +334,7 @@ watch(() => store.srow5.length, (srow5) => {
 
 table {
     width: 100%;
-    border-collapse: collapse;
-    border: 3px solid white;
+    
     
 }
 
@@ -230,5 +357,27 @@ td {
     padding: 1rem;
     border-radius: 20px;
     margin-top: 1rem;
+}
+
+.bingoId {
+    font-size: 0.7rem;
+    color: rgb(10, 150, 125);
+}
+
+.btn-container {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.welcome {
+    text-align: center;
+}
+
+.form {
+    padding-top: 1rem;
+    text-align: center;
+    max-width: 50%;
+    margin: 0 auto;
 }
 </style>

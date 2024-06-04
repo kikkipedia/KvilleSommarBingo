@@ -1,7 +1,7 @@
 //@ts-nocheck
 
 import { db } from "./firebase.ts";
-import { collection, addDoc, getDocs, getDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
 
 const getBingoItems = async () => {
   const itemsArray = [];
@@ -15,7 +15,6 @@ const getBingoItems = async () => {
 
 
 const saveNewSheetToDb = async (sheet) => {
-  console.log(sheet)
   const docRef = await addDoc(collection(db, "bingoSheets"), {
     sheet
   });
@@ -23,14 +22,33 @@ const saveNewSheetToDb = async (sheet) => {
   return docRef.id;
 }
 
+const updateSheetInDb = async (sheet, id) => {
+  const docRef = doc(db, "bingoSheets", id);
+  await setDoc(docRef, {
+    sheet
+  });
+  console.log("Document updated with ID: ", docRef.id);
+  return docRef.id;
+}
+
 const saveNewUser = async (name) => {
   const docRef = await addDoc(collection(db, "users"), {
-    user: {
       name: name,
       score: 0   
-    }
   });
   console.log("Document written with ID: ", docRef.id);
+  return docRef.id;
+}
+
+const updateUserScore = async (id) => {
+  const docRef = doc(db, "users", id);
+  let score = await getDoc(docRef);
+  score = score.data().score;
+  const newScore = score + 1;
+  await setDoc(docRef, {
+    score: newScore
+  }, { merge: true });
+  console.log("Document updated with ID: ", docRef.id);
   return docRef.id;
 }
 
@@ -45,4 +63,30 @@ const fetchUserById = async (id) => {
   }
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems };
+const fetchUserByName = async (name) => {
+  const querySnapshot = await getDocs(collection(db, "users"));
+  let user = null;
+  //find user by name
+  querySnapshot.forEach((doc) => {
+    if (doc.data().name === name) {
+      user = doc.id;
+    }
+  });
+  return user;
+
+}
+
+const updateBingoItemCount = async (id) => {
+  const docRef = doc(db, "bingoItems", id);
+  let countBefore = await getDoc(docRef);
+  countBefore = countBefore.data().count;
+  const newCount = countBefore + 1;
+ //update only one field in doc
+  await setDoc(docRef, {
+    count: newCount
+  }, { merge: true });
+  console.log("Document updated with ID: ", docRef.id);
+  return docRef.id;
+}
+
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName };

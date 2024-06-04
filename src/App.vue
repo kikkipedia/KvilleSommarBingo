@@ -51,13 +51,14 @@
       <RouterView />
     </div>
     <footer>
-        <p>© 2024 Kvilles Sommarbingo. Idé: Sikas. Kod: Kicki & Danne. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p>
+        <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
+        <p>Idé av Sikas. Kod av Kicki & Danne.</p>
     </footer>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { useBingoStore } from './stores/counter';
+import { useBingoStore } from './stores';
 import { watch, ref, onMounted } from 'vue';
 import {getBingoItems} from './db'
 import { type BingoItem } from './types';
@@ -83,11 +84,12 @@ onMounted(async () => {
 
 <style scoped>
 nav {
-    display: flex;
     justify-content: space-between;
     background-color: white;
     width: 100% !important;
     color: #EB00D7;
+    height: 60px;
+    margin: auto;
 }
 ul {
   list-style-type: none;
@@ -133,21 +135,23 @@ li a:hover:not(.active) {
 .main {
   padding: 20px;
   background-color: white;
+  border: #6200ea 3px solid;
   margin: 10px;
-  height: 100% !important;
+  min-height: calc(100vh - 120px - 1rem) !important;
 }
 
 footer {
   text-align: center;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 1rem;
-    font-size: 0.8rem;
-    color: #333;
-    border-top: 1px solid #EB00D7;
-    background-color: white;
-    }
+  position: fixed;
+  bottom: 0;
+  height: 60px;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  color: #333;
+  background-color: white;
+  margin: auto;
+}
 
 .symbol {
     font-size: 1rem;
