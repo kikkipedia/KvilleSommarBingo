@@ -9,6 +9,7 @@
         </div>
         <div v-else> 
             <h2>Välkommen {{ user }}</h2>
+            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }}</p> <!-- ev ta bort? Men bra om man vill återställa-->
         </div>
         <div class="bingoSheet" v-show="bingoId">
             <table>
@@ -39,7 +40,9 @@
             </table>
             <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
         </div>
-        <button @click="randomizeSheet">Generera ny bricka</button>
+        <div class="btn-container" v-show="bingoId == ''">
+            <button @click="randomizeSheet">Generera ny bricka</button>
+        </div>
     </div>
 </template>
 
@@ -54,7 +57,8 @@ const user = ref()
 const showForm = ref(false) //visible if local storage is empty
 const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
-const bingoId = ref() //id for bingoSheet, stored in localStorage
+const bingoId = ref('') //id for bingoSheet, stored in localStorage
+const showButton = ref(true) //show button to get new sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
@@ -64,8 +68,8 @@ const row5 = ref<BingoItem[]>([])
 const row6 = ref<BingoItem[]>([])
 const row7 = ref<BingoItem[]>([])
 const row8 = ref<BingoItem[]>([])
-const row9 = ref<number[]>([])
-const row10 = ref<number[]>([])
+//const row9 = ref<number[]>([]) //TODO: add more rows
+//const row10 = ref<number[]>([])
 
 const store = useBingoStore()
 
@@ -86,7 +90,7 @@ const randomizeSheet = async () => {
     store.srow6 = []
     store.srow7 = []
     store.srow8 = []
-    const items = await getBingoItems()
+    const items = await getBingoItems() //fetch drom database
     bingoItems.value = items
 
     const shuffledArray = bingoItems.value.sort(() => Math.random() - 0.5) //shuffles the array
@@ -205,8 +209,13 @@ onMounted(() => {
     }
 })
 
-//watch for full row in store
+watch(() => bingoId.value, (bingoId) => {
+    if(bingoId){
+        showButton.value = false
+    }
+})
 
+//watch for full row in store
 watch(() => store.srow1.length, (srow1) => {
     if(store.srow1.length == 5){
         if(bingoSheet.value){
@@ -311,5 +320,10 @@ td {
     padding: 1rem;
     border-radius: 20px;
     margin-top: 1rem;
+}
+
+.bingoId {
+    font-size: 0.7rem;
+    color: rgb(10, 150, 125);
 }
 </style>
