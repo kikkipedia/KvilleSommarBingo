@@ -83,11 +83,12 @@ onMounted(async () => {
 
 <style scoped>
 nav {
-    display: flex;
     justify-content: space-between;
     background-color: white;
     width: 100% !important;
     color: #EB00D7;
+    height: auto;
+    margin: auto;
 }
 ul {
   list-style-type: none;
@@ -139,15 +140,15 @@ li a:hover:not(.active) {
 
 footer {
   text-align: center;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 1rem;
-    font-size: 0.8rem;
-    color: #333;
-    border-top: 1px solid #EB00D7;
-    background-color: white;
-    }
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #333;
+  background-color: white;
+  margin: auto;
+}
 
 .symbol {
     font-size: 1rem;

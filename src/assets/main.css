@@ -4,6 +4,7 @@
   max-width: 1500px;
   margin: 0 auto;
   font-weight: normal;
+  scrollbar-width: 0px !important;
 }
 
 a,
@@ -24,11 +25,5 @@ a,
   body {
     display: flex;
     place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
   }
 }

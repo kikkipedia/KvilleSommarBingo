@@ -13,19 +13,19 @@
         <div class="bingoSheet"><!-- will hide this later-->
             <table>
                 <tr>
-                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row2" :key="doc.id" @click="bingoClick(index, 2, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row2" :key="doc.id" @click="bingoClick(index, 2, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row3" :key="doc.id" @click="bingoClick(index, 3, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row3" :key="doc.id" @click="bingoClick(index, 3, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row4" :key="doc.id" @click="bingoClick(index, 4, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row4" :key="doc.id" @click="bingoClick(index, 4, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
                 <tr>
-                    <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]">{{ doc.item }}</td>
+                    <td v-for="doc, index in row5" :key="doc.id" @click="bingoClick(index, 5, doc.id)" :class="[doc.id]" id="unchecked">{{ doc.item }}</td>
                 </tr>
             </table>
             <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo! !</div>
@@ -42,7 +42,8 @@ import { saveNewSheetToDb, getBingoItems } from '@/db';
 import { useBingoStore } from '@/stores/counter';
 
 const user = ref()
-const showForm = ref(false)
+const showForm = ref(false) //visible if local storage is empty
+const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref()
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
@@ -108,37 +109,52 @@ const randomizeSheet = async () => {
 
 
 const saveNewSheet = async () => {
-    // const query = {
-    //     name: user.value,
-    //     bingoSheet: randomizeSheet(),
-    //     timeStarted: new Date().toLocaleString('sv-SE'),
-    //     bingo: false
-    // }
     bingoId.value = await saveNewSheetToDb(bingoSheet.value) //saves the sheet to the database
     localStorage.setItem('bingoId', bingoId.value) //saves the id to local storage
-
 }
 
 const bingoClick = (index: number, row: number, id: string )=> {
-    //change background color of clicked cell
-    const cell = document.getElementsByClassName(id);
-    cell[0].setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
-
-    //push index to store rows
-    if(row == 1){
-        store.srow1.push(index)
+    //check if already checked, then uncheck and remove from store row
+    const checker1 = document.getElementsByClassName(id);
+    const checker2 = checker1[0]?.getAttribute("id")
+    if(checker2 == "checked"){
+        checker1[0]?.setAttribute("style", "background-color:white; color: #6200ea; border: 2px solid #6200ea;");
+        checker1[0]?.setAttribute("id", "unchecked");
+        if(row == 1){
+            store.srow1.pop()
+        }
+        else if(row == 2){
+            store.srow2.pop()
+        }
+        else if(row == 3){
+            store.srow3.pop()
+        }
+        else if(row == 4){
+            store.srow4.pop()
+        }
+        else if(row == 5){
+            store.srow5.pop()
+        }
     }
-    else if(row == 2){
-        store.srow2.push(index)
-    }
-    else if(row == 3){
-        store.srow3.push(index)
-    }
-    else if(row == 4){
-        store.srow4.push(index)
-    }
-    else if(row == 5){
-        store.srow5.push(index)
+    else if (checker2 == "unchecked"){
+        checker1[0]?.setAttribute("style", "background-color:#6200ea; color: white; border: 2px solid white;");
+        checker1[0]?.setAttribute("id", "checked");
+        //push index to store rows
+        if(row == 1){
+            store.srow1.push(index)
+        }
+        else if(row == 2){
+            store.srow2.push(index)
+        }
+        else if(row == 3){
+            store.srow3.push(index)
+        }
+        else if(row == 4){
+            store.srow4.push(index)
+        }
+        else if(row == 5){
+            store.srow5.push(index)
+        }
     }
 }
 
