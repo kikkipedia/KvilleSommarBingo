@@ -50,7 +50,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
 //@ts-ignore
-import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount } from '@/db';
+import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount, saveNewUser, updateUserScore } from '@/db';
 import { useBingoStore } from '@/stores/counter';
 
 const user = ref()
@@ -58,6 +58,7 @@ const showForm = ref(false) //visible if local storage is empty
 const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref('') //id for bingoSheet, stored in localStorage
+const userId = ref('') //id for user, stored in localStorage
 const showButton = ref(true) //show button to get new sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
@@ -73,11 +74,13 @@ const row8 = ref<BingoItem[]>([])
 
 const store = useBingoStore()
 
-const setUser = (event: Event) => {
+const setUser = async (event: Event) => {
     event.preventDefault()
     localStorage.setItem('user', user.value)
     showForm.value = false
     store.setName(user.value)
+    userId.value = await saveNewUser(user.value)
+    localStorage.setItem('userId', userId.value)
 }
 
 const randomizeSheet = async () => {
@@ -280,6 +283,7 @@ watch(() => store.srow8.length, (srow8) => {
 watch(() => bingoSheet.value?.bingo, (bingo) => {
     if(bingoSheet.value?.bingo){
         updateSheetInDb(bingoSheet.value, bingoId.value)
+        updateUserScore(userId.value)//userid
         
     }
 })

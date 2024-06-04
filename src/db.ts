@@ -33,14 +33,25 @@ const updateSheetInDb = async (sheet, id) => {
 
 const saveNewUser = async (name) => {
   const docRef = await addDoc(collection(db, "users"), {
-    user: {
       name: name,
       score: 0   
-    }
   });
   console.log("Document written with ID: ", docRef.id);
   return docRef.id;
 }
+
+const updateUserScore = async (id) => {
+  const docRef = doc(db, "users", id);
+  let score = await getDoc(docRef);
+  score = score.data().score;
+  const newScore = score + 1;
+  await setDoc(docRef, {
+    score: newScore
+  }, { merge: true });
+  console.log("Document updated with ID: ", docRef.id);
+  return docRef.id;
+}
+
 
 const fetchUserById = async (id) => {
   const docRef = doc(db, "users", id);
@@ -53,9 +64,6 @@ const fetchUserById = async (id) => {
   }
 }
 
-
-
-//TODO test this function
 const updateBingoItemCount = async (id) => {
   const docRef = doc(db, "bingoItems", id);
   let countBefore = await getDoc(docRef);
@@ -69,4 +77,4 @@ const updateBingoItemCount = async (id) => {
   return docRef.id;
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount };
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore };
