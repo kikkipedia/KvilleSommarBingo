@@ -8,17 +8,11 @@
     </nav>
     <div class="main">
       <v-dialog v-model="openInfo" width="90%">
-        <v-toolbar>
+        <v-card>
           <v-btn
             icon="mdi-close"
             @click="openInfo = false"
           ></v-btn>
-
-          <v-toolbar-title>Information</v-toolbar-title>
-
-          <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-card>
           <v-card-text>
             <p>Hej {{ name }}, här kommer lite information om spelet.</p>
             <p>Spelet går ut på att samla ihop en rad av de olika händelser/personer som finns på din bricka. Nedan beskrivs de som kan vara mindre informativa.</p>
@@ -32,19 +26,13 @@
       </v-dialog>
 
       <v-dialog v-model="openStats" width="90%">
-        <v-toolbar>
-          <v-btn
+        <v-btn
             icon="mdi-close"
             @click="openStats = false"
           ></v-btn>
-
-          <v-toolbar-title>Statistik</v-toolbar-title>
-
-          <v-spacer></v-spacer>
-        </v-toolbar>
         <v-card>
           <v-card-text>
-            <p>Här kommer statistik att visas</p>
+            <div><Statistics/></div>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -62,6 +50,7 @@ import { useBingoStore } from './stores';
 import { watch, ref, onMounted } from 'vue';
 import {getBingoItems} from './db'
 import { type BingoItem } from './types';
+import Statistics from '@/components/Statistics..vue';
 
 const store = useBingoStore()
 const name = ref('')
