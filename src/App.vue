@@ -1,7 +1,7 @@
 <template>
       <nav>
         <ul>
-            <router-link to="/"><li class="logo">Kvilles Sommarbingo <span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span></li></router-link>
+            <router-link to="/"><li class="logo">Kvilles Sommarbingo <!--<span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span>--></li></router-link>
             <li><img src="./assets/info.svg" @click="openInfo = true"></li>
             <li><img src="./assets/statistics.svg" @click="openStats = true"></li>
         </ul>
@@ -142,10 +142,9 @@ li a:hover:not(.active) {
 
 footer {
   text-align: center;
-  position: fixed;
   bottom: 0;
   height: 60px;
-  width: 100%;
+  width: 100% !important;
   padding: 0.5rem;
   font-size: 0.8rem;
   color: #333;
