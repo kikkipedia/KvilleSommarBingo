@@ -43,10 +43,11 @@
             </table>
             <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
         </div>
-        <div class="btn-container" v-show="bingoId != ''">
+        <div class="btn-container">
             <p>Image here??</p>
             <br/>
             <v-btn
+                v-show="showShuffle"
                 color="#EB00D7"
                 size="x-large"
                 :loading="loading"
@@ -68,7 +69,7 @@ import { type BingoItem, type BingoSheet } from '@/types';
 import { saveNewSheetToDb, getBingoItems, updateSheetInDb, updateBingoItemCount, saveNewUser, updateUserScore, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/index';
 
-const user = ref()
+
 interface Rules {
     required: (value: any) => boolean | string;
 }
@@ -76,6 +77,7 @@ interface Rules {
 const rules: Rules = {
     required: (value) => !!value || 'Field is required',
 };
+const user = ref()
 const loading = ref(false)
 const showForm = ref(false) //visible if local storage is empty
 const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
@@ -105,10 +107,20 @@ const setUser = async (event: Event) => {
     store.setName(user.value)
     userId.value = await saveNewUser(user.value)
     localStorage.setItem('userId', userId.value)
+    showShuffle.value = true
 }
 
 const randomizeSheet = async () => {
+        //change all ids to unchecked
+        const allItems = document.getElementsByClassName('checked')
+    for (let i = 0; i < allItems.length; i++) {
+        allItems[i].setAttribute("style", "background-color:white; color: #6200ea; border: 2px solid #6200ea;")
+        allItems[i].setAttribute("id", "unchecked")
+    }
+        //empty local storage bingoId
+        localStorage.removeItem('bingoId')
     loading.value = true
+
     //empty rows
     store.srow1 = []
     store.srow2 = []
@@ -118,6 +130,8 @@ const randomizeSheet = async () => {
     store.srow6 = []
     store.srow7 = []
     store.srow8 = []
+    bingoSheet.value = undefined
+
     const items = await getBingoItems() //fetch drom database
     bingoItems.value = items
 
@@ -244,6 +258,7 @@ onMounted(() => {
 watch(() => bingoId.value, (bingoId) => {
     if(bingoId){
         showButton.value = false
+        showShuffle.value = false
     }
 })
 

@@ -11,6 +11,7 @@
         <v-card>
           <v-btn
             icon="mdi-close"
+            color="#EB00D770"
             @click="openInfo = false"
           ></v-btn>
           <v-card-text>
@@ -27,6 +28,7 @@
 
       <v-dialog v-model="openStats" width="90%">
         <v-btn
+            color="#EB00D770"
             icon="mdi-close"
             @click="openStats = false"
           ></v-btn>

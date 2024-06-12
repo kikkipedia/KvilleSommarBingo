@@ -10,6 +10,7 @@ const getBingoItems = async () => {
     const addId = { ...doc.data(), id: doc.id };
     itemsArray.push(addId);
   });
+  console.log(itemsArray);
   return itemsArray;
 }
 
