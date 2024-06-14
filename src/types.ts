@@ -4,7 +4,7 @@ export type BingoItem = {
     id: string;
     item: string;
     description: string;
-    checked: number;
+    count: number;
     //maybe add array of coordinates seen?
     };
 

@@ -1,24 +1,19 @@
 <template>
       <nav>
         <ul>
-            <router-link to="/"><li class="logo">Kvilles Sommarbingo <span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span></li></router-link>
+            <router-link to="/"><li class="logo">Kvilles Sommarbingo <!--<span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span>--></li></router-link>
             <li><img src="./assets/info.svg" @click="openInfo = true"></li>
             <li><img src="./assets/statistics.svg" @click="openStats = true"></li>
         </ul>
     </nav>
     <div class="main">
       <v-dialog v-model="openInfo" width="90%">
-        <v-toolbar>
+        <v-card>
           <v-btn
             icon="mdi-close"
+            color="#EB00D770"
             @click="openInfo = false"
           ></v-btn>
-
-          <v-toolbar-title>Information</v-toolbar-title>
-
-          <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-card>
           <v-card-text>
             <p>Hej {{ name }}, här kommer lite information om spelet.</p>
             <p>Spelet går ut på att samla ihop en rad av de olika händelser/personer som finns på din bricka. Nedan beskrivs de som kan vara mindre informativa.</p>
@@ -32,19 +27,14 @@
       </v-dialog>
 
       <v-dialog v-model="openStats" width="90%">
-        <v-toolbar>
-          <v-btn
+        <v-btn
+            color="#EB00D770"
             icon="mdi-close"
             @click="openStats = false"
           ></v-btn>
-
-          <v-toolbar-title>Statistik</v-toolbar-title>
-
-          <v-spacer></v-spacer>
-        </v-toolbar>
         <v-card>
           <v-card-text>
-            <p>Här kommer statistik att visas</p>
+            <div><Statistics/></div>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -62,6 +52,7 @@ import { useBingoStore } from './stores';
 import { watch, ref, onMounted } from 'vue';
 import {getBingoItems} from './db'
 import { type BingoItem } from './types';
+import Statistics from '@/components/Statistics..vue';
 
 const store = useBingoStore()
 const name = ref('')
@@ -142,10 +133,9 @@ li a:hover:not(.active) {
 
 footer {
   text-align: center;
-  position: fixed;
   bottom: 0;
   height: 60px;
-  width: 100%;
+  width: 100% !important;
   padding: 0.5rem;
   font-size: 0.8rem;
   color: #333;

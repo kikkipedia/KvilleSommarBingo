@@ -10,6 +10,7 @@ const getBingoItems = async () => {
     const addId = { ...doc.data(), id: doc.id };
     itemsArray.push(addId);
   });
+  console.log(itemsArray);
   return itemsArray;
 }
 
@@ -39,6 +40,17 @@ const saveNewUser = async (name) => {
   console.log("Document written with ID: ", docRef.id);
   return docRef.id;
 }
+
+const getAllUsers = async () => {
+  const userArray = [];
+  const querySnapshot = await getDocs(collection(db, "users"));
+  querySnapshot.forEach((doc) => {
+      const addData = { ...doc.data(), id: doc.id };
+      userArray.push(addData);
+});
+    return userArray;
+}
+
 
 const updateUserScore = async (id) => {
   const docRef = doc(db, "users", id);
@@ -89,4 +101,4 @@ const updateBingoItemCount = async (id) => {
   return docRef.id;
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName };
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers };
