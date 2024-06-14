@@ -16,3 +16,9 @@ export type BingoSheet = {
   bingo: boolean;
 };
 
+export type User = {
+  id: string;
+  name: string;
+  score: number;
+};
+

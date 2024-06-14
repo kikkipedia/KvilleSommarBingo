@@ -61,7 +61,6 @@ const getAllUsers = async () => {
     return userArray;
 }
 
-
 const updateUserScore = async (id) => {
   const docRef = doc(db, "users", id);
   let score = await getDoc(docRef);
@@ -91,7 +90,10 @@ const fetchUserByName = async (name) => {
   //find user by name
   querySnapshot.forEach((doc) => {
     if (doc.data().name === name) {
-      user = doc.id;
+      user = { ...doc.data(), id: doc.id }
+    }
+    else {
+      return null;
     }
   });
   return user;

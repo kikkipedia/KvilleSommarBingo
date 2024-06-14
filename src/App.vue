@@ -11,7 +11,7 @@
         <v-card>
           <v-btn
             icon="mdi-close"
-            color="#EB00D770"
+            color="rgb(10, 150, 125)"
             @click="openInfo = false"
           ></v-btn>
           <v-card-text>
@@ -28,7 +28,7 @@
 
       <v-dialog v-model="openStats" width="90%">
         <v-btn
-            color="#EB00D770"
+            color="rgb(10, 150, 125)"
             icon="mdi-close"
             @click="openStats = false"
           ></v-btn>
@@ -128,7 +128,7 @@ li a:hover:not(.active) {
   background-color: white;
   border: #6200ea 3px solid;
   margin: 10px;
-  min-height: calc(100vh - 120px - 1rem) !important;
+  min-height: calc(100vh - 110px - 1rem) !important;
 }
 
 footer {
