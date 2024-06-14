@@ -1,5 +1,18 @@
 <template>
     <div>
+            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="userId != ''">Återställ</v-btn>
+            <div v-if="resetWarning">
+                <v-card
+                    prepend-icon="mdi-alert"
+                    text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
+                    title="Warning! Are you sure you want to reset?"
+                >
+                    <v-card-actions>
+                        <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>
+                        <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Reset</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </div>
         <div v-if="showForm" class="form"> <!-- Register name if not already in local storage-->
             <v-form @submit.prevent>
                 <v-text-field
@@ -86,6 +99,7 @@ const bingoId = ref('') //id for bingoSheet, stored in localStorage
 const userId = ref('') //id for user, stored in localStorage
 const showButton = ref(true) //show button to get new sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
+const resetWarning = ref(false) //show warning before reset
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
 const row3 = ref<BingoItem[]>([])
@@ -244,6 +258,19 @@ const bingoClick = (index: number, row: number, id: string )=> {
     }
 }
 
+const reset = () => {
+    //add warning before reset
+    localStorage.removeItem('bingoId')
+    localStorage.removeItem('user')
+    localStorage.removeItem('userId')
+    bingoId.value = ''
+    user.value = ''
+    userId.value = ''
+    showForm.value = true
+    showShuffle.value = false
+    showButton.value = true  
+}
+
 onMounted(() => {
     //check localStorage for user info
     if (localStorage.getItem('user')) {
@@ -394,5 +421,10 @@ td {
     text-align: center;
     max-width: 50%;
     margin: 0 auto;
+}
+
+.reset {
+    text-align: right;
+    margin-top: 1rem;
 }
 </style>

@@ -6,7 +6,7 @@
         <div id="scoreChart">
             
             <p v-for="user, index in scoreChart" :key="user.id">
-                <div class="topScoreNum" id="colour">{{ index + 1 }}</div><span class="name">{{user.name}}:</span><span class="score">{{user.score}}</span> 
+                <div class="topScoreNum" :id="user.id" >{{ index + 1 }}</div><span class="name">{{user.name}}:</span><span class="score">{{user.score}}</span> 
             </p>
         
         </div>
@@ -74,6 +74,15 @@ const getScores = async() => {
     //sort from highest to lowest, then only keep the top 5
     scoreChart.value.sort((a, b) => b.score - a.score)
     scoreChart.value = scoreChart.value.slice(0, 5)
+    nextTick(() => {
+        scoreChart.value.forEach((user: any, index: number) => {
+            const el = document.getElementById(user.id)
+            if (el) {
+                //randomise the colours
+                el.style.backgroundColor = colours[index]
+            }
+        })
+    })
 }
 
 const formatData = (data: any) => {
@@ -140,22 +149,10 @@ const itemChart = () => {
 }
 
 
+
 onMounted(() => {
     getItems()
     getScores()
-
-    nextTick(() => {
-        //sets random colour for each user in the top 5 // TODO since all elements have the same id, only the first one is affected
-        
-
-        let colourElement = document.getElementById('colour');
-        if (colourElement) {
-            colourElement.style.backgroundColor = colours[Math.floor(Math.random() * colours.length)];
-        }
-        else {
-            console.log('no element found')
-        }
-        })
 })
 
 
