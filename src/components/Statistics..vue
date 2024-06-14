@@ -49,9 +49,8 @@ const colours = [
 //fetch all BingoItems from database
 const getItems = async() => {
     const response = await getBingoItems()
-    //only add those who have count > 5
-    checkedChart.value = response.filter((item: BingoItem) => item.count > 5).map((item: BingoItem) => {
-    //format the data
+    //sort the response by count then only keep the top 6
+    checkedChart.value = response.sort((a: BingoItem, b: BingoItem) => b.count - a.count).slice(0, 6).map((item: BingoItem) => {
         return {
             id: item.id,
             name: item.item,

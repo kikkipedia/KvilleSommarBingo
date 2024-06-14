@@ -10,7 +10,6 @@ const getBingoItems = async () => {
     const addId = { ...doc.data(), id: doc.id };
     itemsArray.push(addId);
   });
-  console.log(itemsArray);
   return itemsArray;
 }
 
@@ -30,6 +29,17 @@ const updateSheetInDb = async (sheet, id) => {
   });
   console.log("Document updated with ID: ", docRef.id);
   return docRef.id;
+}
+
+const fetchSheetById = async (id) => {
+  const docRef = doc(db, "bingoSheets", id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const sheet = docSnap.data().sheet;
+    return sheet;
+  } else {
+    console.log("No such document!");
+  }
 }
 
 const saveNewUser = async (name) => {
@@ -101,4 +111,12 @@ const updateBingoItemCount = async (id) => {
   return docRef.id;
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers };
+const saveNewUserSheet = async (sheet) => {
+  const docRef = await addDoc(collection(db, "userSheets"), {
+      sheet  
+  });
+  console.log("Document written with ID: ", docRef.id);
+  return docRef.id;
+}
+
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById };
