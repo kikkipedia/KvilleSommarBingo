@@ -5,15 +5,14 @@ export type BingoItem = {
     item: string;
     description: string;
     count: number;
-    //maybe add array of coordinates seen?
+    isChecked: boolean;
     };
 
 export type BingoSheet = {
-  //id: string; needs to be returned from firebase
+  //id: string; //needs to be returned from firebase
   name: string;
   items: BingoItem[];
   timeStarted: string;  
   bingo: boolean;
 };
 
-//add type User to keep track of times played and how many bingos?
