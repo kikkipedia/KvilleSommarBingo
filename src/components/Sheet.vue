@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
-import { updateSheetInDb } from '@/db';
+import { updateSheetInDb, updateUserScore } from '@/db';
 import { useBingoStore } from '@/stores';
 
 //define props
@@ -117,6 +117,8 @@ watch(() => props.bingoSheet?.bingo, () => {
     if (props.bingoSheet) {
         if (props.bingoSheet.bingo) {
             props.bingoSheet.bingo = true
+            //update user score
+            updateUserScore(localStorage.getItem('userId') as string)
         }
         else {
             props.bingoSheet.bingo = false

@@ -25,11 +25,32 @@
         </div>
         <div v-else class="welcome"> 
             <h2>Välkommen {{ user }}</h2>
-            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }}</p> <!-- ev ta bort? Men bra om man vill återställa-->
+            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }}</p>
         </div>
 
         <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId"/>
 
+        <v-dialog v-model="fetchByIdWarning" width="90%">
+            <v-btn
+            size="small"
+            icon="mdi-close"
+            color="#EB00D770"
+            @click="fetchByIdWarning = false"/>
+            <v-card text="Om du har kvar ditt ID, ange det nedan.">
+                <v-form @submit.prevent>
+                    <v-text-field
+                        v-model="bingoId"
+                        label="Brickans ID"
+                    ></v-text-field>
+                    <v-btn :disabled="!bingoId" color="#EB00D7" class="mt-2" type="submit" block @click="fetchById">
+                        Hämta
+                        <template v-slot:loader>
+                            <v-progress-linear indeterminate></v-progress-linear>
+                        </template>
+                    </v-btn>
+                </v-form>
+            </v-card>
+        </v-dialog>
         <div class="btn-container">
             <p>Image here??</p>
             <br/>
@@ -79,6 +100,7 @@ const userId = ref('') //id for user, stored in localStorage
 const showButton = ref(true) //show button to get new sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const resetWarning = ref(false) //show warning before reset
+const fetchByIdWarning = ref(false) //show warning before fetching by id
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
 const row3 = ref<BingoItem[]>([])
@@ -104,13 +126,7 @@ const setUser = async (event: Event) => {
 }
 
 const randomizeSheet = async () => {
-    //change all ids to unchecked
-    const allItems = document.getElementsByClassName('checked')
-    for (let i = 0; i < allItems.length; i++) {
-        allItems[i].setAttribute("style", "background-color:white; color: #6200ea; border: 2px solid #6200ea;")
-        allItems[i].setAttribute("id", "unchecked")
-    }
-    //empty local storage bingoId
+  //empty local storage bingoId
     localStorage.removeItem('bingoId')
     loading.value = true
 
@@ -170,6 +186,7 @@ const reset = () => {
 }
 
 const fetchOldSheet = async () => {
+    if(!localStorage.getItem('bingoId')){
     //fetch sheet from db
     bingoId.value = localStorage.getItem('bingoId') || ''   
     bingoSheet.value = await fetchSheetById(bingoId.value) as BingoSheet
@@ -182,13 +199,14 @@ const fetchOldSheet = async () => {
     row6.value = bingoSheet.value?.items?.slice(25, 30)
     row7.value = bingoSheet.value?.items?.slice(30, 35)
     row8.value = bingoSheet.value?.items?.slice(35, 40)
-    //fetch the checked items from store
-    let localStorageSheet = [] as any
-    localStorageSheet = localStorage.getItem('localSheet')
-    console.log(localStorageSheet)
-    store.srow1 = localStorageSheet.srow1
-    store.srow2 = localStorageSheet.srow2
-    
+    }
+    else fetchByIdWarning.value = true
+}
+
+const fetchById = async () => {
+    //fetch sheet from db from user input
+    bingoSheet.value = await fetchSheetById(bingoId.value) as BingoSheet
+    fetchByIdWarning.value = false
 }
 
 onMounted(() => {
@@ -208,9 +226,6 @@ watch(() => bingoId.value, (bingoId) => {
         showShuffle.value = false
     }
 })
-
-
-
 </script>
 
 <style scoped>
