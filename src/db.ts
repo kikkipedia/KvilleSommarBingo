@@ -92,9 +92,6 @@ const fetchUserByName = async (name) => {
     if (doc.data().name === name) {
       user = { ...doc.data(), id: doc.id }
     }
-    else {
-      return null;
-    }
   });
   return user;
 
