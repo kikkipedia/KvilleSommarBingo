@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
-import { updateSheetInDb, updateUserScore } from '@/db';
+import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore } from '@/db';
 import { useBingoStore } from '@/stores';
 
 //define props
@@ -88,7 +88,20 @@ const bingoClick = (index: number, row: number, id: string) => {
         const item = props.bingoSheet.items?.find((item: BingoItem) => item.id === id)
         //set the item to checked/not-checked
         item!.isChecked = !item!.isChecked
+        if (item!.isChecked) {
+            //update the item count
+            console.log('checked', item!.item)
+            const itemId = item!.id
+            updateBingoItemCount(itemId)
+        }
+        //substract again
+        else {
+            console.log('unchecked', item!.item)
+            minusBingoItemCount(item!.id)
+        }
+        
         //update the sheet in db
+        console.log('updating sheet', props.bingoSheet, props.bingoId)
         updateSheetInDb(props.bingoSheet, props.bingoId)
         //check if bingo
         checkBingo()

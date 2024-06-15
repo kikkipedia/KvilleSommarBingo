@@ -110,12 +110,18 @@ const updateBingoItemCount = async (id) => {
   return docRef.id;
 }
 
-const saveNewUserSheet = async (sheet) => {
-  const docRef = await addDoc(collection(db, "userSheets"), {
-      sheet  
-  });
-  console.log("Document written with ID: ", docRef.id);
+const minusBingoItemCount = async (id) => {
+  const docRef = doc(db, "bingoItems", id);
+  let countBefore = await getDoc(docRef);
+  countBefore = countBefore.data().count;
+  const newCount = countBefore - 1;
+ //update only one field in doc
+  await setDoc(docRef, {
+    count: newCount
+  }, { merge: true });
+  console.log("Document updated with ID: ", docRef.id);
   return docRef.id;
 }
 
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById };
+
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount };
