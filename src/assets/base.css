@@ -47,7 +47,6 @@
 body {
   min-height: 100vh;
   color: rgb(61, 60, 60);
-  background-color: #6200ea ;
   transition:
     color 0.5s,
     background-color 0.5s;
@@ -74,7 +73,7 @@ body {
 h1 {
   font-family: "Chakra Petch", sans-serif;
   font-weight: 800;
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-style: normal;
   color:#6200ea;
 }
@@ -82,7 +81,7 @@ h1 {
 h2 {
   font-family: "Jersey 20", sans-serif;
   font-weight: 400;
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-style: normal;
   color: rgb(10, 150, 125);
 }

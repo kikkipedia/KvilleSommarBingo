@@ -28,7 +28,7 @@
         </div>
         <div v-else class="welcome"> 
             <h2>Välkommen {{ user }}</h2>
-            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <b>(kan vara bra att spara!)</b></p>
+            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
         </div>
 
         <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId"/>
