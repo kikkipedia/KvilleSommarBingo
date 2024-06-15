@@ -148,12 +148,12 @@ watch(() => props.bingoSheet?.bingo, () => {
 <style scoped>
 
 .bingoSheet {
-    border: 3px solid #6200ea;
-    border-radius: 20px;
-    padding: 0.5rem;
+    border: 1px solid #6200ea;
+    border-radius: 10px;
+    padding: 0.3rem;
     margin: 1rem 0;
     min-height: 500px;
-    background-color: #6200ea;
+    
 }
 
 table {
@@ -166,7 +166,7 @@ td {
     font-size: 10px;
     color: #6200ea;
     background-color:white;
-    border: 2px solid #6200ea;
+    border: 1px solid #6200ea;
     height: 70px;
     text-align: center;
     cursor: pointer;
