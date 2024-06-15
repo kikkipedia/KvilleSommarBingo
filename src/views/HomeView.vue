@@ -119,6 +119,8 @@ const setUser = async (event: Event) => {
     const userExists = await fetchUserByName(user.value)
     if(userExists !== null){
         //@ts-ignore
+        console.log('User exists', userExists)
+        //@ts-ignore
         userId.value = userExists.id
         //@ts-ignore
         user.value = userExists.name
@@ -214,12 +216,16 @@ const fetchById = async () => {
     fetchByIdWarning.value = false
 }
 
-onMounted(() => {
+onMounted(async ()  => {
     //check localStorage for user info
     const userCheck = localStorage.getItem('user')
     if (userCheck != null) {
         user.value = localStorage.getItem('user')
-        //is there also a bingo in local storage?
+        //fetch user id 
+        const userIdCheck = await fetchUserByName(user.value)
+        //@ts-ignore
+        userId.value = userIdCheck.id
+        localStorage.setItem('userId', userId.value)
         let bingo = localStorage.getItem('bingo')
         const bingoo = localStorage.getItem('bingoId')
         showShuffle.value = false
