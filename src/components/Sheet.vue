@@ -1,5 +1,6 @@
 <template>
     <div class="bingoSheet" v-show="bingoId">
+        <ConfettiExplosion v-if="confetti" :particleSize="10" :duration="1500" :colors="colors"/>
              <table>
                 <tr>
                     <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
@@ -35,6 +36,7 @@ import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
 import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore } from '@/db';
 import { useBingoStore } from '@/stores';
+import ConfettiExplosion from "vue-confetti-explosion";
 
 //define props
 const props = defineProps({
@@ -54,7 +56,8 @@ const row6 = ref<BingoItem[]>([])
 const row7 = ref<BingoItem[]>([])
 const row8 = ref<BingoItem[]>([])
 
-const checkedBox = ref(false)
+const confetti = ref(false)
+const colors = ['#6200ea', '#03a9f4', '#4caf50', '#ffeb3b', '#ff5722', '#795548', '#9c27b0', '#e91e63', '#00bcd4', '#009688', '#8bc34a', '#cddc39', '#ff9800', '#ff5722', '#607d8b']
 
 //on Mounted check if Id is in local storage
 onMounted(() => {
@@ -89,17 +92,20 @@ const bingoClick = (index: number, row: number, id: string) => {
         //set the item to checked/not-checked
         item!.isChecked = !item!.isChecked
         if (item!.isChecked) {
+            confetti.value = true
             //update the item count
-            console.log('checked', item!.item)
             const itemId = item!.id
             updateBingoItemCount(itemId)
+            //wait 2000ms
+            setTimeout(() => {
+                confetti.value = false
+            }, 2000)
         }
         //substract again
         else {
             console.log('unchecked', item!.item)
             minusBingoItemCount(item!.id)
         }
-        
         //update the sheet in db
         console.log('updating sheet', props.bingoSheet, props.bingoId)
         updateSheetInDb(props.bingoSheet, props.bingoId)
