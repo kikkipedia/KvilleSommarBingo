@@ -159,11 +159,10 @@ watch(() => props.bingoSheet?.bingo, () => {
 table {
     width: 100%;
     
-    
 }
 
 td {
-    font-size: 10px;
+    font-size: 8px;
     color: #6200ea;
     background-color:white;
     border: 1px solid #6200ea;
@@ -171,6 +170,7 @@ td {
     text-align: center;
     cursor: pointer;
     font-weight: bold;
+    max-width: 75px;
 }
 
 .checked {
