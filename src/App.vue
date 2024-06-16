@@ -124,10 +124,9 @@ li a:hover:not(.active) {
 }
 
 .main {
-  padding: 20px;
   background-color: white;
-  border: #6200ea 3px solid;
-  margin: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   min-height: calc(100vh - 110px - 1rem) !important;
 }
 

@@ -28,7 +28,7 @@
         </div>
         <div v-else class="welcome"> 
             <h2>Välkommen {{ user }}</h2>
-            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <b>(kan vara bra att spara!)</b></p>
+            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
         </div>
 
         <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId"/>
@@ -214,12 +214,16 @@ const fetchById = async () => {
     fetchByIdWarning.value = false
 }
 
-onMounted(() => {
+onMounted(async ()  => {
     //check localStorage for user info
     const userCheck = localStorage.getItem('user')
     if (userCheck != null) {
         user.value = localStorage.getItem('user')
-        //is there also a bingo in local storage?
+        //fetch user id 
+        const userIdCheck = await fetchUserByName(user.value)
+        //@ts-ignore
+        userId.value = userIdCheck.id
+        localStorage.setItem('userId', userId.value)
         let bingo = localStorage.getItem('bingo')
         const bingoo = localStorage.getItem('bingoId')
         showShuffle.value = false
@@ -241,6 +245,13 @@ watch(() => bingoId.value, (bingoId) => {
     if(bingoId){
         showButton.value = false
         showShuffle.value = false
+    }
+})
+
+//if bingo - show shuffle button
+watch(() => store.bingo, () => {
+    if(bingoSheet && store.bingo){
+        showShuffle.value = true
     }
 })
 </script>
