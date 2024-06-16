@@ -125,7 +125,8 @@ li a:hover:not(.active) {
 
 .main {
   background-color: white;
-  margin: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   min-height: calc(100vh - 110px - 1rem) !important;
 }
 

@@ -1,5 +1,6 @@
 <template>
     <div class="bingoSheet" v-show="bingoId">
+        <ConfettiExplosion v-if="confetti" :particleSize="10" :duration="1500" :colors="colors"/>
              <table>
                 <tr>
                     <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
@@ -26,7 +27,16 @@
                     <td v-for="doc, index in row8" :key="doc.id" @click="bingoClick(index, 8, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
                 </tr>
             </table>
-            <div v-if="bingoSheet?.bingo" class="bingoYes">Bingo ! !</div>
+            <!-- Bingo Popup -->
+            <v-overlay v-model="overlay" class="overlay">
+                <ConfettiExplosion v-if="explode" :particleSize="15" :duration="2000" :colors="colors" :particleCount="200"/>
+                <v-card
+                    class="mx-auto my-8 bingocard"
+                    elevation="16"
+                >
+                <span class="animate__animated animate__bounceIn">BINGO!</span>
+                </v-card>
+            </v-overlay>
         </div>
 </template>
 
@@ -35,6 +45,8 @@ import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
 import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore } from '@/db';
 import { useBingoStore } from '@/stores';
+import ConfettiExplosion from "vue-confetti-explosion";
+import 'animate.css';
 
 //define props
 const props = defineProps({
@@ -54,7 +66,11 @@ const row6 = ref<BingoItem[]>([])
 const row7 = ref<BingoItem[]>([])
 const row8 = ref<BingoItem[]>([])
 
-const checkedBox = ref(false)
+const confetti = ref(false)
+const explode = ref(false)
+const colors = ['#6200ea', '#03a9f4', '#4caf50', '#ffeb3b', '#ff5722', '#795548', '#9c27b0', '#e91e63', '#00bcd4', '#009688', '#8bc34a', '#cddc39', '#ff9800', '#ff5722', '#607d8b']
+
+const overlay = ref(false)
 
 //on Mounted check if Id is in local storage
 onMounted(() => {
@@ -89,19 +105,20 @@ const bingoClick = (index: number, row: number, id: string) => {
         //set the item to checked/not-checked
         item!.isChecked = !item!.isChecked
         if (item!.isChecked) {
+            confetti.value = true
             //update the item count
-            console.log('checked', item!.item)
             const itemId = item!.id
             updateBingoItemCount(itemId)
+            //wait 2000ms
+            setTimeout(() => {
+                confetti.value = false
+            }, 2000)
         }
         //substract again
         else {
-            console.log('unchecked', item!.item)
             minusBingoItemCount(item!.id)
         }
-        
         //update the sheet in db
-        console.log('updating sheet', props.bingoSheet, props.bingoId)
         updateSheetInDb(props.bingoSheet, props.bingoId)
         //check if bingo
         checkBingo()
@@ -116,7 +133,8 @@ const checkBingo = () => {
         rows.forEach((row, index) => {
             if (row.value.every((item: BingoItem) => item.isChecked)) {
                 bingo = true
-                console.log('Bingo')
+                explode.value = true
+                overlay.value = true
                 localStorage.setItem('bingo', 'true')
                 //save 
             }
@@ -125,6 +143,8 @@ const checkBingo = () => {
     }
 
 }
+
+//todo add bingo popup
 
 
 //watch for bingo in bingoSheet
@@ -142,7 +162,6 @@ watch(() => props.bingoSheet?.bingo, () => {
     }
 })
 
-
 </script>
 
 <style scoped>
@@ -157,13 +176,11 @@ watch(() => props.bingoSheet?.bingo, () => {
 }
 
 table {
-    width: 100%;
-    
-    
+    width: 100%;   
 }
 
 td {
-    font-size: 10px;
+    font-size: 8px;
     color: #6200ea;
     background-color:white;
     border: 1px solid #6200ea;
@@ -171,6 +188,7 @@ td {
     text-align: center;
     cursor: pointer;
     font-weight: bold;
+    max-width: 75px;
 }
 
 .checked {
@@ -187,6 +205,35 @@ td {
     padding: 1rem;
     border-radius: 20px;
     margin-top: 1rem;
+}
+
+.bingocard {
+    background-color: rgb(10, 150, 125);;
+    color: white;
+    font-size: 10rem;
+    font-family: "Jersey 10 Charted", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 1rem;
+    width: 400px;
+    height: 200px;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 </style>

@@ -119,8 +119,6 @@ const setUser = async (event: Event) => {
     const userExists = await fetchUserByName(user.value)
     if(userExists !== null){
         //@ts-ignore
-        console.log('User exists', userExists)
-        //@ts-ignore
         userId.value = userExists.id
         //@ts-ignore
         user.value = userExists.name
@@ -247,6 +245,13 @@ watch(() => bingoId.value, (bingoId) => {
     if(bingoId){
         showButton.value = false
         showShuffle.value = false
+    }
+})
+
+//if bingo - show shuffle button
+watch(() => store.bingo, () => {
+    if(bingoSheet && store.bingo){
+        showShuffle.value = true
     }
 })
 </script>
