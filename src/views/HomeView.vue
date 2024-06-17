@@ -161,6 +161,7 @@ const randomizeSheet = async () => {
     bingoSheet.value = bingoSheet2
     //saves to db
     saveNewSheet()
+    showSheet.value = true
 }
 
 //saves the sheet to the database
