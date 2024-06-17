@@ -247,6 +247,9 @@ onMounted(async ()  => {
         }
         else {
             const userIdCheck = await fetchUserByName(user.value)
+            if(!userIdCheck ){
+                reset()
+            }
             //@ts-ignore
             userId.value = userIdCheck.id
             localStorage.setItem('userId', userId.value)
