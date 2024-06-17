@@ -205,6 +205,10 @@ const fetchOldSheet = async () => {
 const fetchById = async () => {
     //fetch sheet from db from user input
     bingoSheet.value = await fetchSheetById(bingoId.value) as BingoSheet
+    if(bingoSheet. value = undefined){
+        localStorage.removeItem('bingoId')
+        localStorage.removeItem('userName')
+    }
     fetchByIdWarning.value = false
 }
 
