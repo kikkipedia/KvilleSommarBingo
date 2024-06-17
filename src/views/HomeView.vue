@@ -72,6 +72,7 @@
                 size="x-large"
                 :loading="loading"
                 @click="randomizeSheet"
+                v-if="userId"
             >
                 Generera bricka!
                 <template v-slot:loader>
@@ -173,7 +174,7 @@ const saveNewSheet = async () => {
 const reset = () => {
     //add warning before reset
     localStorage.removeItem('bingoId')
-    localStorage.removeItem('user')
+    localStorage.removeItem('userName')
     localStorage.removeItem('userId')
     bingoId.value = ''
     user.value = ''
@@ -222,9 +223,6 @@ const sheetCheck = () => {
             showSheet.value = false
         }
     }
-    else {
-       showShuffle.value = true
-}
 }
 
 //TODO use with firebase auth
