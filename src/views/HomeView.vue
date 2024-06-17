@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="buttons">
-            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="userId != ''" >Återställ</v-btn>
+            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="!userId" >Återställ</v-btn>
             <v-btn class="fetchOld" v-if="user" @click="fetchOldSheet" size="x-small">Hämta tidigare bricka</v-btn>
         </div>
             <div v-if="resetWarning">
@@ -16,15 +16,17 @@
                     </v-card-actions>
                 </v-card>
             </div>
-        <div v-if="showForm" class="form"> <!-- Register name if not already in local storage-->
-            <v-form @submit.prevent>
+        <div v-if="showForm" class="form"> 
+            <Register/>
+            <!-- Register name if not already in local storage-->
+         <!--    <v-form @submit.prevent>
                 <v-text-field
                     :rules="[rules.required]"
                     v-model="user"
                     label="Namn"
                 ></v-text-field>
                 <v-btn :disabled="!user" color="#EB00D7" class="mt-2" type="submit" block @click="setUser">Registrera</v-btn>
-                </v-form>
+                </v-form> -->
         </div>
         <div v-else class="welcome"> 
             <h2>Välkommen {{ user }}</h2>
@@ -62,6 +64,7 @@
                 size="x-large"
                 :loading="loading"
                 @click="randomizeSheet"
+                v-if="userId"
             >
                 Generera bricka!
                 <template v-slot:loader>
@@ -76,10 +79,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
-//@ts-ignore
 import { saveNewSheetToDb, getBingoItems, saveNewUser, fetchSheetById, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
+//@ts-ignore
+import Register from '@/components/Register.vue';
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -277,7 +281,7 @@ watch(() => store.bingo, () => {
 .form {
     padding-top: 1rem;
     text-align: center;
-    max-width: 50%;
+    max-width: 80%;
     margin: 0 auto;
 }
 
