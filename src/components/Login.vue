@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="login">
         <v-form @submit.prevent="userSubmit">
             <v-text-field
                 v-model="email"
@@ -23,6 +23,7 @@
 import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import router from '@/router';
+import { fetchUserById } from '@/db';
 
 const email = ref('');
 const password = ref('');
@@ -40,8 +41,13 @@ const userSubmit = () => {
     signInWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
             localStorage.setItem('userId', userCredential.user.uid);
-
-            router.push('/');
+            fetchUserById(userCredential.user.uid)
+                .then((response) => {
+                    console.log(response);
+                    localStorage.setItem('userName', response);
+                    router.push({ path: '/' }); //this doesnt update component
+                });
+            
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -52,4 +58,9 @@ const userSubmit = () => {
 </script> 
 
 <style scoped>
+.login {
+    text-align: center;
+    max-width: 80%;
+    margin: 0 auto;
+}
 </style>

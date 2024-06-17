@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="buttons">
-            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="!userId" >Återställ</v-btn>
+            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="bingoSheet" >Återställ</v-btn>
             <v-btn class="fetchOld" v-if="user" @click="fetchOldSheet" size="x-small">Hämta tidigare bricka</v-btn>
         </div>
             <div v-if="resetWarning">
@@ -16,36 +16,29 @@
                     </v-card-actions>
                 </v-card>
             </div>
-            <div class="btns" v-if="!userId">
-                <button>Login</button>
+            <!-- If no userId in local storage. Log in or register -->
+            <div class="auth-btns" v-if="!userId">
+                <v-btn>Login</v-btn>
                 or
-                <button @click="showForm = true">Register</button>
+                <v-btn @click="showForm = true">Register</v-btn>
             </div>
-        <div v-if="!userId" class="form"> 
-            <Register/>
-            <!-- Register name if not already in local storage-->
-         <!--    <v-form @submit.prevent>
-                <v-text-field
-                    :rules="[rules.required]"
-                    v-model="user"
-                    label="Namn"
-                ></v-text-field>
-                <v-btn :disabled="!user" color="#EB00D7" class="mt-2" type="submit" block @click="setUser">Registrera</v-btn>
-                </v-form> -->
-        </div>
-        <div v-else class="welcome"> 
-            <h2>Välkommen {{ user }}</h2>
-            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
-        </div>
+            <!-- If userId in local storage -->
+            <div v-else class="welcome"> 
+                <h2>Välkommen {{ user }}</h2>
+                <!-- if bingo id in local storage -->
+                <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
+            </div>
 
+            <!-- here the sheet will render -->
         <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId"/>
 
+        <!-- TODO -->
         <v-dialog v-model="fetchByIdWarning" width="90%">
             <v-btn
-            size="small"
-            icon="mdi-close"
-            color="rgb(10, 150, 125)"
-            @click="fetchByIdWarning = false"/>
+                size="small"
+                icon="mdi-close"
+                color="rgb(10, 150, 125)"
+                @click="fetchByIdWarning = false"/>
             <v-card text="Om du har kvar ditt ID, ange det nedan.">
                 <v-form @submit.prevent>
                     <v-text-field
@@ -61,9 +54,9 @@
                 </v-form>
             </v-card>
         </v-dialog>
+
+        <!-- Visible if showShuffle is true -->
         <div class="btn-container" v-show="showShuffle == true">
-            <p v-show="!bingoId">Image here??</p>
-            <br/>
             <v-btn
                 color="#EB00D7"
                 size="x-large"
@@ -84,11 +77,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
-import { saveNewSheetToDb, getBingoItems, saveNewUser, fetchSheetById, fetchUserByName } from '@/db';
+import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
-//@ts-ignore
-import Register from '@/components/Register.vue';
 import { getAuth } from 'firebase/auth';
 
 interface Rules {
@@ -125,29 +116,29 @@ const store = useBingoStore()
 const auth = getAuth()
 
 //this set user from form input
-const setUser = async (event: Event) => {
-    event.preventDefault()
-    //check if user already exists
-    const userExists = await fetchUserByName(user.value)
-    if(userExists !== null){
-        //@ts-ignore
-        userId.value = userExists.id
-        //@ts-ignore
-        user.value = userExists.name
-        localStorage.setItem('userId', userId.value)
-        localStorage.setItem('user', user.value)
-        store.setName(localStorage.getItem('user') as string)
-    }
-    else {
-        userId.value = await saveNewUser(user.value)
-        localStorage.setItem('userId', userId.value)
-        localStorage.setItem('user', user.value)
-        //@ts-ignore
-        store.setName(user.value)
-    }
-    showForm.value = false
-    showShuffle.value = true
-}
+// const setUser = async (event: Event) => {
+//     event.preventDefault()
+//     //check if user already exists
+//     const userExists = await fetchUserByName(user.value)
+//     if(userExists !== null){
+//         //@ts-ignore
+//         userId.value = userExists.id
+//         //@ts-ignore
+//         user.value = userExists.name
+//         localStorage.setItem('userId', userId.value)
+//         localStorage.setItem('user', user.value)
+//         store.setName(localStorage.getItem('user') as string)
+//     }
+//     else {
+//         userId.value = await saveNewUser(user.value)
+//         localStorage.setItem('userId', userId.value)
+//         localStorage.setItem('user', user.value)
+//         //@ts-ignore
+//         store.setName(user.value)
+//     }
+//     showForm.value = false
+//     showShuffle.value = true
+// }
 
 const randomizeSheet = async () => {
   //empty local storage bingoId

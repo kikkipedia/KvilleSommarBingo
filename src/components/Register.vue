@@ -50,8 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, sendSignInLinkToEmail } from 'firebase/auth';
+import { ref, watch } from 'vue';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { useBingoStore } from '@/stores';
 import  router from '@/router';
 import { saveNewUser } from '@/db';
@@ -61,6 +61,8 @@ const userName = ref();
 const password = ref('');
 const userCredentials = ref();
 const showSnackbar = ref(false);
+
+const error = ref(null);
 
 const store = useBingoStore();
 
@@ -72,9 +74,9 @@ const rules: Rules = {
     required: (value) => !!value || 'Field is required',
 };
 
-const saveUserInDb = async() =>{
+const saveUserInDb = async(id: string) =>{
     //save new user in db
-    const response = await saveNewUser(userName.value)
+    const response = await saveNewUser(id, userName.value)
     localStorage.setItem('userId', response)
 }
 
@@ -83,16 +85,17 @@ const userSubmit = async () => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
-            //console.log(userCredential.user)
         // Signed in 
         const user = userCredential.user;
-        saveUserInDb()
+        //save as post in db
+        saveUserInDb(user.uid)
         sendEmail()
         setUser()
+        localStorage.setItem('userId', user.uid);
   })
   .catch((error) => {
     error.code;
-    error.message;
+    error.value = error.message;
     // TODO show error message
   });
     
@@ -100,7 +103,7 @@ const userSubmit = async () => {
 
 const sendEmail = () => {
     const actionCodeSettings = {
-        url: 'http://kvillbingo.web.app/login',
+        url: 'http://localhost:5173/', //todo change to production url
         handleCodeInApp: true,
     };
     const auth = getAuth();
@@ -108,10 +111,9 @@ const sendEmail = () => {
     if (auth.currentUser) {
         sendEmailVerification(auth.currentUser, actionCodeSettings)
         .then(() => {
-            //redirect to login
-            redirect()
-    //     // Email verification sent!
-         showSnackbar.value = true; //todo show in middle of screen
+            console.log('Email verification sent');
+            showSnackbar.value = true; //todo show in middle of screen
+            router.push('/login');
      });
     }
 }
@@ -123,10 +125,7 @@ const setUser = () => {
     //todo set userId
 }
 
-const redirect = () => {
-    //redirect to login
-    router.push('/login')
-}
+
 
 </script>
 
