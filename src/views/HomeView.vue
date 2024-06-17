@@ -18,9 +18,19 @@
             </div>
             <!-- If no userId in local storage. Log in or register -->
             <div class="auth-btns" v-if="!userId">
-                <v-btn>Login</v-btn>
-                or
-                <v-btn @click="showForm = true">Register</v-btn>
+                <v-btn
+                    color="#EB00D7"
+                    @click="login"
+                >
+                Login
+            </v-btn>
+                <p>or</p>
+                <v-btn 
+                    color="#EB00D7"
+                    @click="register"
+                >
+                Register
+            </v-btn>
             </div>
             <!-- If userId in local storage -->
             <div v-else class="welcome"> 
@@ -30,7 +40,7 @@
             </div>
 
             <!-- here the sheet will render -->
-        <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId"/>
+        <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" />
 
         <!-- TODO -->
         <v-dialog v-model="fetchByIdWarning" width="90%">
@@ -80,7 +90,7 @@ import { type BingoItem, type BingoSheet } from '@/types';
 import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
-import { getAuth } from 'firebase/auth';
+import router from '@/router';
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -91,8 +101,7 @@ const rules: Rules = {
 };
 const user = ref()
 const loading = ref(false)
-const showForm = ref(false) //visible if local storage is empty
-const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
+const showShuffle= ref(false) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref() //id for bingoSheet, stored in localStorage
 const userId = ref() //id for user, stored in localStorage
@@ -113,32 +122,13 @@ const row8 = ref<BingoItem[]>([])
 
 const store = useBingoStore()
 
-const auth = getAuth()
+const login = () => {
+    router.push('/login')
+}
 
-//this set user from form input
-// const setUser = async (event: Event) => {
-//     event.preventDefault()
-//     //check if user already exists
-//     const userExists = await fetchUserByName(user.value)
-//     if(userExists !== null){
-//         //@ts-ignore
-//         userId.value = userExists.id
-//         //@ts-ignore
-//         user.value = userExists.name
-//         localStorage.setItem('userId', userId.value)
-//         localStorage.setItem('user', user.value)
-//         store.setName(localStorage.getItem('user') as string)
-//     }
-//     else {
-//         userId.value = await saveNewUser(user.value)
-//         localStorage.setItem('userId', userId.value)
-//         localStorage.setItem('user', user.value)
-//         //@ts-ignore
-//         store.setName(user.value)
-//     }
-//     showForm.value = false
-//     showShuffle.value = true
-// }
+const register = () => {
+    router.push('/register')
+}
 
 const randomizeSheet = async () => {
   //empty local storage bingoId
@@ -168,6 +158,7 @@ const randomizeSheet = async () => {
         }
     }
     bingoSheet.value = bingoSheet2
+    //saves to db
     saveNewSheet()
 }
 
@@ -187,7 +178,6 @@ const reset = () => {
     bingoId.value = ''
     user.value = ''
     userId.value = ''
-    showForm.value = true
     showShuffle.value = false
     showButton.value = true  
 }
@@ -217,41 +207,46 @@ const fetchById = async () => {
     fetchByIdWarning.value = false
 }
 
-//TODO use with firebase auth
-onMounted(async ()  => {
-    //check localStorage for user info
-    const userCheck = localStorage.getItem('user')
-    userId.value = localStorage.getItem('userId')
-    if (userCheck != null) {
-        user.value = localStorage.getItem('user')
-        //fetch user id 
-        const userIdCheck = await fetchUserByName(user.value)
-        //@ts-ignore
-        userId.value = userIdCheck.id
-        localStorage.setItem('userId', userId.value)
-        let bingo = localStorage.getItem('bingo')
-        const bingoo = localStorage.getItem('bingoId')
-        showShuffle.value = false
-        store.setName(user.value)
-        if(bingo === null && bingoo != null) {
+const sheetCheck = () => {
+    //check if exists in local storage
+    if(localStorage.getItem('bingoId') != null){
+        bingoId.value = localStorage.getItem('bingoId')
+        const hasBingo = localStorage.getItem('bingo')
+        //fetch sheet from db
+        if(hasBingo == 'false' || hasBingo === null){
             fetchOldSheet()
-            showShuffle.value = false
         }
-        else if (bingo === 'true') {
+        else if(hasBingo == 'true'){ //if bingo is true show shuffle button
             showShuffle.value = true
         }
     }
     else {
-        showForm.value = true
+       showShuffle.value = true
+}
+}
+
+//TODO use with firebase auth
+onMounted(async ()  => {
+    //check localStorage for user info
+    const userCheck = localStorage.getItem('userId')
+    if (userCheck != null) {
+        user.value = localStorage.getItem('userName')
+        //local storage has user id or else fetch it
+        if(localStorage.getItem('userId') != null){
+            userId.value = localStorage.getItem('userId')
+            sheetCheck()
+        }
+        else {
+            const userIdCheck = await fetchUserByName(user.value)
+            //@ts-ignore
+            userId.value = userIdCheck.id
+            localStorage.setItem('userId', userId.value)
+            sheetCheck()
+        }
     }
+    sheetCheck()
 })
 
-watch(() => bingoId.value, (bingoId) => {
-    if(bingoId){
-        showButton.value = false
-        showShuffle.value = false
-    }
-})
 
 //if bingo - show shuffle button
 watch(() => store.bingo, () => {
@@ -303,5 +298,15 @@ watch(() => store.name, (name) => {
 .fetchOld {
     text-align: left;
     margin-top: 1rem;
+}
+
+.auth-btns {
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 1rem;
+}
+
+p {
+    margin: 1rem;
 }
 </style>
