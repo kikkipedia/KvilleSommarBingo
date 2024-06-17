@@ -38,7 +38,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <RouterView />
+      <RouterView :key="$route.fullPath"/>
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 

@@ -1,5 +1,6 @@
 //@ts-nocheck
 
+import { set } from "firebase/database";
 import { db } from "./firebase.ts";
 import { collection, addDoc, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
 
@@ -42,13 +43,13 @@ const fetchSheetById = async (id) => {
   }
 }
 
-const saveNewUser = async (name) => {
-  const docRef = await addDoc(collection(db, "users"), {
-      name: name,
-      score: 0   
+const saveNewUser = async (id, name) => {
+  const docRef = await setDoc(doc(db, "users", id), {
+    name: name,
+    score: 0
   });
   console.log("Document written with ID: ", docRef.id);
-  return docRef.id;
+  return id;
 }
 
 const getAllUsers = async () => {
@@ -78,6 +79,7 @@ const fetchUserById = async (id) => {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     console.log("Document data:", docSnap.data());
+    return docSnap.data().name;
   } else {
     // docSnap.data() will be undefined in this case
     console.log("No such document!");
