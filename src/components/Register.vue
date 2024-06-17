@@ -103,7 +103,7 @@ const userSubmit = async () => {
 
 const sendEmail = () => {
     const actionCodeSettings = {
-        url: 'http://localhost:5173/', //todo change to production url
+        url: 'http://kvillebingo.web.app/', //todo change to production url
         handleCodeInApp: true,
     };
     const auth = getAuth();
@@ -120,7 +120,7 @@ const sendEmail = () => {
 
 const setUser = () => {
     //set in local storage and store
-    localStorage.setItem('user', userName.value);
+    localStorage.setItem('userName', userName.value);
     store.setName(userName.value);
     //todo set userId
 }

@@ -72,6 +72,7 @@
                 size="x-large"
                 :loading="loading"
                 @click="randomizeSheet"
+                v-if="userId"
             >
                 Generera bricka!
                 <template v-slot:loader>
@@ -160,6 +161,7 @@ const randomizeSheet = async () => {
     bingoSheet.value = bingoSheet2
     //saves to db
     saveNewSheet()
+    showSheet.value = true
 }
 
 //saves the sheet to the database
@@ -173,7 +175,7 @@ const saveNewSheet = async () => {
 const reset = () => {
     //add warning before reset
     localStorage.removeItem('bingoId')
-    localStorage.removeItem('user')
+    localStorage.removeItem('userName')
     localStorage.removeItem('userId')
     bingoId.value = ''
     user.value = ''
@@ -203,6 +205,10 @@ const fetchOldSheet = async () => {
 const fetchById = async () => {
     //fetch sheet from db from user input
     bingoSheet.value = await fetchSheetById(bingoId.value) as BingoSheet
+    if(bingoSheet. value = undefined){
+        localStorage.removeItem('bingoId')
+        localStorage.removeItem('userName')
+    }
     fetchByIdWarning.value = false
 }
 
@@ -223,8 +229,8 @@ const sheetCheck = () => {
         }
     }
     else {
-       showShuffle.value = true
-}
+        showShuffle.value = true
+    }
 }
 
 //TODO use with firebase auth
