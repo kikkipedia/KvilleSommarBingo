@@ -54,6 +54,7 @@ import { ref } from 'vue';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, sendSignInLinkToEmail } from 'firebase/auth';
 import { useBingoStore } from '@/stores';
 import  router from '@/router';
+import { saveNewUser } from '@/db';
 
 const email = ref('');
 const userName = ref();
@@ -71,19 +72,23 @@ const rules: Rules = {
     required: (value) => !!value || 'Field is required',
 };
 
+const saveUserInDb = async() =>{
+    //save new user in db
+    const response = await saveNewUser(userName.value)
+    localStorage.setItem('userId', response)
+}
 
-const userSubmit = () => {
+
+const userSubmit = async () => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
             //console.log(userCredential.user)
         // Signed in 
         const user = userCredential.user;
-        console.log(user.uid);
-        localStorage.setItem('userId', user.uid);
-
-    sendEmail()
-    setUser()
+        saveUserInDb()
+        sendEmail()
+        setUser()
   })
   .catch((error) => {
     error.code;

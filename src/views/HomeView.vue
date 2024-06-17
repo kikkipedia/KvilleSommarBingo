@@ -16,7 +16,12 @@
                     </v-card-actions>
                 </v-card>
             </div>
-        <div v-if="showForm" class="form"> 
+            <div class="btns" v-if="!userId">
+                <button>Login</button>
+                or
+                <button @click="showForm = true">Register</button>
+            </div>
+        <div v-if="!userId" class="form"> 
             <Register/>
             <!-- Register name if not already in local storage-->
          <!--    <v-form @submit.prevent>
@@ -221,9 +226,11 @@ const fetchById = async () => {
     fetchByIdWarning.value = false
 }
 
+//TODO use with firebase auth
 onMounted(async ()  => {
     //check localStorage for user info
     const userCheck = localStorage.getItem('user')
+    userId.value = localStorage.getItem('userId')
     if (userCheck != null) {
         user.value = localStorage.getItem('user')
         //fetch user id 
