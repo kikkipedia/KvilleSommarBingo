@@ -223,6 +223,9 @@ const sheetCheck = () => {
             showSheet.value = false
         }
     }
+    else {
+        showShuffle.value = true
+    }
 }
 
 //TODO use with firebase auth
