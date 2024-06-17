@@ -64,7 +64,7 @@
                 size="x-large"
                 :loading="loading"
                 @click="randomizeSheet"
-                v-if="userId"
+                v-if="showButton"
             >
                 Generera bricka!
                 <template v-slot:loader>
@@ -84,6 +84,7 @@ import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
 //@ts-ignore
 import Register from '@/components/Register.vue';
+import { getAuth } from 'firebase/auth';
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -115,6 +116,8 @@ const row8 = ref<BingoItem[]>([])
 //const row10 = ref<number[]>([])
 
 const store = useBingoStore()
+
+const auth = getAuth()
 
 //this set user from form input
 const setUser = async (event: Event) => {
@@ -257,6 +260,10 @@ watch(() => store.bingo, () => {
     if(bingoSheet && store.bingo){
         showShuffle.value = true
     }
+})
+
+watch(() => store.name, (name) => {
+    user.value = name
 })
 </script>
 
