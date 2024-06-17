@@ -36,11 +36,11 @@
             <div v-else class="welcome"> 
                 <h2>Välkommen {{ user }}</h2>
                 <!-- if bingo id in local storage -->
-                <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
+                <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
             </div>
 
             <!-- here the sheet will render -->
-        <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" />
+        <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" v-if="showSheet"/>
 
         <!-- TODO -->
         <v-dialog v-model="fetchByIdWarning" width="90%">
@@ -65,14 +65,13 @@
             </v-card>
         </v-dialog>
 
-        <!-- Visible if showShuffle is true -->
-        <div class="btn-container" v-show="showShuffle == true">
+        <!-- Visible if showShuffle is true TODO not working -->
+        <div class="btn-container" v-if="showShuffle == true">
             <v-btn
                 color="#EB00D7"
                 size="x-large"
                 :loading="loading"
                 @click="randomizeSheet"
-                v-if="showButton"
             >
                 Generera bricka!
                 <template v-slot:loader>
@@ -105,7 +104,8 @@ const showShuffle= ref(false) //get new bingo sheet - hidden when playing for no
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref() //id for bingoSheet, stored in localStorage
 const userId = ref() //id for user, stored in localStorage
-const showButton = ref(true) //show button to get new sheet
+const showButton = ref(false) //show button to get new sheet
+const showSheet = ref(false) //show sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const resetWarning = ref(false) //show warning before reset
 const fetchByIdWarning = ref(false) //show warning before fetching by id
@@ -179,7 +179,6 @@ const reset = () => {
     user.value = ''
     userId.value = ''
     showShuffle.value = false
-    showButton.value = true  
 }
 
 const fetchOldSheet = async () => {
@@ -214,10 +213,13 @@ const sheetCheck = () => {
         const hasBingo = localStorage.getItem('bingo')
         //fetch sheet from db
         if(hasBingo == 'false' || hasBingo === null){
+            showSheet.value = true
             fetchOldSheet()
         }
         else if(hasBingo == 'true'){ //if bingo is true show shuffle button
             showShuffle.value = true
+            store.bingo = true
+            showSheet.value = false
         }
     }
     else {
@@ -231,6 +233,7 @@ onMounted(async ()  => {
     const userCheck = localStorage.getItem('userId')
     if (userCheck != null) {
         user.value = localStorage.getItem('userName')
+        store.setName(user.value)
         //local storage has user id or else fetch it
         if(localStorage.getItem('userId') != null){
             userId.value = localStorage.getItem('userId')
