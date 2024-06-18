@@ -1,9 +1,9 @@
 <template>
       <nav>
         <ul>
-            <router-link to="/"><li class="logo">Kvilles Sommarbingo <!--<span class="symbol">(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</span>--></li></router-link>
-            <li><img src="./assets/info.svg" @click="openInfo = true"></li>
-            <li><img src="./assets/statistics.svg" @click="openStats = true"></li>
+            <!-- <router-link to="/"><li class="logo">Kvilles Sommarbingo</li></router-link> -->
+            <li><v-icon x-large @click="openInfo = true">mdi-information-outline</v-icon></li>
+            <li><v-icon x-large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
         </ul>
     </nav>
     <div class="main">
@@ -76,9 +76,9 @@ onMounted(async () => {
 <style scoped>
 nav {
     justify-content: space-between;
-    background-color: white;
+    background-color: #7400FF;
     width: 100% !important;
-    color: #EB00D7;
+    color: white;
     height: 60px;
     margin: auto;
 }
@@ -97,7 +97,6 @@ li {
 }
 
 li.logo {
-    margin-right: auto;
     float: left;
 }
 
@@ -111,16 +110,8 @@ li.logo {
 
 a {
   text-decoration: none;
-  color: #EB00D7;
+  color: pink;
 
-}
-
-li a:hover:not(.active) {
-  background-color: #111;
-}
-
-.active {
-  background-color: #04AA6D;
 }
 
 .main {
@@ -137,16 +128,9 @@ footer {
   width: 100% !important;
   padding: 0.5rem;
   font-size: 0.8rem;
-  color: #333;
-  background-color: white;
+  color: white;
+  background-color: #7400FF;
   margin: auto;
-}
-
-.symbol {
-    font-size: 1rem;
-    color: rgb(10, 150, 125);
-    font-family: 'Courier New', Courier, monospace;
-    text-align: middle;
 }
 
 h4 {
@@ -156,8 +140,7 @@ h4 {
   padding-top: 5px
 }
 
-p {
-  font-size: 0.8rem;
-  color: #333;
+.v-icon {
+  --v-icon-size-multiplier: 2;
 }
 </style>

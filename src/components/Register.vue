@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div class="register">
+        <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
         <p class="info">
             För att spela Bingo och kunna spara din bricka och poäng behöver du registrera dig med email, och
             sedan logga in. Detta behöver du förhoppningsvis bara göra en gång.
@@ -31,7 +32,7 @@
             v-model="password"
         >
         </v-text-field>
-        <v-btn :disabled="!userName" color="#EB00D7" class="mt-2" type="submit" block @click="userSubmit">Registrera</v-btn>
+        <v-btn :disabled="!userName" color="#7400FF" class="mt-2" type="submit" block @click="userSubmit">Registrera</v-btn>
     </v-form>
     <v-snackbar v-model="showSnackbar" color="success">
         Email verification sent to {{ email }}. Please verify your email before logging in.
@@ -44,7 +45,6 @@
           Close
         </v-btn>
       </template>
-
     </v-snackbar>
     </div>
 </template>
@@ -132,7 +132,18 @@ const setUser = () => {
 <style scoped>
 .info {
     font-size: 0.9em;
-    margin: 20px;
     text-align: left;
+    margin-bottom: 10px;
+}
+
+.register {
+    text-align: center;
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.bingologo {
+    width: 150px;
+    margin-top: 20px;
 }
 </style>

@@ -1,21 +1,22 @@
 <template>
     <div>
-        <div class="buttons">
-            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="bingoSheet" >Återställ</v-btn>
-            <v-btn class="fetchOld" v-if="user" @click="fetchOldSheet" size="x-small">Hämta tidigare bricka</v-btn>
-        </div>
-            <div v-if="resetWarning">
-                <v-card
-                    prepend-icon="mdi-alert"
-                    text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
-                    title="Warning! Are you sure you want to reset?"
-                >
-                    <v-card-actions>
-                        <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>
-                        <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Reset</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </div>
+        <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
+            <!-- Warning before reset -->
+
+                <v-dialog  v-model="resetWarning" width="90%">
+                    <v-card
+                        prepend-icon="mdi-alert"
+                        text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
+                        title="Warning! Are you sure you want to reset?"
+                    >
+                        <v-card-actions>
+                            <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>
+                            <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Reset</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
+
             <!-- If no userId in local storage. Log in or register -->
             <div class="auth-btns" v-if="!userId">
                 <v-btn
@@ -80,7 +81,10 @@
                 </template>
             </v-btn>
         </div>
-        
+        <div class="buttons">
+            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="bingoSheet" >Återställ</v-btn>
+            <v-btn class="fetchOld" v-if="user" @click="fetchOldSheet" size="x-small">Hämta tidigare bricka</v-btn>
+        </div>
     </div>
 </template>
 
@@ -313,12 +317,18 @@ watch(() => store.name, (name) => {
 }
 
 .auth-btns {
+    display: block;
     text-align: center;
-    margin: 0 auto;
     margin-top: 1rem;
 }
 
 p {
     margin: 1rem;
+}
+
+.bingologo {
+    display: block;
+    margin: 0 auto;
+    width: 100px;
 }
 </style>
