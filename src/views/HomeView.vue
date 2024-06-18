@@ -243,7 +243,10 @@ onMounted(async ()  => {
     const userCheck = localStorage.getItem('userId')
     if (userCheck != null) {
         user.value = localStorage.getItem('userName')
-        store.setName(user.value)
+        if(user.value == null){
+            router.push('/login')
+        }
+        else store.setName(user.value)
         //local storage has user id or else fetch it
         if(localStorage.getItem('userId') != null){
             userId.value = localStorage.getItem('userId')
