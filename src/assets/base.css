@@ -75,7 +75,7 @@ h1 {
   font-weight: 800;
   font-size: 2.5rem;
   font-style: normal;
-  color:#6200ea;
+  color:#6900FF;
 }
 
 h2 {
@@ -84,4 +84,11 @@ h2 {
   font-size: 2.2rem;
   font-style: normal;
   color: rgb(10, 150, 125);
+}
+
+.link {
+  color: #6900FF;
+  text-decoration: none;
+  transition: color 0.5s;
+  cursor: pointer;
 }

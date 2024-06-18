@@ -1,8 +1,8 @@
 <template>
     <div>
         <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
-            <!-- Warning before reset -->
 
+            <!-- Warning before reset -->
                 <v-dialog  v-model="resetWarning" width="90%">
                     <v-card
                         prepend-icon="mdi-alert"
@@ -20,18 +20,19 @@
             <!-- If no userId in local storage. Log in or register -->
             <div class="auth-btns" v-if="!userId">
                 <v-btn
-                    color="#EB00D7"
+                    color="#00FF00"
                     @click="login"
                 >
                 Login
             </v-btn>
                 <p>or</p>
                 <v-btn 
-                    color="#EB00D7"
+                    color="#00FF00"
                     @click="register"
                 >
                 Register
             </v-btn>
+            <p>or you just <router-link to='/reset-password'><span class="link">forgot your password?</span></router-link></p>
             </div>
             <!-- If userId in local storage -->
             <div v-else class="welcome"> 
@@ -96,6 +97,8 @@ import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
 import router from '@/router';
+import { getAuth } from 'firebase/auth';
+
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -110,11 +113,12 @@ const showShuffle= ref(false) //get new bingo sheet - hidden when playing for no
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref() //id for bingoSheet, stored in localStorage
 const userId = ref() //id for user, stored in localStorage
-const showButton = ref(false) //show button to get new sheet
 const showSheet = ref(false) //show sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const resetWarning = ref(false) //show warning before reset
 const fetchByIdWarning = ref(false) //show warning before fetching by id
+const userEmail = ref('') //email for password reset
+
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
 const row3 = ref<BingoItem[]>([])
@@ -278,6 +282,13 @@ watch(() => store.bingo, () => {
 watch(() => store.name, (name) => {
     user.value = name
 })
+
+const resetPassword = () => {
+    // Admin SDK API to generate the password reset link.
+    
+
+}
+
 </script>
 
 <style scoped>

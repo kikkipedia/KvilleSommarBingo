@@ -118,7 +118,7 @@ li.logo {
 
 a {
   text-decoration: none;
-  color: pink;
+  color: #00FF00;
 
 }
 
@@ -126,7 +126,7 @@ a {
   background-color: white;
   margin-top: 10px;
   margin-bottom: 10px;
-  min-height: calc(100vh - 110px - 1rem) !important;
+  min-height: calc(100vh - 140px) !important;
 }
 
 footer {

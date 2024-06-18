@@ -17,7 +17,7 @@
             ></v-text-field>
             <v-btn type="submit" color="#7400FF">Play bingo!</v-btn>
         </v-form>
-
+        <p>or you just <router-link to='/reset-password'><span class="link">forgot your password?</span></router-link></p>
     </div>
 </template>
 
@@ -69,5 +69,9 @@ const userSubmit = () => {
 .bingologo {
     width: 150px;
     margin: 0 auto;
+}
+
+p {
+    margin-top: 1rem;
 }
 </style>
