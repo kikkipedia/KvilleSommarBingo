@@ -1,5 +1,6 @@
 <template>
     <div class="login">
+        <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
         <v-form @submit.prevent="userSubmit">
             <v-text-field
                 v-model="email"
@@ -9,11 +10,12 @@
             ></v-text-field>
             <v-text-field
                 v-model="password"
+                type="password"
                 label="Password"
                 required
                 :rules="[rules.required]"
             ></v-text-field>
-            <v-btn type="submit">Play bingo!</v-btn>
+            <v-btn type="submit" color="#7400FF">Play bingo!</v-btn>
         </v-form>
 
     </div>
@@ -61,6 +63,11 @@ const userSubmit = () => {
 .login {
     text-align: center;
     max-width: 80%;
+    margin: 0 auto;
+}
+
+.bingologo {
+    width: 150px;
     margin: 0 auto;
 }
 </style>

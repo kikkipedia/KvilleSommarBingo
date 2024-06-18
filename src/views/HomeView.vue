@@ -1,21 +1,22 @@
 <template>
     <div>
-        <div class="buttons">
-            <v-btn class="reset" size="x-small" color="#EB00D7" @click="resetWarning = true" v-if="bingoSheet" >Återställ</v-btn>
-            <v-btn class="fetchOld" v-if="user" @click="fetchOldSheet" size="x-small">Hämta tidigare bricka</v-btn>
-        </div>
-            <div v-if="resetWarning">
-                <v-card
-                    prepend-icon="mdi-alert"
-                    text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
-                    title="Warning! Are you sure you want to reset?"
-                >
-                    <v-card-actions>
-                        <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>
-                        <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Reset</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </div>
+        <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
+            <!-- Warning before reset -->
+
+                <v-dialog  v-model="resetWarning" width="90%">
+                    <v-card
+                        prepend-icon="mdi-alert"
+                        text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
+                        title="Warning! Are you sure you want to reset?"
+                    >
+                        <v-card-actions>
+                            <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>
+                            <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Reset</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
+
             <!-- If no userId in local storage. Log in or register -->
             <div class="auth-btns" v-if="!userId">
                 <v-btn
@@ -39,10 +40,25 @@
                 <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
             </div>
 
+        <!-- Visible if showShuffle is true -->
+        <div class="btn-container" v-if="showShuffle == true || store.bingo">
+            <v-btn
+                color="#7400FF"
+                size="large"
+                :loading="loading"
+                @click="randomizeSheet"
+                v-if="userId"
+            >
+                Generera bricka!
+                <template v-slot:loader>
+                    <v-progress-linear indeterminate></v-progress-linear>
+                </template>
+            </v-btn>
+        </div>
+
             <!-- here the sheet will render -->
         <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" v-if="showSheet"/>
 
-        <!-- TODO -->
         <v-dialog v-model="fetchByIdWarning" width="90%">
             <v-btn
                 size="small"
@@ -65,22 +81,11 @@
             </v-card>
         </v-dialog>
 
-        <!-- Visible if showShuffle is true TODO not working -->
-        <div class="btn-container" v-if="showShuffle == true">
-            <v-btn
-                color="#EB00D7"
-                size="x-large"
-                :loading="loading"
-                @click="randomizeSheet"
-                v-if="userId"
-            >
-                Generera bricka!
-                <template v-slot:loader>
-                    <v-progress-linear indeterminate></v-progress-linear>
-                </template>
-            </v-btn>
+        <div class="buttons">
+            <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
+            <br/>
+            <v-btn class="fetchOld" v-if="user" @click="fetchByIdWarning = true" size="x-small" color="#7400FF">Hämta tidigare bricka</v-btn>
         </div>
-        
     </div>
 </template>
 
@@ -233,7 +238,6 @@ const sheetCheck = () => {
     }
 }
 
-//TODO use with firebase auth
 onMounted(async ()  => {
     //check localStorage for user info
     const userCheck = localStorage.getItem('userId')
@@ -247,6 +251,9 @@ onMounted(async ()  => {
         }
         else {
             const userIdCheck = await fetchUserByName(user.value)
+            if(!userIdCheck ){
+                reset()
+            }
             //@ts-ignore
             userId.value = userIdCheck.id
             localStorage.setItem('userId', userId.value)
@@ -261,6 +268,7 @@ onMounted(async ()  => {
 watch(() => store.bingo, () => {
     if(bingoSheet && store.bingo){
         showShuffle.value = true
+
     }
 })
 
@@ -295,27 +303,29 @@ watch(() => store.name, (name) => {
 }
 
 .reset {
-    text-align: right;
     margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 
 .buttons {
-    display: flex;
-    justify-content: space-between;
-}
-
-.fetchOld {
-    text-align: left;
-    margin-top: 1rem;
+    display: block;
+    text-align: center;
+    margin-top: 5rem;
 }
 
 .auth-btns {
+    display: block;
     text-align: center;
-    margin: 0 auto;
     margin-top: 1rem;
 }
 
 p {
     margin: 1rem;
+}
+
+.bingologo {
+    display: block;
+    margin: 0 auto;
+    width: 100px;
 }
 </style>
