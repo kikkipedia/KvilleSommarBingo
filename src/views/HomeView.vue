@@ -7,7 +7,7 @@
                     <v-card
                         prepend-icon="mdi-alert"
                         text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
-                        title="Warning! Are you sure you want to reset?"
+                        title="Warning!"
                     >
                         <v-card-actions>
                             <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>

@@ -15,12 +15,13 @@
             @click="openInfo = false"
           ></v-btn>
           <v-card-text>
-            <p>Hej {{ name }}, här kommer lite information om spelet.</p>
-            <p>Spelet går ut på att samla ihop en rad av de olika händelser/personer som finns på din bricka. Nedan beskrivs de som kan vara mindre informativa.</p>
-            <p>Lycka till!</p>
+            <h2>Vadå Sturis?</h2>
+            <p style="color: #7400FF;">Här finns en lista som kan vara till hjälp när man inte fattar vad i helvete en ruta betyder.</p>
+            <hr/>
             <div v-for="item in descriptions">
               <h4 v-if="item.description != null">{{ item.item }}</h4>
               <p v-if="item.description != null">{{ item.description }}</p>
+              <hr v-if="item.description != null"/>
             </div>
           </v-card-text>
         </v-card>
@@ -66,9 +67,16 @@ watch(() => store.name, (nam) => {
     name.value = nam
 })
 
+//sort by description.name in ascending order
+const sortItems = (): BingoItem[] => {
+  descriptions.value.sort((a, b) => a.item.localeCompare(b.item))
+  return descriptions.value
+}
+
 onMounted(async () => {
   const items = await getBingoItems()
   descriptions.value = items
+  sortItems()
 })
 
 </script>
@@ -136,11 +144,17 @@ footer {
 h4 {
   font-size: 0.8rem;
   font-weight: bold;
-  color: #EB00D7;
+  color: #7400FF;
   padding-top: 5px
 }
 
 .v-icon {
   --v-icon-size-multiplier: 2;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #7400FF;
 }
 </style>
