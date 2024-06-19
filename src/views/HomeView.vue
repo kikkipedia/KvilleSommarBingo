@@ -141,6 +141,7 @@ const register = () => {
 }
 
 const randomizeSheet = async () => {
+    showShuffle.value = false
   //empty local storage bingoId
     localStorage.removeItem('bingoId')
     localStorage.removeItem('bingo')
