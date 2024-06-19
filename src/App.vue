@@ -1,6 +1,6 @@
 <template>
       <nav>
-        <ul>
+        <ul v-if="store.isAuth">
             <!-- <router-link to="/"><li class="logo">Kvilles Sommarbingo</li></router-link> -->
             <li><v-icon x-large @click="openInfo = true">mdi-information-outline</v-icon></li>
             <li><v-icon x-large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
