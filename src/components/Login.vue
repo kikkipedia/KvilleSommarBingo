@@ -26,9 +26,12 @@ import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import router from '@/router';
 import { fetchUserById } from '@/db';
+import { useBingoStore } from '@/stores';
 
 const email = ref('');
 const password = ref('');
+
+const store = useBingoStore()
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -43,11 +46,12 @@ const userSubmit = () => {
     signInWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
             localStorage.setItem('userId', userCredential.user.uid);
+            store.setAuth(userCredential.user.uid)
             fetchUserById(userCredential.user.uid)
                 .then((response) => {
                     console.log(response);
                     localStorage.setItem('userName', response);
-                    router.push({ path: '/' }); //this doesnt update component
+                    router.push({ path: '/' });
                 });
             
         })

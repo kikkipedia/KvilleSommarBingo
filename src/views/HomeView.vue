@@ -247,6 +247,7 @@ onMounted(async ()  => {
     //check localStorage for user info
     const userCheck = localStorage.getItem('userId')
     if (userCheck != null) {
+        store.setAuth(userCheck)
         user.value = localStorage.getItem('userName')
         if(user.value == null){
             router.push('/login')
@@ -262,6 +263,8 @@ onMounted(async ()  => {
             if(!userIdCheck ){
                 reset()
             }
+            //@ts-ignore
+            store.setAuth(userIdCheck)
             //@ts-ignore
             userId.value = userIdCheck.id
             localStorage.setItem('userId', userId.value)

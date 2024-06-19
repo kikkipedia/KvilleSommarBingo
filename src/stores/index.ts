@@ -15,6 +15,14 @@ export const useBingoStore = defineStore('bingoStore', () => {
     bingo.value = newBingo
   }
 
+  const isAuth = ref(false)
 
-  return { name, setName, bingo, setBingo}
+  function setAuth(id: string) {
+    if(id){
+      isAuth.value = true
+    }
+  }
+
+
+  return { name, setName, bingo, setBingo, isAuth, setAuth}
 })
