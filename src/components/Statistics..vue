@@ -3,8 +3,7 @@
         <h3>Mest kryssade</h3>
         <canvas id="checkedChart"></canvas>
         <h3>Flest Bingo!</h3>
-        <div id="scoreChart">
-            
+        <div id="scoreChart">         
             <p v-for="user, index in scoreChart" :key="user.id">
                 <div class="topScoreNum" :id="user.id" >{{ index + 1 }}</div><span class="name">{{user.name}}:</span><span class="score">{{user.score}}</span> 
             </p>
@@ -70,9 +69,9 @@ const getScores = async() => {
             score: user.score
         }
     })
-    //sort from highest to lowest, then only keep the top 5
+    //sort from highest to lowest, then only keep the top 7
     scoreChart.value.sort((a, b) => b.score - a.score)
-    scoreChart.value = scoreChart.value.slice(0, 5)
+    scoreChart.value = scoreChart.value.slice(0, 7)
     nextTick(() => {
         scoreChart.value.forEach((user: any, index: number) => {
             const el = document.getElementById(user.id)

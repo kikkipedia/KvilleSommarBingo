@@ -54,6 +54,7 @@ const userSubmit = () => {
                     console.log(response);
                     localStorage.setItem('userName', response);
                     router.push({ path: '/' });
+                    location.reload();
                 });
             
         })

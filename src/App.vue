@@ -1,9 +1,9 @@
 <template>
       <nav>
         <ul v-if="store.isAuth">
-            <!-- <router-link to="/"><li class="logo">Kvilles Sommarbingo</li></router-link> -->
-            <li><v-icon x-large @click="openInfo = true">mdi-information-outline</v-icon></li>
-            <li><v-icon x-large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
+            <li><v-icon large @click="openMap = true">mdi-map-legend</v-icon> </li>
+            <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
+            <li><v-icon large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
         </ul>
     </nav>
     <div class="main">
@@ -27,6 +27,19 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="openMap" width="90%">
+        <v-btn
+            color="rgb(10, 150, 125)"
+            icon="mdi-close"
+            @click="openMap = false"
+          ></v-btn>
+        <v-card>
+          <v-card-text>
+            <div><Map/></div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <v-dialog v-model="openStats" width="90%">
         <v-btn
             color="rgb(10, 150, 125)"
@@ -39,6 +52,8 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+
+
       <RouterView :key="$route.fullPath"/>
     </div>
     <footer>
@@ -54,12 +69,14 @@ import { watch, ref, onMounted } from 'vue';
 import {getBingoItems} from './db'
 import { type BingoItem } from './types';
 import Statistics from '@/components/Statistics..vue';
+import Map from '@/components/Map.vue';
 
 const store = useBingoStore()
 const name = ref('')
 
 const openInfo = ref(false)
 const openStats = ref(false)
+const openMap = ref(false)  
 const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 
 //get name from store
@@ -90,6 +107,11 @@ nav {
     height: 60px;
     margin: auto;
 }
+
+.mdi:before, .mdi-set {
+    font-size: 2rem;
+
+}
 ul {
   list-style-type: none;
   margin: 0;
@@ -102,10 +124,6 @@ li {
   cursor: pointer;
   padding: 0.5rem;
   float: right;
-}
-
-li.logo {
-    float: left;
 }
 
 .logo {

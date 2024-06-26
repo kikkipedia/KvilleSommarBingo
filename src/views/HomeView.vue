@@ -83,9 +83,9 @@
         </v-dialog>
 
         <div class="buttons">
-            <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
-            <br/>
             <v-btn class="fetchOld" v-if="user" @click="fetchByIdWarning = true" size="x-small" color="#7400FF">Hämta tidigare bricka</v-btn>
+            <br/>
+            <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
         </div>
     </div>
 </template>
@@ -97,8 +97,6 @@ import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
 import router from '@/router';
-import { getAuth } from 'firebase/auth';
-
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -315,7 +313,7 @@ watch(() => store.name, (name) => {
 }
 
 .reset {
-    margin-top: 1rem;
+    margin-top: 0.1rem;
     margin-bottom: 2rem;
 }
 
@@ -339,5 +337,8 @@ p {
     display: block;
     margin: 0 auto;
     width: 100px;
+}
+.fetchOld {
+    margin-bottom: 1rem;;
 }
 </style>
