@@ -26,6 +26,12 @@
                 <tr>
                     <td v-for="doc, index in row8" :key="doc.id" @click="bingoClick(index, 8, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
                 </tr>
+                <tr>
+                    <td v-for="doc, index in row9" :key="doc.id" @click="bingoClick(index, 9, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
+                </tr>
+                <tr>
+                    <td v-for="doc, index in row10" :key="doc.id" @click="bingoClick(index, 10, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
+                </tr>
             </table>
             <!-- Bingo Popup -->
             <v-overlay v-model="overlay" class="overlay">
@@ -65,6 +71,8 @@ const row5 = ref<BingoItem[]>([])
 const row6 = ref<BingoItem[]>([])
 const row7 = ref<BingoItem[]>([])
 const row8 = ref<BingoItem[]>([])
+const row9 = ref<BingoItem[]>([])
+const row10 = ref<BingoItem[]>([])
 
 const confetti = ref(false)
 const explode = ref(false)
@@ -95,7 +103,8 @@ const setRows = () => {
     row6.value = props.bingoSheet.items?.slice(25, 30) 
     row7.value = props.bingoSheet.items?.slice(30, 35)
     row8.value = props.bingoSheet.items?.slice(35, 40)
-    //todo add more rows
+    row9.value = props.bingoSheet.items?.slice(40, 45)
+    row10.value = props.bingoSheet.items?.slice(45, 50)
     }
 }
 
@@ -128,7 +137,7 @@ const bingoClick = (index: number, row: number, id: string) => {
 
 const checkBingo = () => {
     if (props.bingoSheet) {
-        const rows = [row1, row2, row3, row4, row5, row6, row7, row8]
+        const rows = [row1, row2, row3, row4, row5, row6, row7, row8, row9, row10]
         let bingo = false
         rows.forEach((row, index) => {
             if (row.value.every((item: BingoItem) => item.isChecked)) {
