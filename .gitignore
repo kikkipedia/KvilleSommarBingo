@@ -33,3 +33,5 @@ coverage
 
 *.firebase
 *.firebase/hosting
+
+*.cache
