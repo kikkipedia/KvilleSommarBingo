@@ -58,7 +58,7 @@
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
-        <p>Idé av Sikas. Kod av Kicki & Danne.</p>
+        <p>Idé av Sikas. Kod av Kicki & Danne. Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
     </footer>
 </template>
 

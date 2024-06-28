@@ -247,6 +247,8 @@ onMounted(async ()  => {
     const userCheck = localStorage.getItem('userId')
     if (userCheck != null) {
         store.setAuth(userCheck)
+        //login to firebase
+        
         user.value = localStorage.getItem('userName')
         if(user.value == null){
             router.push('/login')
