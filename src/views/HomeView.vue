@@ -83,9 +83,9 @@
         </v-dialog>
 
         <div class="buttons">
-            <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
-            <br/>
             <v-btn class="fetchOld" v-if="user" @click="fetchByIdWarning = true" size="x-small" color="#7400FF">Hämta tidigare bricka</v-btn>
+            <br/>
+            <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
         </div>
     </div>
 </template>
@@ -97,8 +97,6 @@ import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
 import router from '@/router';
-import { getAuth } from 'firebase/auth';
-
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -117,7 +115,6 @@ const showSheet = ref(false) //show sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const resetWarning = ref(false) //show warning before reset
 const fetchByIdWarning = ref(false) //show warning before fetching by id
-const userEmail = ref('') //email for password reset
 
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
@@ -127,8 +124,8 @@ const row5 = ref<BingoItem[]>([])
 const row6 = ref<BingoItem[]>([])
 const row7 = ref<BingoItem[]>([])
 const row8 = ref<BingoItem[]>([])
-//const row9 = ref<number[]>([]) //TODO: add more rows
-//const row10 = ref<number[]>([])
+const row9 = ref<BingoItem[]>([])
+const row10 = ref<BingoItem[]>([])
 
 const store = useBingoStore()
 
@@ -208,6 +205,8 @@ const fetchOldSheet = async () => {
         row6.value = bingoSheet.value?.items?.slice(25, 30)
         row7.value = bingoSheet.value?.items?.slice(30, 35)
         row8.value = bingoSheet.value?.items?.slice(35, 40)
+        row9.value = bingoSheet.value?.items?.slice(40, 45)
+        row10.value = bingoSheet.value?.items?.slice(45, 50)
     }
     else fetchByIdWarning.value = true
 }
@@ -248,6 +247,8 @@ onMounted(async ()  => {
     const userCheck = localStorage.getItem('userId')
     if (userCheck != null) {
         store.setAuth(userCheck)
+        //login to firebase
+        
         user.value = localStorage.getItem('userName')
         if(user.value == null){
             router.push('/login')
@@ -274,7 +275,6 @@ onMounted(async ()  => {
     sheetCheck()
 })
 
-
 //if bingo - show shuffle button
 watch(() => store.bingo, () => {
     if(bingoSheet && store.bingo){
@@ -286,12 +286,6 @@ watch(() => store.bingo, () => {
 watch(() => store.name, (name) => {
     user.value = name
 })
-
-const resetPassword = () => {
-    // Admin SDK API to generate the password reset link.
-    
-
-}
 
 </script>
 
@@ -321,7 +315,7 @@ const resetPassword = () => {
 }
 
 .reset {
-    margin-top: 1rem;
+    margin-top: 0.1rem;
     margin-bottom: 2rem;
 }
 
@@ -345,5 +339,8 @@ p {
     display: block;
     margin: 0 auto;
     width: 100px;
+}
+.fetchOld {
+    margin-bottom: 1rem;;
 }
 </style>

@@ -15,6 +15,7 @@
                 required
                 :rules="[rules.required]"
             ></v-text-field>
+            <p v-if="errorMsg != ''">{{ errorMsg }}! Nånting gick fel! Kontakta Kicki eller Danne eller dubbelkolla lösenordet</p>
             <v-btn type="submit" color="#7400FF">Play bingo!</v-btn>
         </v-form>
         <p>or you just <router-link to='/reset-password'><span class="link">forgot your password?</span></router-link></p>
@@ -32,6 +33,7 @@ const email = ref('');
 const password = ref('');
 
 const store = useBingoStore()
+const errorMsg = ref('');
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -52,13 +54,15 @@ const userSubmit = () => {
                     console.log(response);
                     localStorage.setItem('userName', response);
                     router.push({ path: '/' });
+                    location.reload();
                 });
             
         })
         .catch((error) => {
             const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
+            //const errorMessage = error.message;
+            errorMsg.value = errorCode;
+            error.value = true;
         });
 }
 </script> 
@@ -77,5 +81,6 @@ const userSubmit = () => {
 
 p {
     margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 </style>
