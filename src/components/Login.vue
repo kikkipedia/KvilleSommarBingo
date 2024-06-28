@@ -13,7 +13,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-        <v-form @submit.prevent="userSubmit">
+        <v-form @submit.prevent="userSubmit" v-if="!openRegister">
             <v-text-field
                 v-model="email"
                 label="Email"
