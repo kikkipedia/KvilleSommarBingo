@@ -52,9 +52,10 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-
-
-      <RouterView />
+      <RouterView  >
+        <Login v-if="!uid"/>
+        <HomeView v-else/>
+      </RouterView>
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
@@ -70,6 +71,8 @@ import {getBingoItems} from './db'
 import { type BingoItem } from './types';
 import Statistics from '@/components/Statistics..vue';
 import Map from '@/components/Map.vue';
+import Login from './components/Login.vue';
+import HomeView from './views/HomeView.vue';
 
 const store = useBingoStore()
 const name = ref('')
@@ -83,6 +86,8 @@ const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 watch(() => store.name, (nam) => {
     name.value = nam
 })
+
+const uid = localStorage.getItem('userId')
 
 //sort by description.name in ascending order
 const sortItems = (): BingoItem[] => {

@@ -1,6 +1,18 @@
 <template>
     <div class="login">
         <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
+        <v-dialog v-model="openReset" width="90%">
+            <v-btn
+                color="rgb(10, 150, 125)"
+                icon="mdi-close"
+                @click="openReset = false"
+            ></v-btn>
+            <v-card>
+                <v-card-text>
+                    <div><PswdReset/></div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
         <v-form @submit.prevent="userSubmit">
             <v-text-field
                 v-model="email"
@@ -16,9 +28,11 @@
                 :rules="[rules.required]"
             ></v-text-field>
             <p v-if="errorMsg != ''">{{ errorMsg }}! Nånting gick fel! Kontakta Kicki eller Danne eller dubbelkolla lösenordet</p>
-            <v-btn type="submit" color="#7400FF">Play bingo!</v-btn>
+            <v-btn type="submit" color="#00FF00">Play bingo!</v-btn>
         </v-form>
-        <p>or you just <router-link to='/reset-password'><span class="link">forgot your password?</span></router-link></p>
+        <p>or you just <span class="link" @click="openReset = true">forgot your password?</span></p>
+        <v-btn color="#7400FF" @click="openRegister = true" v-if="!openRegister">Register</v-btn>
+        <Register v-if="openRegister"/>
     </div>
 </template>
 
@@ -28,12 +42,16 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import router from '@/router';
 import { fetchUserById } from '@/db';
 import { useBingoStore } from '@/stores';
+import Register from './Register.vue';
+import PswdReset from './PswdReset.vue';
 
 const email = ref('');
 const password = ref('');
 
 const store = useBingoStore()
 const errorMsg = ref('');
+const openRegister = ref(false);
+const openReset = ref(false);
 
 interface Rules {
     required: (value: any) => boolean | string;

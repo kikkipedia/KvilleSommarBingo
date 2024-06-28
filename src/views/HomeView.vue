@@ -13,16 +13,6 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-            <!-- If no userId in local storage. Log in or register -->
-            <div class="auth-btns" v-if="!userId">
-                <Login :key="componentKey"/>
-                <v-btn 
-                    color="#00FF00"
-                    @click="register"
-                >
-                Register
-            </v-btn>
-            </div>
             <!-- If userId in local storage -->
             <div v-if="userId" class="welcome"> 
                 <h2>Välkommen {{ user }}</h2>
@@ -176,7 +166,7 @@ const reset = () => {
     user.value = ''
     userId.value = ''
     showShuffle.value = false
-    router.push('/login')
+    componentKey.value ++
 }
 
 const fetchOldSheet = async () => {

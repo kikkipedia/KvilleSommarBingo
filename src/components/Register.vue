@@ -1,10 +1,17 @@
 <template>
     <div class="register">
-        <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
-        <p class="info">
-            För att spela Bingo och kunna spara din bricka och poäng behöver du registrera dig med email, och
-            sedan logga in. Detta behöver du förhoppningsvis bara göra en gång.
-        </p>
+        <v-snackbar v-model="showSnackbar" color="success">
+        Email verification sent to {{ email }}. Please verify your email before logging in.
+        <template v-slot:actions>
+        <v-btn
+          color="red"
+          variant="text"
+          @click="showSnackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
         <v-form @submit.prevent>
         <v-text-field
             solo dense
@@ -34,18 +41,7 @@
         </v-text-field>
         <v-btn :disabled="!userName" color="#7400FF" class="mt-2" type="submit" block @click="userSubmit">Registrera</v-btn>
     </v-form>
-    <v-snackbar v-model="showSnackbar" color="success">
-        Email verification sent to {{ email }}. Please verify your email before logging in.
-        <template v-slot:actions>
-        <v-btn
-          color="red"
-          variant="text"
-          @click="showSnackbar = false"
-        >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    
     </div>
 </template>
 
@@ -113,7 +109,7 @@ const sendEmail = () => {
         .then(() => {
             console.log('Email verification sent');
             showSnackbar.value = true; //todo show in middle of screen
-            router.push('/login');
+            router.push('/');
      });
     }
 }
@@ -130,15 +126,10 @@ const setUser = () => {
 </script>
 
 <style scoped>
-.info {
-    font-size: 0.9em;
-    text-align: left;
-    margin-bottom: 10px;
-}
 
 .register {
     text-align: center;
-    max-width: 80%;
+    max-width: 100%;
     margin: 0 auto;
 }
 
