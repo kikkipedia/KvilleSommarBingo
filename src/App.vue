@@ -54,7 +54,7 @@
       </v-dialog>
 
 
-      <RouterView :key="$route.fullPath"/>
+      <RouterView />
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
@@ -70,7 +70,6 @@ import {getBingoItems} from './db'
 import { type BingoItem } from './types';
 import Statistics from '@/components/Statistics..vue';
 import Map from '@/components/Map.vue';
-import { getAuth } from 'firebase/auth';
 
 const store = useBingoStore()
 const name = ref('')

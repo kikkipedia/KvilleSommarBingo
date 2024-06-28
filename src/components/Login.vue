@@ -48,14 +48,13 @@ const userSubmit = () => {
     signInWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
             localStorage.setItem('userId', userCredential.user.uid);
-            store.setAuth(userCredential.user.uid)
             store.isAuth = true;
             fetchUserById(userCredential.user.uid)
                 .then((response) => {
                     console.log(response);
                     localStorage.setItem('userName', response);
                     router.push({ path: '/' });
-                    location.reload();
+                    
                 });
             
         })

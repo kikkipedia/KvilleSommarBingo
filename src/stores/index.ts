@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 
 
@@ -15,12 +15,12 @@ export const useBingoStore = defineStore('bingoStore', () => {
     bingo.value = newBingo
   }
 
-  const isAuth = ref(false)
+  const isAuth = ref()
 
-  function setAuth(id: string) {
+  function setAuth(id : string | null) {
     if(id){
-      isAuth.value = true
-    }
+      isAuth.value = true   
+  }
   }
 
 
