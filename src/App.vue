@@ -58,7 +58,7 @@
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
-        <p>Idé av Sikas. Kod av Kicki & Danne. Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
+        <p>Idé av Sikas. Kod av Kicki & Danne.<br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
     </footer>
 </template>
 
@@ -70,6 +70,7 @@ import {getBingoItems} from './db'
 import { type BingoItem } from './types';
 import Statistics from '@/components/Statistics..vue';
 import Map from '@/components/Map.vue';
+import { getAuth } from 'firebase/auth';
 
 const store = useBingoStore()
 const name = ref('')
@@ -150,7 +151,6 @@ a {
 footer {
   text-align: center;
   bottom: 0;
-  height: 60px;
   width: 100% !important;
   padding: 0.5rem;
   font-size: 0.8rem;

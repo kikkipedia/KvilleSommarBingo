@@ -97,6 +97,7 @@ import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
 import router from '@/router';
+import { getAuth } from 'firebase/auth';
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -188,6 +189,7 @@ const reset = () => {
     user.value = ''
     userId.value = ''
     showShuffle.value = false
+    router.push('/login')
 }
 
 const fetchOldSheet = async () => {
@@ -242,13 +244,25 @@ const sheetCheck = () => {
     }
 }
 
+const checkAuth = () => {
+  const auth = getAuth()
+  if (auth.currentUser === null) {
+    // store.isAuth = false
+    // reset()
+  } else {
+    console.log(auth.currentUser)
+    //store.isAuth = true
+  }
+}
+
 onMounted(async ()  => {
     //check localStorage for user info
+    checkAuth()
     const userCheck = localStorage.getItem('userId')
     if (userCheck != null) {
         store.setAuth(userCheck)
         //login to firebase
-        
+
         user.value = localStorage.getItem('userName')
         if(user.value == null){
             router.push('/login')
