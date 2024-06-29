@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="store.isAuth">
          <!-- Warning before reset -->
                 <v-dialog  v-model="resetWarning" width="90%">
                     <v-card
@@ -111,10 +111,6 @@ const store = useBingoStore()
 
 const componentKey = ref(0)
 
-const register = () => {
-    router.push('/register')
-}
-
 const randomizeSheet = async () => {
     showShuffle.value = false
   //empty local storage bingoId
@@ -167,6 +163,7 @@ const reset = () => {
     userId.value = ''
     showShuffle.value = false
     componentKey.value ++
+    location.reload()
 }
 
 const fetchOldSheet = async () => {

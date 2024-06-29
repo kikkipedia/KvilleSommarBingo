@@ -71,8 +71,8 @@ const userSubmit = () => {
                 .then((response) => {
                     console.log(response);
                     localStorage.setItem('userName', response);
-                    router.push({ path: '/' });
-                    
+                    store.isAuth = true;
+                    location.reload();
                 });
             
         })

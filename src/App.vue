@@ -54,7 +54,7 @@
       </v-dialog>
       <RouterView  >
         <Login v-if="!uid"/>
-        <HomeView v-else/>
+        <HomeView v-if="uid" :key="componentKey"/>
       </RouterView>
     </div>
     <footer>
@@ -81,10 +81,16 @@ const openInfo = ref(false)
 const openStats = ref(false)
 const openMap = ref(false)  
 const descriptions = ref<BingoItem[]>([]) //BingoItems from database
+const componentKey = ref(0)
 
 //get name from store
 watch(() => store.name, (nam) => {
     name.value = nam
+  
+})
+
+watch(() => store.isAuth, () => {
+  componentKey.value++
 })
 
 const uid = localStorage.getItem('userId')

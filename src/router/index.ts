@@ -25,6 +25,7 @@ const router = createRouter({
       name: 'reset-password',
       component: () => import('../components/PswdReset.vue')
     },
+    
   ]
 })
 
