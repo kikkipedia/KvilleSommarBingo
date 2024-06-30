@@ -19,6 +19,7 @@ import Chart from 'chart.js/auto';
 import { getBingoItems, getAllUsers } from '@/db';
 import type { BingoItem } from '@/types';
 import { nextTick } from 'vue';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 type CheckedChart = {
     id: string;
@@ -101,10 +102,12 @@ const formatData = (data: any) => {
 }
 
 //creates the bar chart
+
 const itemChart = () => {
     const qx = document.getElementById('checkedChart') as HTMLCanvasElement
     const formatted = formatData(checkedChart.value)
     //using Chart.js for rendering graphs
+    Chart.register(ChartDataLabels)
     const chart = new Chart(qx, 
     {
         type: 'bar',
