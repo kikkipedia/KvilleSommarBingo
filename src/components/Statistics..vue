@@ -19,6 +19,7 @@ import Chart from 'chart.js/auto';
 import { getBingoItems, getAllUsers } from '@/db';
 import type { BingoItem } from '@/types';
 import { nextTick } from 'vue';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 type CheckedChart = {
     id: string;
@@ -69,9 +70,11 @@ const getScores = async() => {
             score: user.score
         }
     })
-    //sort from highest to lowest, then only keep the top 7
+    //sort from highest to lowest, then only keep the top 4
+    //delete the ones with score 0
+    scoreChart.value = scoreChart.value.filter((user: any) => user.score > 0)
     scoreChart.value.sort((a, b) => b.score - a.score)
-    scoreChart.value = scoreChart.value.slice(0, 7)
+    scoreChart.value = scoreChart.value.slice(0, 4)
     nextTick(() => {
         scoreChart.value.forEach((user: any, index: number) => {
             const el = document.getElementById(user.id)
@@ -99,10 +102,12 @@ const formatData = (data: any) => {
 }
 
 //creates the bar chart
+
 const itemChart = () => {
     const qx = document.getElementById('checkedChart') as HTMLCanvasElement
     const formatted = formatData(checkedChart.value)
     //using Chart.js for rendering graphs
+    Chart.register(ChartDataLabels)
     const chart = new Chart(qx, 
     {
         type: 'bar',
@@ -120,7 +125,7 @@ const itemChart = () => {
                         'rgba(153, 102, 255, 0.6)',
                         'rgba(201, 203, 207, 0.6)'
                     ],
-                                        
+                     barThickness: 15,                   
                 }
             ]
         },
@@ -135,11 +140,21 @@ const itemChart = () => {
                 beginAtZero: true,
                 ticks: {
                     font: {
-                        size: 10,
+                        size: 8,
+                    },
                     
                 }
-            }
-            }
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 8,
+                    },
+                    autoSkip: false,
+                    maxRotation: 90,
+                    minRotation: 90
+                }
+            },
         }
          }
     });
@@ -179,5 +194,11 @@ onMounted(() => {
 
 .score {
     margin-right: 5px;
+}
+
+#checkedChart {
+    width: 100%;
+    padding: 0;
+    height: 400px;
 }
 </style>

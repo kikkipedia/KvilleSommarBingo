@@ -52,13 +52,14 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-
-
-      <RouterView :key="$route.fullPath"/>
+      <RouterView  >
+        <Login v-if="!uid"/>
+        <HomeView v-if="uid" :key="componentKey"/>
+      </RouterView>
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
-        <p>Idé av Sikas. Kod av Kicki & Danne. Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
+        <p>Idé av Sikas. Kod av Kicki & Danne.<br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
     </footer>
 </template>
 
@@ -70,6 +71,8 @@ import {getBingoItems} from './db'
 import { type BingoItem } from './types';
 import Statistics from '@/components/Statistics..vue';
 import Map from '@/components/Map.vue';
+import Login from './components/Login.vue';
+import HomeView from './views/HomeView.vue';
 
 const store = useBingoStore()
 const name = ref('')
@@ -78,11 +81,19 @@ const openInfo = ref(false)
 const openStats = ref(false)
 const openMap = ref(false)  
 const descriptions = ref<BingoItem[]>([]) //BingoItems from database
+const componentKey = ref(0)
 
 //get name from store
 watch(() => store.name, (nam) => {
     name.value = nam
+  
 })
+
+watch(() => store.isAuth, () => {
+  componentKey.value++
+})
+
+const uid = localStorage.getItem('userId')
 
 //sort by description.name in ascending order
 const sortItems = (): BingoItem[] => {
@@ -150,7 +161,6 @@ a {
 footer {
   text-align: center;
   bottom: 0;
-  height: 60px;
   width: 100% !important;
   padding: 0.5rem;
   font-size: 0.8rem;

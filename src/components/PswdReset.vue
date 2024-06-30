@@ -7,13 +7,13 @@
                 required
                 color="#7400FF"
             ></v-text-field>
-            <v-btn type="submit" color="#00FF00">Reset password</v-btn>
+            <v-btn type="submit" color="#7400FF">Reset password</v-btn>
         </v-form>
         <div v-else>
             <p>Kolla din inbox för att fixa nytt lösen!</p>
             <v-btn
                 color="#7400FF"
-                @click="$router.push('/login')"
+                @click="$router.push('/')"
             >
                 Login
             </v-btn>
@@ -45,7 +45,7 @@ const resetPswd = () => {
     text-align: center;
     padding-top: 1rem;
     margin: 0 auto;
-    width: 90%;
+    width: 100%;
 }
 
 p {
