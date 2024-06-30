@@ -69,9 +69,11 @@ const getScores = async() => {
             score: user.score
         }
     })
-    //sort from highest to lowest, then only keep the top 7
+    //sort from highest to lowest, then only keep the top 4
+    //delete the ones with score 0
+    scoreChart.value = scoreChart.value.filter((user: any) => user.score > 0)
     scoreChart.value.sort((a, b) => b.score - a.score)
-    scoreChart.value = scoreChart.value.slice(0, 7)
+    scoreChart.value = scoreChart.value.slice(0, 4)
     nextTick(() => {
         scoreChart.value.forEach((user: any, index: number) => {
             const el = document.getElementById(user.id)
@@ -120,7 +122,7 @@ const itemChart = () => {
                         'rgba(153, 102, 255, 0.6)',
                         'rgba(201, 203, 207, 0.6)'
                     ],
-                                        
+                     barThickness: 15,                   
                 }
             ]
         },
@@ -135,11 +137,21 @@ const itemChart = () => {
                 beginAtZero: true,
                 ticks: {
                     font: {
-                        size: 10,
+                        size: 8,
+                    },
                     
                 }
-            }
-            }
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 8,
+                    },
+                    autoSkip: false,
+                    maxRotation: 90,
+                    minRotation: 90
+                }
+            },
         }
          }
     });
@@ -179,5 +191,11 @@ onMounted(() => {
 
 .score {
     margin-right: 5px;
+}
+
+#checkedChart {
+    width: 100%;
+    padding: 0;
+    height: 400px;
 }
 </style>

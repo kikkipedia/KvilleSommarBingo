@@ -15,15 +15,18 @@
                 </v-dialog>
             <!-- If userId in local storage -->
             <div v-if="userId" class="welcome"> 
-                <h2>Välkommen {{ user }}</h2>
+                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2>
                 <!-- if bingo id in local storage -->
                 <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
+                <div style="text-align: left;">
+                    <p class="bingoInfo" v-if="showSheet == true">Vid Bingo ring personsökaren <b>0740119540 </b> och lämna telefonnummer och vänta på att bli uppringd av vår vinsttelefon</p>
+                </div>
             </div>
 
         <!-- Visible if showShuffle is true -->
         <div class="btn-container" v-if="showShuffle == true || store.bingo">
             <v-btn
-                color="#7400FF"
+                color="#00FF00"
                 size="large"
                 :loading="loading"
                 @click="randomizeSheet"
@@ -75,8 +78,6 @@ import { type BingoItem, type BingoSheet } from '@/types';
 import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
-import router from '@/router';
-import Login from '@/components/Login.vue';
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -195,6 +196,9 @@ const fetchById = async () => {
         localStorage.removeItem('userName')
     }
     fetchByIdWarning.value = false
+    localStorage.setItem('bingoId', bingoId.value)
+    showSheet.value = true
+    location.reload()
 }
 
 const sheetCheck = () => {
@@ -270,6 +274,11 @@ watch(() => store.name, (name) => {
     font-size: 0.7rem;
     color: rgb(10, 150, 125);
 }
+
+.bingoInfo {
+    font-size: 0.8rem;
+    color: "#7400FF";
+}   
 
 .btn-container {
     display: block;
