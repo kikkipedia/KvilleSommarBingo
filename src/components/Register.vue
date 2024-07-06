@@ -4,7 +4,7 @@
         border="start"
         border-color="deep-purple accent-4"
         elevation="2"
-        closable="true"
+        closable
         >
         Email verification sent to {{ email }}. Please verify your email before logging in.
     </v-alert>
