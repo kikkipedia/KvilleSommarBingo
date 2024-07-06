@@ -1,17 +1,13 @@
 <template>
     <div class="register">
-        <v-snackbar v-model="showSnackbar" color="success">
-        Email verification sent to {{ email }}. Please verify your email before logging in.
-        <template v-slot:actions>
-        <v-btn
-          color="red"
-          variant="text"
-          @click="showSnackbar = false"
+        <v-alert v-model="showSnackbar"
+        border="start"
+        border-color="deep-purple accent-4"
+        elevation="2"
+        closable="true"
         >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+        Email verification sent to {{ email }}. Please verify your email before logging in.
+    </v-alert>
         <v-form @submit.prevent>
         <v-text-field
             solo dense
@@ -99,7 +95,7 @@ const userSubmit = async () => {
 
 const sendEmail = () => {
     const actionCodeSettings = {
-        url: 'http://kvillebingo.web.app/', //todo change to production url
+        url: 'http://kvillebingo.web.app/', 
         handleCodeInApp: true,
     };
     const auth = getAuth();
@@ -108,8 +104,9 @@ const sendEmail = () => {
         sendEmailVerification(auth.currentUser, actionCodeSettings)
         .then(() => {
             console.log('Email verification sent');
-            showSnackbar.value = true; //todo show in middle of screen
-            router.push('/');
+            showSnackbar.value = true;
+            redirectHome();
+            
      });
     }
 }
@@ -121,6 +118,10 @@ const setUser = () => {
     //todo set userId
 }
 
+const redirectHome = () => {
+    showSnackbar.value = false;
+    location.reload()
+}
 
 
 </script>

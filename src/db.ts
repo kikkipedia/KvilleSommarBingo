@@ -43,8 +43,8 @@ const fetchSheetById = async (id) => {
   }
 }
 
-const saveNewUser = async (id, name) => {
-  const docRef = await setDoc(doc(db, "users", id), {
+const saveNewUser = async (name) => {
+  const docRef = await addDoc(collection(db, "users"), {
     name: name,
     score: 0
   });

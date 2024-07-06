@@ -145,7 +145,8 @@ const checkBingo = () => {
                 explode.value = true
                 overlay.value = true
                 localStorage.setItem('bingo', 'true')
-                //save 
+                //save the sheet in db
+                updateSheetInDb(props.bingoSheet, props.bingoId)
             }
         })
         props.bingoSheet.bingo = bingo
