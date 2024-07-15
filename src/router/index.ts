@@ -10,11 +10,6 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-    // {
-    //   path: '/login',
-    //   name: 'login',
-    //   component: () => import('../components/Login.vue')
-    // },
     {
       path: '/register',
       name: 'register',
@@ -24,6 +19,11 @@ const router = createRouter({
       path: '/reset-password',
       name: 'reset-password',
       component: () => import('../components/PswdReset.vue')
+    },
+    {
+      path: '/toplist',
+      name: 'toplist',
+      component: () => import('../components/TopList.vue')
     },
     
   ]

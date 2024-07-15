@@ -52,7 +52,10 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <RouterView  >
+      <RouterView v-if="$route.name === 'toplist'">
+        <TopList/>
+      </RouterView>      
+      <RouterView v-else>
         <Login v-if="!uid"/>
         <HomeView v-if="uid" :key="componentKey"/>
       </RouterView>
@@ -73,6 +76,7 @@ import Statistics from '@/components/Statistics..vue';
 import Map from '@/components/Map.vue';
 import Login from './components/Login.vue';
 import HomeView from './views/HomeView.vue';
+import TopList from './components/TopList.vue';
 
 const store = useBingoStore()
 const name = ref('')
