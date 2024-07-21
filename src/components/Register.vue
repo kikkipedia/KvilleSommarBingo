@@ -37,6 +37,7 @@
         </v-text-field>
         <v-btn :disabled="!userName" color="#7400FF" class="mt-2" type="submit" block @click="userSubmit">Registrera</v-btn>
     </v-form>
+    <!-- register with Google -->
     
     </div>
 </template>

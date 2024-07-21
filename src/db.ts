@@ -3,6 +3,9 @@
 import { set } from "firebase/database";
 import { db } from "./firebase.ts";
 import { collection, addDoc, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
+import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
+import "firebase/auth";
+import { auth } from './firebase.ts'
 
 const getBingoItems = async () => {
   const itemsArray = [];
@@ -123,6 +126,31 @@ const minusBingoItemCount = async (id) => {
   }, { merge: true });
   console.log("Document updated with ID: ", docRef.id);
   return docRef.id;
+}
+
+const googleProvider = new GoogleAuthProvider();
+
+export const signInWithGoogle = () => {
+  signInWithPopup(auth, googleProvider).then((res) => {
+    //get firebase user credentials
+    auth.onAuthStateChanged((user) => {
+      //check if already in db
+      fetchUserById(user.uid).then((newuser) => {
+        if (!newuser) {
+          saveNewUser(user.uid, user.displayName)
+        }
+        else{
+          console.log('user already exist', user.uid)
+        }
+        localStorage.setItem('userName', user.displayName)
+        localStorage.setItem('userId', user.uid)
+        location.reload()
+      })
+      })    
+    
+  }).catch((error) => {
+    console.log(error.message)
+  })
 }
 
 

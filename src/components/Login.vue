@@ -1,6 +1,12 @@
 <template>
     <div class="login">
         <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
+        <p style="font-size: 10px; margin-bottom: 15px;">Börja spela direkt via Google login</p>
+        <v-btn append-icon="mdi-google" color="#7400FF" @click="googleSignIn">
+         Google login
+        </v-btn>
+        <p></p>
+        <v-btn color="#7400FF" @click="openLogin = true" v-if="!openLogin">Logga in med email</v-btn>
         <v-dialog v-model="openReset" width="90%">
             <v-btn
                 color="rgb(10, 150, 125)"
@@ -13,7 +19,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-        <v-form @submit.prevent="userSubmit" v-if="!openRegister">
+        <v-form @submit.prevent="userSubmit" v-if="openLogin">
             <v-text-field
                 v-model="email"
                 label="Email"
@@ -22,16 +28,16 @@
             ></v-text-field>
             <v-text-field
                 v-model="password"
-                type="password"
+                type="password "
                 label="Password"
                 required
                 :rules="[rules.required]"
             ></v-text-field>
-            <p v-if="errorMsg != ''">{{ errorMsg }}! Nånting gick fel! Kontakta Kicki eller Danne eller dubbelkolla lösenordet</p>
+            <p v-if="errorMsg != ''">{{ errorMsg }}! Nånting gick fel! Dubbelkolla lösenordet eller skapa ny användare</p>
             <v-btn type="submit" color="#00FF00">Play bingo!</v-btn>
         </v-form>
         <p>or you just <span class="link" @click="openReset = true">forgot your password?</span></p>
-        <v-btn color="#7400FF" @click="openRegister = true" v-if="!openRegister">Register</v-btn>
+        <v-btn color="pink" @click="openRegister = true" v-if="!openRegister">Registrera med Email och lösenord</v-btn>
         <Register v-if="openRegister"/>
     </div>
 </template>
@@ -40,7 +46,7 @@
 import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import router from '@/router';
-import { fetchUserById } from '@/db';
+import { fetchUserById, signInWithGoogle } from '@/db';
 import { useBingoStore } from '@/stores';
 import Register from './Register.vue';
 import PswdReset from './PswdReset.vue';
@@ -52,6 +58,7 @@ const store = useBingoStore()
 const errorMsg = ref('');
 const openRegister = ref(false);
 const openReset = ref(false);
+const openLogin = ref(false);
 
 interface Rules {
     required: (value: any) => boolean | string;
@@ -69,7 +76,6 @@ const userSubmit = () => {
             store.isAuth = true;
             fetchUserById(userCredential.user.uid)
                 .then((response) => {
-                    console.log(response);
                     localStorage.setItem('userName', response);
                     store.isAuth = true;
                     location.reload();
@@ -82,6 +88,10 @@ const userSubmit = () => {
             errorMsg.value = errorCode;
             error.value = true;
         });
+}
+
+const googleSignIn = async () => {
+    await signInWithGoogle();
 }
 </script> 
 
