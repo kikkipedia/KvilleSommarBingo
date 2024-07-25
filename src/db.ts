@@ -47,11 +47,20 @@ const fetchSheetById = async (id) => {
 }
 
 const saveNewUser = async (id, name) => {
-  const docRef = await addDoc(collection(db, "users", id), {
+  //check if already exists
+  const docRef = doc(db, "users", id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+    return
+  }
+  else {
+  const docRef = await setDoc(doc(db, "users", id), {
     name: name,
     score: 0
   });
   console.log("Document written with ID: ", docRef.id);
+}
   return id;
 }
 
@@ -129,29 +138,31 @@ const minusBingoItemCount = async (id) => {
 }
 
 const googleProvider = new GoogleAuthProvider();
-
-export const signInWithGoogle = () => {
-  signInWithPopup(auth, googleProvider).then((res) => {
+export const signInWithGoogle = async () => {
+  await signInWithPopup(auth, googleProvider).then((result) => {
     //get firebase user credentials
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
       //check if already in db
-      fetchUserById(user.uid).then((newuser) => {
-        if (!newuser) {
-          saveNewUser(user.uid, user.displayName)
-        }
-        else{
-          console.log('user already exist', user.uid)
-        }
-        localStorage.setItem('userName', user.displayName)
-        localStorage.setItem('userId', user.uid)
-        location.reload()
-      })
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+      }
+      else{
+        const docRef = await setDoc(doc(db, "users", user.uid), {
+          name: user.displayName,
+          score: 0
+        });
+        
+      }
+      //set local storage
+      localStorage.setItem('userName', user.displayName)
+      localStorage.setItem('userId', user.uid)
+      location.reload()
       })    
-    
-  }).catch((error) => {
-    console.log(error.message)
   })
 }
+
 
 
 export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount };

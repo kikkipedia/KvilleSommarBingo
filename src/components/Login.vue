@@ -37,7 +37,7 @@
             <v-btn type="submit" color="#00FF00">Play bingo!</v-btn>
         </v-form>
         <p>or you just <span class="link" @click="openReset = true">forgot your password?</span></p>
-        <v-btn color="pink" @click="openRegister = true" v-if="!openRegister">Registrera med Email och lösenord</v-btn>
+        <v-btn color="pink" @click="openRegister = true" v-if="!openRegister" size="small">Registrera med Email och lösenord</v-btn>
         <Register v-if="openRegister"/>
     </div>
 </template>
