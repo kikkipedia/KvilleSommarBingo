@@ -1,11 +1,7 @@
 <template>
     <div class="login">
         <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
-        <p style="font-size: 10px; margin-bottom: 15px;">Börja spela direkt via Google login</p>
-        <v-btn append-icon="mdi-google" color="#7400FF" @click="googleSignIn">
-         Google login
-        </v-btn>
-        <p></p>
+        
         <v-btn color="#7400FF" @click="openLogin = true" v-if="!openLogin">Logga in med email</v-btn>
         <v-dialog v-model="openReset" width="90%">
             <v-btn
@@ -37,7 +33,7 @@
             <v-btn type="submit" color="#00FF00">Play bingo!</v-btn>
         </v-form>
         <p>or you just <span class="link" @click="openReset = true">forgot your password?</span></p>
-        <v-btn color="pink" @click="openRegister = true" v-if="!openRegister" size="small">Registrera med Email och lösenord</v-btn>
+        <v-btn color="pink" @click="openRegister = true" v-if="!openRegister" size="small">Registrera</v-btn>
         <Register v-if="openRegister"/>
     </div>
 </template>
@@ -46,7 +42,7 @@
 import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import router from '@/router';
-import { fetchUserById, signInWithGoogle } from '@/db';
+import { fetchUserById } from '@/db';
 import { useBingoStore } from '@/stores';
 import Register from './Register.vue';
 import PswdReset from './PswdReset.vue';
@@ -90,9 +86,6 @@ const userSubmit = () => {
         });
 }
 
-const googleSignIn = async () => {
-    await signInWithGoogle();
-}
 </script> 
 
 <style scoped>

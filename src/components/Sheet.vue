@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
-import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore } from '@/db';
+import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore, saveLocation } from '@/db';
 import { useBingoStore } from '@/stores';
 import ConfettiExplosion from "vue-confetti-explosion";
 import 'animate.css';
@@ -108,7 +108,7 @@ const setRows = () => {
     }
 }
 
-const bingoClick = (index: number, row: number, id: string) => {
+const bingoClick = async (index: number, row: number, id: string) => {
     if (props.bingoSheet) {
         const item = props.bingoSheet.items?.find((item: BingoItem) => item.id === id)
         //set the item to checked/not-checked
@@ -122,6 +122,13 @@ const bingoClick = (index: number, row: number, id: string) => {
             setTimeout(() => {
                 confetti.value = false
             }, 2000)
+            //get geolocation
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude
+                const long = position.coords.longitude
+                console.log(lat, long)
+                saveLocation(id, lat, long)
+            })
         }
         //substract again
         else {

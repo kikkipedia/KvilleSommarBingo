@@ -5,6 +5,7 @@ import { db } from "./firebase.ts";
 import { collection, addDoc, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import "firebase/auth";
+import { GeoPoint } from "firebase/firestore";
 import { auth } from './firebase.ts'
 
 const getBingoItems = async () => {
@@ -161,6 +162,25 @@ export const signInWithGoogle = async () => {
       location.reload()
       })    
   })
+}
+
+export const saveLocation = async (id, lat, long) => {
+  //fetch bingoItem
+  const docRef = doc(db, "bingoItems", id);
+  let item = await getDoc(docRef);
+  item = item.data();
+  //get all item.locations and set new array if empty
+  if (!item.locations) {
+    item.locations = [];
+  }
+  let locations = item.locations; //array of geopoints
+  //add new geopoint to array as firebase geopoint
+  locations.push(new GeoPoint(lat, long));
+  //update item.locations in db
+  await setDoc(docRef, {
+    locations: locations
+  }, { merge: true });
+
 }
 
 
