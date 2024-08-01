@@ -175,7 +175,7 @@ export const saveLocation = async (id, lat, long) => {
   }
   let locations = item.locations; //array of geopoints
   //add new geopoint to array as firebase geopoint
-  locations.push(new GeoPoint(lat, long));
+  locations.push({lat: lat, long: long});
   //update item.locations in db
   await setDoc(docRef, {
     locations: locations

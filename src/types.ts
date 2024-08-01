@@ -6,6 +6,7 @@ export type BingoItem = {
     description: string;
     count: number;
     isChecked: boolean;
+    locations: {lat: number, long: number}[];
     };
 
 export type BingoSheet = {

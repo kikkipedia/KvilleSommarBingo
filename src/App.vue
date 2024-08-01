@@ -27,16 +27,14 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="openMap" width="90%">
+      <v-dialog v-model="openMap" width="100%">
         <v-btn
             color="rgb(10, 150, 125)"
             icon="mdi-close"
             @click="openMap = false"
           ></v-btn>
         <v-card>
-          <v-card-text>
             <div><Map/></div>
-          </v-card-text>
         </v-card>
       </v-dialog>
 
