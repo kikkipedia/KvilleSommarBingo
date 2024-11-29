@@ -109,6 +109,7 @@ const setRows = () => {
 }
 
 const bingoClick = async (index: number, row: number, id: string) => {
+    location.reload()
     if (props.bingoSheet) {
         const item = props.bingoSheet.items?.find((item: BingoItem) => item.id === id)
         //set the item to checked/not-checked

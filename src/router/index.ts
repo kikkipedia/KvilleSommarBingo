@@ -25,7 +25,11 @@ const router = createRouter({
       name: 'toplist',
       component: () => import('../components/TopList.vue')
     },
-    
+    {
+      path: '/live',
+      name: 'live',
+      component: () => import('../components/LiveBingo.vue')
+    }
   ]
 })
 

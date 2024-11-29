@@ -1,5 +1,6 @@
 <template>
-      <nav>
+  <RouterView/>
+      <!-- <nav>
         <ul v-if="store.isAuth">
             <li><v-icon large @click="openMap = true">mdi-map-legend</v-icon> </li>
             <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
@@ -7,6 +8,7 @@
         </ul>
     </nav>
     <div class="main">
+      <img src="@/assets/bingologo.png" alt="logo"  @click="openBingoClosed = true" style="width: 100%;"/>
       <v-dialog v-model="openInfo" width="90%">
         <v-card>
           <v-btn
@@ -50,6 +52,19 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+
+      <v-dialog v-model="openBingoClosed" width="90%">
+        <v-card class="its-over">
+          <v-card-text>
+            <h2>Slut på Sommarbingo!</h2>
+            <p>Sommaren är över, uteserveringarna har demonterats.</p>
+            <p>Det blir såklart avslutningsfest på Pastan i november!</p>
+            <p><router-link to="/toplist" @click="openBingoClosed=false">Här</router-link> kan du kika på resultaten så länge!</p>
+
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <RouterView v-if="$route.name === 'toplist'">
         <TopList/>
       </RouterView>      
@@ -60,8 +75,8 @@
     </div>
     <footer>
         <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
-        <p>Idé av Sikas. Kod av Kicki & Danne.<br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
-    </footer>
+        <p>Idé av Sikas. Kod av Kicki & Danne. <br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
+    </footer> -->
 </template>
 
 <script setup lang="ts">
@@ -84,16 +99,17 @@ const openStats = ref(false)
 const openMap = ref(false)  
 const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 const componentKey = ref(0)
+const openBingoClosed = ref(false)
 
 //get name from store
-watch(() => store.name, (nam) => {
-    name.value = nam
+// watch(() => store.name, (nam) => {
+//     name.value = nam
   
-})
+// })
 
-watch(() => store.isAuth, () => {
-  componentKey.value++
-})
+// watch(() => store.isAuth, () => {
+//   componentKey.value++
+// })
 
 const uid = localStorage.getItem('userId')
 
@@ -104,9 +120,13 @@ const sortItems = (): BingoItem[] => {
 }
 
 onMounted(async () => {
-  const items = await getBingoItems()
-  descriptions.value = items
-  sortItems()
+  //const items = await getBingoItems()
+  //descriptions.value = items
+  //sortItems()
+  localStorage.removeItem('userId')
+  localStorage.removeItem('userName')
+  store.isAuth = false
+  openBingoClosed.value = true
 })
 
 </script>
@@ -186,5 +206,22 @@ h2 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #7400FF;
+}
+
+.its-over {
+  background-color: #7400FF;
+  color: white;
+  border: 5px solid #00FF00;
+}
+
+.its-over a {
+  font-size: large;
+  font-weight: bold;
+}
+
+.its-over h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white
 }
 </style>

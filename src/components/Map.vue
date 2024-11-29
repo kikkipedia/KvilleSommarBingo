@@ -11,7 +11,9 @@
                 hint="Välj en eller flera kryssrutor"
             ></v-select>
         </div> -->
-
+<!--         <div class="legend">
+            <p v-for="marker in markers"><span class="box" :style="{backgroundColor: marker.color}"></span>{{marker.item}}</p>
+        </div> -->
          <div id="map">map</div>
     </div>
 </template>
@@ -23,10 +25,11 @@ import { onMounted, ref } from 'vue';
 import { type BingoItem } from '../types';
 import { getBingoItems } from '../db';
 
+
 const items = ref<BingoItem[]>([]);
 const selectMenu = ref<{name: string, id: string}[]>([]);
 const selectedItems = ref<BingoItem[]>([]);
-const markers = ref<{color: string, item: string}[]>([]);
+const markers = ref<{color: string, item: string, id: string}[]>([]);
 
 
 onMounted(async () => {
@@ -40,23 +43,32 @@ onMounted(async () => {
     
     //then set markers
     items.value.forEach(item => {
-        //order items by name
-        selectMenu.value.push({
-            name: item.item,
+        //set random marker icon
+        const leafletColors = ['red', 'blue', 'green', 'yellow', 'orange', 'black',];
+        const randomcolor = leafletColors[Math.floor(Math.random() * leafletColors.length)]
+        const icon = L.icon({
+            iconUrl: `https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${randomcolor}.png`,
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+            iconSize: [15, 25],
+            iconAnchor: [12, 25],
+            popupAnchor: [1, -34],
+            shadowSize: [25, 25]
+        });
+        if(item.locations) {
+            markers.value.push({
+            color: randomcolor,
+            item: item.item,
             id: item.id
         });
-        selectMenu.value.sort((a, b) => a.name.localeCompare(b.name));
-        //set random marker color
-        const color = '#' + Math.floor(Math.random()*16777215).toString(16);
-        const markers = [];
-        if(item.locations) {
             item.locations.forEach(location => {
                 var marker = L.marker([location.lat, location.long], {
-                    color: color,
+                    icon: icon
                 })
                 .addTo(map);
-        
+                marker.bindPopup(`<b>${item.item}</b>`).openPopup();
         });
+        //remove markers with no locations
+
     }
     else {
         //console.log('No locations found for items');    
@@ -91,5 +103,18 @@ onMounted(async () => {
 #map {
     height: 600px;
     max-width: 100vw;
+}
+.box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid black;
+}
+.legend {
+    text-align: left;
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 10px;
 }
 </style>

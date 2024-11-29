@@ -1,7 +1,7 @@
 @import './base.css';
 
 #app {
-  max-width: 1500px;
+  /* max-width: 1500px; */
   margin: 0 auto;
   font-weight: normal;
   scrollbar-width: 0px !important;
