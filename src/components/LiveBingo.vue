@@ -1,20 +1,14 @@
 <template>
     <div class="container">
         <div id="snow">
-                <span
-                    v-for="n in snowflakeCount"
-                    :key="n"
-                    class="snowflake"
-                >*</span>
             <div class="bingo-box">
-                <h1>Kvilles Nyårsbingo </h1>
                 <div v-if="itemNow">
                 <div class="animate__animated animate__bounceInLeft item-box">
                     {{ itemNow.item }}
                 </div>
             </div>
             </div>
-            <div class="dragnaNr">
+            <div class="dragnaNr" v-if="dragnaNr.length">
                 <div v-for="item in dragnaNr" :key="item.id">{{ item.item }}</div>
             </div>
         </div>
@@ -34,17 +28,9 @@ const items = ref([]);
 const dragnaNr = ref([]);
 const itemNow = ref();
 const snowflakeCount = 100;
+const randomGifs = ref([]);
 
 onMounted(() => {
-    //start snow
-    const snowflakes = document.querySelectorAll('.snowflake');
-    // Apply random positioning and animation delays for each snowflake
-    snowflakes.forEach((flake) => {
-        const flakeElement = flake as HTMLElement;
-        flakeElement.style.left = `${Math.random() * 100}vw`; // Random horizontal position
-        flakeElement.style.animationDuration = `${Math.random() * 3 + 5}s`; // Duration between 2s and 5s
-        flakeElement.style.animationDelay = `${Math.random() * 20}s`; // Delay up to 5s
-      });
     items.value = bingoitems;
 })
 
@@ -60,6 +46,10 @@ const getNext = () => {
     setTimeout(() => {
         if(randomItem) {
             dragnaNr.value.push(randomItem);
+            //if more than 5 items in dragnaNr, remove the first one
+            if(dragnaNr.value.length > 5) {
+                dragnaNr.value.shift();
+            }
         }
     }, 2000)
     
@@ -70,9 +60,13 @@ const getNext = () => {
 
 <style scoped>
 .container {
-    height: 100vh;
+    height: 90vh;
     width: 100vw;
     background: black;
+}
+
+footer {
+  padding: 25px;
 }
 
 .bingo-box {
@@ -83,106 +77,39 @@ const getNext = () => {
 }
 
 .item-box {
-    background-color: white;
+
     width: 100%;
-    height: 100%;
+    height: 400px;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: black;
+    color: white;
+    margin-top: 20px;
 }
 
 .dragnaNr {
-    background: transparent;
-    margin-left: 200px;
-    padding: 5px;
+  background: transparent;
+  margin-left: 200px;
+  padding: 10px;
   margin-right: 0px;
   width: 200px;
   border: 3px solid #0000;
   border-radius: 12px;
-  background: linear-gradient(#131219, #131219) padding-box, linear-gradient(
-        var(--angle),
-        #070707,
-        #687aff
-      ) border-box;
-  animation: 8s rotate linear infinite;
+  color: white;
 }
-
-@keyframes rotate {
-  to {
-    --angle: 360deg;
-  }
-}
-
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
 
 #snow {
     display: flex;
     align-items: center;
     display: flex;
   position: relative;
-  overflow: hidden;
   height: 100vh; /* Adjust based on the section you want to cover */
   width: 100%;
   background: black; /* Background color, optional */
 }
 
-.snowflake {
-  position: absolute;
-  top: -15px; /* Start above the container */
-  font-size: 24px;
-  color: rgba(255, 252, 252, 0.923);
-  animation: fall linear infinite;
+footer {
+  background-color: black;
 }
-
-/* Keyframes for falling effect */
-@keyframes fall {
-  0% {
-    transform: translateY(-0px);
-    opacity: 0.6;
-  }
-
-  10% {
-    opacity: 0.1;
-  }
-  15% {
-    opacity: 0.5;
-  }
-  20% {
-    opacity: 0.1;
-  }
-  25% {
-    opacity: 0.4;
-  }
-  30% {
-    opacity: 0.1;
-  }
-  35% {
-    opacity: 0.3;
-  }
- 40% {
-    opacity: 0.1;
-  }
- 45% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.1;
-  }
- 55% {
-    opacity: 0.3;
-  }
- 
-  100% {
-    transform: translateY(100vh); /* Move down the full height */
-    opacity: 0;
-  }
-}
-
 </style>
