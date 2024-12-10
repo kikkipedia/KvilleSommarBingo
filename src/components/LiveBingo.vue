@@ -23,15 +23,16 @@ import { ref, onMounted } from 'vue';
 import { getBingoItems } from '../db';
 import bingoitems from '../assets/liveBingoItems.json';
 import 'animate.css';
+import type { BingoItem } from '../types';
 
-const items = ref([]);
+const items = ref<BingoItem[]>([]);
 const dragnaNr = ref([]);
 const itemNow = ref();
 const snowflakeCount = 100;
 const randomGifs = ref([]);
 
 onMounted(() => {
-    items.value = bingoitems;
+    items.value = bingoitems as any
 })
 
 const getNext = () => {
