@@ -1,5 +1,5 @@
 <template>
-    <div class="bingoSheet" v-show="bingoId">
+    <div class="bingoSheet" >
         <ConfettiExplosion v-if="confetti" :particleSize="10" :duration="1500" :colors="colors"/>
              <table>
                 <tr>
@@ -105,11 +105,12 @@ const setRows = () => {
     row8.value = props.bingoSheet.items?.slice(35, 40)
     row9.value = props.bingoSheet.items?.slice(40, 45)
     row10.value = props.bingoSheet.items?.slice(45, 50)
+    
     }
 }
 
 const bingoClick = async (index: number, row: number, id: string) => {
-    location.reload()
+    //location.reload()
     if (props.bingoSheet) {
         const item = props.bingoSheet.items?.find((item: BingoItem) => item.id === id)
         //set the item to checked/not-checked
@@ -118,22 +119,22 @@ const bingoClick = async (index: number, row: number, id: string) => {
             confetti.value = true
             //update the item count
             const itemId = item!.id
-            updateBingoItemCount(itemId)
+            //updateBingoItemCount(itemId)
             //wait 2000ms
             setTimeout(() => {
                 confetti.value = false
             }, 2000)
             //get geolocation
-            navigator.geolocation.getCurrentPosition((position) => {
-                const lat = position.coords.latitude
-                const long = position.coords.longitude
-                console.log(lat, long)
-                saveLocation(id, lat, long)
-            })
+            // navigator.geolocation.getCurrentPosition((position) => {
+            //     const lat = position.coords.latitude
+            //     const long = position.coords.longitude
+            //     console.log(lat, long)
+            //     saveLocation(id, lat, long)
+            // })
         }
-        //substract again
+        //substract agains
         else {
-            minusBingoItemCount(item!.id)
+            //minusBingoItemCount(item!.id)
         }
         //update the sheet in db
         updateSheetInDb(props.bingoSheet, props.bingoId)
@@ -172,7 +173,11 @@ watch(() => props.bingoSheet?.bingo, () => {
             props.bingoSheet.bingo = true
             store.bingo = true
             //update user score
-            updateUserScore(localStorage.getItem('userId') as string)
+            //updateUserScore(localStorage.getItem('userId') as string)
+            //wait 5s then set bingo to false in store
+            setTimeout(() => {
+                store.bingo = false
+            }, 5000)
         }
         else {
             props.bingoSheet.bingo = false
@@ -195,13 +200,14 @@ watch(() => props.bingoSheet?.bingo, () => {
 
 table {
     width: 100%;   
+    border-spacing: 0px;
 }
 
 td {
-    font-size: 8px;
+    font-size: 12px;
     color: #6200ea;
     background-color:white;
-    border: 1px solid #6200ea;
+    border: 2px solid #6200ea;
     height: 70px;
     text-align: center;
     cursor: pointer;
