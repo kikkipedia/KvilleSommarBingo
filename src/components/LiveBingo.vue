@@ -1,11 +1,11 @@
 <template>
     <div class="container">
             <div class="bingo-box">
-                <div v-if="itemNow">
-                <div class="animate__animated animate__bounceInLeft item-box">
-                    {{ itemNow.item }}
+                <!-- <div v-if="itemNow"> -->
+                <div class="item-box">
+                    <div class="animate__animated animate__bounceInLeft name" v-if="itemNow">{{ itemNow.item }}</div>
                 </div>
-            </div>
+            <!-- </div> -->
             </div>
             <div class="dragnaNr" v-if="dragnaNr.length">
                 <!-- only show bottom 5 in dragnaNr-->
@@ -37,14 +37,9 @@ onMounted(() => {
 })
 
 const getNext = () => {
-    itemNow.value = null;
     const randomIndex = Math.floor(Math.random() * items.value.length);
     const randomItem = items.value[randomIndex];
-    setTimeout(() => {
-        
-        itemNow.value = randomItem;
-        
-    }, 1000)
+    itemNow.value = null
     setTimeout(() => {
         if(randomItem) {
             //check if already in dragnaNr
@@ -53,12 +48,17 @@ const getNext = () => {
                 getNext();
             }
             else {
-                dragnaNr.value.push(randomItem);
+                
+                itemNow.value = randomItem;
+                setTimeout(() => {
+                    dragnaNr.value.push(randomItem);
+                }, 1500)
+                
                 //if more than 5 items in dragnaNr, remove the first one
             }
             
         }
-    }, 2000)   
+    }, 1000)   
 } 
 
 const reset = () => {
@@ -84,22 +84,26 @@ const reset = () => {
 
 .bingo-box {
     display: flex;  
-    width: 100%;
-    height: 50%;
+    width: 100%; 
     justify-content: center;
     align-items: center;
 }
 
-.item-box {
+.name {
+    position: absolute;
+    bottom: 20px;
+}
 
+.item-box {
     width: 100%;
-    height: 400px;
+    height: 350px;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     justify-content: center;
     color: white;
+    position: relative;
 }
 
 .dragnaNr {
@@ -113,7 +117,7 @@ const reset = () => {
 
 .buttons {
     position: absolute;
-  bottom: 0;
+  bottom: 20px;
     
 }
 .btn {

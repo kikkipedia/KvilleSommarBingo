@@ -30,14 +30,6 @@ const router = createRouter({
       name: 'live',
       component: () => import('../components/LiveBingo.vue')
     },
-    {
-      path: '/stats',
-      name: 'stats',
-    },
-    {
-      path: '/map',
-      name: 'map',
-    },
   ]
 })
 
