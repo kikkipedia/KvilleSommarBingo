@@ -204,7 +204,7 @@ table {
 }
 
 td {
-    font-size: 12px;
+    font-size: 8px;
     color: #6200ea;
     background-color:white;
     border: 2px solid #6200ea;

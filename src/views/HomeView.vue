@@ -68,7 +68,7 @@
 
          <div class="buttons">
             <v-btn class="fetchOld"  @click="fetchByIdWarning = true" size="x-small" color="#7400FF" v-if="!showSheet">Hämta tidigare bricka</v-btn>
-            <v-btn color="#00FF00" v-else>Ny bricka</v-btn>
+            <v-btn color="#00FF00" v-else @click="randomizeSheet">Ny bricka</v-btn>
             </div>
         <!--<br/>
             <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
