@@ -1,12 +1,12 @@
 <template>
-       <!-- <nav>
+    <nav>
         
         <ul v-if="store.isAuth">
             <li><v-icon large @click="openMap = true">mdi-map-legend</v-icon> </li>
             <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
             <li><v-icon large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
         </ul>
-    </nav> -->
+    </nav>
     <div class="main">
       <v-dialog v-model="openInfo" width="90%">
         <v-card>
@@ -52,7 +52,7 @@
         </v-card>
       </v-dialog>
 
-     <!--  <v-dialog v-model="openBingoClosed" width="90%">
+      <v-dialog v-model="openBingoClosed" width="90%">
         <v-card class="its-over">
           <v-card-text>
             <h2>Slut på Sommarbingo!</h2>
@@ -62,16 +62,19 @@
 
           </v-card-text>
         </v-card>
-      </v-dialog> -->
+      </v-dialog>
       <RouterView v-if="$route.name == 'live'">
         <LiveBingo />
       </RouterView>
       <RouterView v-else>
-        <!-- <Login v-if="!uid"/> -->
-          <HomeView />
+        <Login v-if="!uid"/>
+         <HomeView />
       </RouterView>
     </div>
-
+    <footer>
+        <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a> 
+        <br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
+    </footer> 
 </template>
 
 <script setup lang="ts">
@@ -125,7 +128,7 @@ const sortItems = (): BingoItem[] => {
   return descriptions.value
 }
 
-/* onMounted(async () => {
+onMounted(async () => {
   const items = await getBingoItems()
   descriptions.value = items
   sortItems()
@@ -133,7 +136,7 @@ const sortItems = (): BingoItem[] => {
   localStorage.removeItem('userName')
   store.isAuth = false
   openBingoClosed.value = true
-}) */
+})
 
 
 </script>
@@ -234,5 +237,17 @@ h2 {
   font-size: 2rem;
   font-weight: bold;
   color: white
+}
+
+footer {
+  text-align: center;
+  bottom: 0;
+  width: 100% !important;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  color: white;
+  background-color: #7400FF;
+  margin: auto;
+  position: relative;
 }
 </style>

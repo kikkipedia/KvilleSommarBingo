@@ -14,16 +14,16 @@
                     </v-card>
                 </v-dialog>
             <!-- If userId in local storage -->
-           <!--  <div v-if="userId" class="welcome"> 
+             <div v-if="userId" class="welcome"> 
                 <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> -->
                 <!-- if bingo id in local storage -->
                 
-                <!-- <div style="text-align: left;">
+                <div style="text-align: left;">
                     <p class="bingoInfo" v-if="showSheet == true">Vid Bingo ring personsökaren <b>0740119540 </b> och lämna telefonnummer och vänta på att bli uppringd av vår vinsttelefon</p>
                 </div> 
-            </div> -->
+            </div>
 
-            <img src="@/assets/NB_LOGO.png" alt="logo" id="logo"/>
+            
             <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} (kan vara bra att spara!)</p>
         <!-- Visible if showShuffle is true -->
         <div class="btn-container" v-if="!showSheet && showShuffle">
@@ -70,14 +70,11 @@
             <v-btn class="fetchOld"  @click="fetchByIdWarning = true" size="x-small" color="#7400FF" v-if="!showSheet">Hämta tidigare bricka</v-btn>
             <v-btn color="#00FF00" v-else @click="randomizeSheet">Ny bricka</v-btn>
             </div>
-        <!--<br/>
+        <br/>
             <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
-        </div> -->
-    </div>
-<!--     <footer>
-        <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
-        <p>Idé av Sikas, Björn och Rea. Kod av Kicki. Design av Danne. <br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
-    </footer>  -->
+        </div>
+
+
 </template>
 
 <script setup lang="ts">
@@ -235,31 +232,31 @@ const sheetCheck = () => {
 
 onMounted(async ()  => {
     //check localStorage for user info
-    // const userCheck = localStorage.getItem('userId')
-    // if (userCheck != null) {
-    //     store.setAuth(userCheck)
-    //     user.value = localStorage.getItem('userName')
-    //     if(user.value){
-    //         store.setName(user.value)
-    //     }
-    //     //local storage has user id or else fetch it
-    //     if(localStorage.getItem('userId') != null){
-    //         userId.value = localStorage.getItem('userId')
-    //         sheetCheck()
-    //     }
-    //     else {
-    //         const userIdCheck = await fetchUserByName(user.value)
-    //         if(!userIdCheck ){
-    //             reset()
-    //         }
-    //         //@ts-ignore
-    //         store.setAuth(userIdCheck)
-    //         //@ts-ignore
-    //         userId.value = userIdCheck.id
-    //         localStorage.setItem('userId', userId.value)
-    //         sheetCheck()
-    //     }
-    // }
+    const userCheck = localStorage.getItem('userId')
+    if (userCheck != null) {
+        store.setAuth(userCheck)
+        user.value = localStorage.getItem('userName')
+        if(user.value){
+            store.setName(user.value)
+        }
+        //local storage has user id or else fetch it
+        if(localStorage.getItem('userId') != null){
+            userId.value = localStorage.getItem('userId')
+            sheetCheck()
+        }
+        else {
+            const userIdCheck = await fetchUserByName(user.value)
+            if(!userIdCheck ){
+                reset()
+            }
+            //@ts-ignore
+            store.setAuth(userIdCheck)
+            //@ts-ignore
+            userId.value = userIdCheck.id
+            localStorage.setItem('userId', userId.value)
+            sheetCheck()
+        }
+    }
     sheetCheck()
     componentKey.value ++
 })
@@ -351,14 +348,5 @@ p {
 
 }
 
-footer {
-  text-align: center;
-  bottom: 0;
-  width: 100% !important;
-  padding: 0.5rem;
-  font-size: 0.8rem;
-  color: white;
-  background-color: #7400FF;
-  margin: auto;
-}
+
 </style>
