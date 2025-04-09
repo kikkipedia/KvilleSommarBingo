@@ -1,5 +1,5 @@
 <template>
-    <div v-if="store.isAuth">
+    <div>
          <!-- Warning before reset -->
                 <v-dialog  v-model="resetWarning" width="90%">
                     <v-card
@@ -14,23 +14,25 @@
                     </v-card>
                 </v-dialog>
             <!-- If userId in local storage -->
-            <div v-if="userId" class="welcome"> 
-                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2>
+             <div v-if="userId" class="welcome"> 
+                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> -->
                 <!-- if bingo id in local storage -->
-                <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} <br/>(kan vara bra att spara!)</p>
+                
                 <div style="text-align: left;">
                     <p class="bingoInfo" v-if="showSheet == true">Vid Bingo ring personsökaren <b>0740119540 </b> och lämna telefonnummer och vänta på att bli uppringd av vår vinsttelefon</p>
-                </div>
+                </div> 
             </div>
 
+            
+            <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} (kan vara bra att spara!)</p>
         <!-- Visible if showShuffle is true -->
-        <div class="btn-container" v-if="showShuffle == true || store.bingo">
+        <div class="btn-container" v-if="!showSheet && showShuffle">
             <v-btn
                 color="#00FF00"
                 size="large"
                 :loading="loading"
                 @click="randomizeSheet"
-                v-if="userId"
+                
             >
                 Generera bricka!
                 <template v-slot:loader>
@@ -40,7 +42,7 @@
         </div>
 
             <!-- here the sheet will render -->
-        <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" v-if="showSheet"/>
+        <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" v-show="showSheet"/>
 
         <v-dialog v-model="fetchByIdWarning" width="90%">
             <v-btn
@@ -64,12 +66,15 @@
             </v-card>
         </v-dialog>
 
-        <div class="buttons">
-            <v-btn class="fetchOld" v-if="user" @click="fetchByIdWarning = true" size="x-small" color="#7400FF">Hämta tidigare bricka</v-btn>
-            <br/>
+         <div class="buttons">
+            <v-btn class="fetchOld"  @click="fetchByIdWarning = true" size="x-small" color="#7400FF" v-if="!showSheet">Hämta tidigare bricka</v-btn>
+            <v-btn color="#00FF00" v-else @click="randomizeSheet">Ny bricka</v-btn>
+            </div>
+        <br/>
             <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
         </div>
-    </div>
+
+
 </template>
 
 <script setup lang="ts">
@@ -88,7 +93,7 @@ const rules: Rules = {
 };
 const user = ref()
 const loading = ref(false)
-const showShuffle= ref(false) //get new bingo sheet - hidden when playing for non-cheating
+const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref() //id for bingoSheet, stored in localStorage
 const userId = ref() //id for user, stored in localStorage
@@ -129,7 +134,7 @@ const randomizeSheet = async () => {
 
     const shuffledArray = bingoItems.value.sort(() => Math.random() - 0.5) //shuffles the array
     //add shuffeled array to bingoSheet.items
-    const name = user.value
+    const name = 'nyårbingo'
     const timeStarted = new Date().toLocaleString('sv-SE')
     const bingo = false
     const bingoSheet2 = {name, timeStarted, bingo, items: [], rows: []  }
@@ -150,6 +155,7 @@ const randomizeSheet = async () => {
 const saveNewSheet = async () => {
     bingoId.value = await saveNewSheetToDb(bingoSheet.value) 
     localStorage.setItem('bingoId', bingoId.value) //saves the id to local storage
+    store.setBingoId(bingoId.value)
     loading.value = false
     showShuffle.value = false
 }
@@ -184,6 +190,8 @@ const fetchOldSheet = async () => {
         row8.value = bingoSheet.value?.items?.slice(35, 40)
         row9.value = bingoSheet.value?.items?.slice(40, 45)
         row10.value = bingoSheet.value?.items?.slice(45, 50)
+        showSheet.value = true
+        store.setBingoId(bingoId.value)
     }
     else fetchByIdWarning.value = true
 }
@@ -208,7 +216,7 @@ const sheetCheck = () => {
         const hasBingo = localStorage.getItem('bingo')
         //fetch sheet from db
         if(hasBingo == 'false' || hasBingo === null){
-            showSheet.value = true
+            //showSheet.value = true
             fetchOldSheet()
         }
         else if(hasBingo == 'true'){ //if bingo is true show shuffle button
@@ -266,9 +274,20 @@ watch(() => store.name, (name) => {
     componentKey.value ++
 })
 
+watch(() => showSheet.value, () => {
+    if (showSheet.value == true) {
+        //make logo smaller
+        document.getElementById('logo')!.style.width = '40%'
+    }
+})
+
 </script>
 
 <style scoped>
+
+#logo {
+    width: 80%
+}
 
 .bingoId {
     font-size: 0.7rem;
@@ -283,7 +302,8 @@ watch(() => store.name, (name) => {
 .btn-container {
     display: block;
     text-align: center;
-    margin-top: 1rem;
+    padding-top: 20px;
+    padding-bottom: 10px;
 }
 
 .welcome {
@@ -306,7 +326,7 @@ watch(() => store.name, (name) => {
 .buttons {
     display: block;
     text-align: center;
-    margin-top: 5rem;
+    margin-top: 6rem;
 }
 
 .auth-btns {
@@ -325,6 +345,8 @@ p {
     width: 100px;
 }
 .fetchOld {
-    margin-bottom: 1rem;;
+
 }
+
+
 </style>

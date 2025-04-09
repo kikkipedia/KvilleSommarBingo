@@ -23,10 +23,11 @@ import "leaflet/dist/leaflet.css"
 import L from 'leaflet';
 import { onMounted, ref } from 'vue';
 import { type BingoItem } from '../types';
-import { getBingoItems } from '../db';
+import { getBingoItemById, getBingoItems } from '../db';
 
 
 const items = ref<BingoItem[]>([]);
+const item = ref<BingoItem>();
 const selectMenu = ref<{name: string, id: string}[]>([]);
 const selectedItems = ref<BingoItem[]>([]);
 const markers = ref<{color: string, item: string, id: string}[]>([]);
@@ -68,10 +69,9 @@ onMounted(async () => {
                 marker.bindPopup(`<b>${item.item}</b>`).openPopup();
         });
         //remove markers with no locations
+        } else {
+            markers.value = markers.value.filter(marker => marker.id !== item.id);
 
-    }
-    else {
-        //console.log('No locations found for items');    
     }
     });
 });
@@ -98,11 +98,13 @@ onMounted(async () => {
 <style scoped>
 .container {
     text-align: center;
+    width: 100vw;
+    height: 100vh;
 }
 
 #map {
-    height: 600px;
-    max-width: 100vw;
+    width: 100%;
+    height: 100%;
 }
 .box {
     display: inline-block;

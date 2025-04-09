@@ -1,6 +1,6 @@
 <template>
-  <RouterView/>
-      <!-- <nav>
+    <nav>
+        
         <ul v-if="store.isAuth">
             <li><v-icon large @click="openMap = true">mdi-map-legend</v-icon> </li>
             <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
@@ -8,7 +8,6 @@
         </ul>
     </nav>
     <div class="main">
-      <img src="@/assets/bingologo.png" alt="logo"  @click="openBingoClosed = true" style="width: 100%;"/>
       <v-dialog v-model="openInfo" width="90%">
         <v-card>
           <v-btn
@@ -64,19 +63,18 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-
-      <RouterView v-if="$route.name === 'toplist'">
-        <TopList/>
-      </RouterView>      
+      <RouterView v-if="$route.name == 'live'">
+        <LiveBingo />
+      </RouterView>
       <RouterView v-else>
         <Login v-if="!uid"/>
-        <HomeView v-if="uid" :key="componentKey"/>
+         <HomeView />
       </RouterView>
     </div>
     <footer>
-        <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a></p> 
-        <p>Idé av Sikas. Kod av Kicki & Danne. <br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
-    </footer> -->
+        <p><em>© 2024 Kvilles Sommarbingo</em>. <a href="https://github.com/kikkipedia/KvilleSommarBingo/" target="_blank">Checkout the code</a> 
+        <br/>Rapportera fel: <a href="sms:+46762100615">0762100615</a></p>
+    </footer> 
 </template>
 
 <script setup lang="ts">
@@ -85,11 +83,13 @@ import { useBingoStore } from './stores';
 import { watch, ref, onMounted } from 'vue';
 import {getBingoItems } from './db'
 import { type BingoItem } from './types';
-import Statistics from '@/components/Statistics..vue';
-import Map from '@/components/Map.vue';
+import Statistics from './components/Statistics..vue';
+import Map from './components/Map.vue';
 import Login from './components/Login.vue';
 import HomeView from './views/HomeView.vue';
 import TopList from './components/TopList.vue';
+import LiveBingo from './components/LiveBingo.vue';
+
 
 const store = useBingoStore()
 const name = ref('')
@@ -100,18 +100,27 @@ const openMap = ref(false)
 const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 const componentKey = ref(0)
 const openBingoClosed = ref(false)
+const showButton = ref(false)
 
 //get name from store
-// watch(() => store.name, (nam) => {
-//     name.value = nam
+watch(() => store.name, (nam) => {
+    name.value = nam
   
-// })
+})
 
-// watch(() => store.isAuth, () => {
-//   componentKey.value++
-// })
+watch(() => store.isAuth, () => {
+  componentKey.value++
+})
+
+watch (() => store.bingoId, () => {
+  showButton.value = store.bingoId ? true : false
+  componentKey.value++
+})
 
 const uid = localStorage.getItem('userId')
+
+
+//watch for changes in bingoId
 
 //sort by description.name in ascending order
 const sortItems = (): BingoItem[] => {
@@ -120,18 +129,19 @@ const sortItems = (): BingoItem[] => {
 }
 
 onMounted(async () => {
-  //const items = await getBingoItems()
-  //descriptions.value = items
-  //sortItems()
+  const items = await getBingoItems()
+  descriptions.value = items
+  sortItems()
   localStorage.removeItem('userId')
   localStorage.removeItem('userName')
   store.isAuth = false
   openBingoClosed.value = true
 })
 
+
 </script>
 
-<style scoped>
+<style >
 nav {
     justify-content: space-between;
     background-color: #7400FF;
@@ -139,7 +149,10 @@ nav {
     color: white;
     height: 60px;
     margin: auto;
+    padding: 0.5rem;
 }
+
+
 
 .mdi:before, .mdi-set {
     font-size: 2rem;
@@ -177,7 +190,8 @@ a {
   background-color: white;
   margin-top: 10px;
   margin-bottom: 10px;
-  min-height: calc(100vh - 140px) !important;
+  min-height: calc(100vh - 180px) !important;
+  text-align: center;
 }
 
 footer {
@@ -188,7 +202,7 @@ footer {
   font-size: 0.8rem;
   color: white;
   background-color: #7400FF;
-  margin: auto;
+  height: 60px;
 }
 
 h4 {
@@ -223,5 +237,17 @@ h2 {
   font-size: 2rem;
   font-weight: bold;
   color: white
+}
+
+footer {
+  text-align: center;
+  bottom: 0;
+  width: 100% !important;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  color: white;
+  background-color: #7400FF;
+  margin: auto;
+  position: relative;
 }
 </style>

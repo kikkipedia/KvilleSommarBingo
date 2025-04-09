@@ -18,6 +18,17 @@ const getBingoItems = async () => {
   return itemsArray;
 }
 
+const getBingoItemById = async (id) => {
+  const docRef = doc(db, "bingoItems", id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const item = docSnap.data();
+    return item;
+  } else {
+    console.log("No such document!");
+  }
+}
+
 
 const saveNewSheetToDb = async (sheet) => {
   const docRef = await addDoc(collection(db, "bingoSheets"), {
@@ -183,17 +194,12 @@ export const saveLocation = async (id, lat, long) => {
 
 }
 
-export const getEmails = async () => {
-  getAuth()
-  .getUsers()
-  .then((userRecord) => {
-    // See the UserRecord reference doc for the contents of userRecord.
-    console.log(`Successfully fetched user data: ${userRecord.toJSON()}`);
-  })
-  .catch((error) => {
-    console.log('Error fetching user data:', error);
+export const countSheets = async () => {
+  const querySnapshot = await getDocs(collection(db, "bingoSheets"));
+  let count = 0;
+  querySnapshot.forEach((doc) => {
+    count++;
   });
+  return console.log(count);
 }
-
-
-export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount };
+export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount, getBingoItemById };

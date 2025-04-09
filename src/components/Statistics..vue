@@ -2,13 +2,13 @@
     <div>
         <h3>Mest kryssade</h3>
         <canvas id="checkedChart"></canvas>
-        <h3>Flest Bingo!</h3>
+        <!-- <h3>Flest Bingo!</h3>
         <div id="scoreChart">         
             <p v-for="user, index in scoreChart" :key="user.id">
                 <div class="topScoreNum" :id="user.id" >{{ index + 1 }}</div><span class="name">{{user.name}}:</span><span class="score">{{user.score}}</span> 
             </p>
         
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -140,7 +140,7 @@ const itemChart = () => {
                 beginAtZero: true,
                 ticks: {
                     font: {
-                        size: 8,
+                        size: 12,
                     },
                     
                 }

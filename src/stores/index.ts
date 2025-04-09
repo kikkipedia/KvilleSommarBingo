@@ -23,6 +23,12 @@ export const useBingoStore = defineStore('bingoStore', () => {
   }
   }
 
+  const bingoId = ref('')
 
-  return { name, setName, bingo, setBingo, isAuth, setAuth}
+  function setBingoId(newBingoId: string) {
+    bingoId.value = newBingoId
+  }
+
+
+  return { name, setName, bingo, setBingo, isAuth, setAuth, setBingoId, bingoId }
 })

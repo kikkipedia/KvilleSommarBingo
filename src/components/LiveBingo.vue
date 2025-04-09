@@ -1,115 +1,128 @@
 <template>
     <div class="container">
-        <div id="snow">
             <div class="bingo-box">
-                <div v-if="itemNow">
-                <div class="animate__animated animate__bounceInLeft item-box">
-                    {{ itemNow.item }}
+                <!-- <div v-if="itemNow"> -->
+                <div class="item-box">
+                    <div class="animate__animated animate__bounceInLeft name" v-if="itemNow">{{ itemNow.item }}</div>
                 </div>
-            </div>
+            <!-- </div> -->
             </div>
             <div class="dragnaNr" v-if="dragnaNr.length">
-                <div v-for="item in dragnaNr" :key="item.id">{{ item.item }}</div>
+                <!-- only show bottom 5 in dragnaNr-->
+                <div v-for="item in dragnaNr.slice(-5)" :key="item.id">{{ item.item }}</div>
+                <!-- <div v-for="item in dragnaNr" :key="item.id">{{ item.item }}</div> -->
             </div>
-        </div>
+            <div class="buttons">
+                <v-btn @click="getNext()">Nästa</v-btn>
+                <v-btn class="btn" @click="reset()">Reset</v-btn>
+            </div>       
     </div>
-    <footer>
-        <v-btn @click="getNext()">Nästa</v-btn>
-    </footer>
+
+        
+
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getBingoItems } from '../db';
 import bingoitems from '../assets/liveBingoItems.json';
 import 'animate.css';
+import type { BingoItem } from '../types';
 
-const items = ref([]);
-const dragnaNr = ref([]);
+const items = ref<BingoItem[]>([]);
+const dragnaNr = ref<BingoItem[]>([]);
 const itemNow = ref();
-const snowflakeCount = 100;
-const randomGifs = ref([]);
 
 onMounted(() => {
-    items.value = bingoitems;
+    items.value = bingoitems as any
 })
 
 const getNext = () => {
-    itemNow.value = null;
     const randomIndex = Math.floor(Math.random() * items.value.length);
     const randomItem = items.value[randomIndex];
-    setTimeout(() => {
-        
-        itemNow.value = randomItem;
-        
-    }, 1000)
+    itemNow.value = null
     setTimeout(() => {
         if(randomItem) {
-            dragnaNr.value.push(randomItem);
-            //if more than 5 items in dragnaNr, remove the first one
-            if(dragnaNr.value.length > 5) {
-                dragnaNr.value.shift();
+            //check if already in dragnaNr
+            const alreadyDrawn = dragnaNr.value.find((item) => item.id === randomItem.id);
+            if(alreadyDrawn) {
+                getNext();
             }
+            else {
+                
+                itemNow.value = randomItem;
+                setTimeout(() => {
+                    dragnaNr.value.push(randomItem);
+                }, 1500)
+                
+                //if more than 5 items in dragnaNr, remove the first one
+            }
+            
         }
-    }, 2000)
-    
-    
+    }, 1000)   
 } 
+
+const reset = () => {
+    dragnaNr.value = [];
+    itemNow.value = null;
+    items.value = bingoitems as any
+}
    
 </script>
 
 <style scoped>
+.main {
+    padding: 0px !important;
+    margin: 0px !important;
+}
 .container {
-    height: 90vh;
+    height: 110vh;
     width: 100vw;
     background: black;
-}
-
-footer {
-  padding: 25px;
+    align-items: center;
+    display: block;
 }
 
 .bingo-box {
-    background: transparent;
-    width: 50%;
-    height: 50%;
-    margin-left: 20%;
+    display: flex;  
+    width: 100%; 
+    justify-content: center;
+    align-items: center;
+}
+
+.name {
+    position: absolute;
+    bottom: 20px;
 }
 
 .item-box {
-
     width: 100%;
-    height: 400px;
+    height: 350px;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    justify-content: center;
     color: white;
-    margin-top: 20px;
+    position: relative;
 }
 
 .dragnaNr {
   background: transparent;
-  margin-left: 200px;
   padding: 10px;
-  margin-right: 0px;
-  width: 200px;
-  border: 3px solid #0000;
-  border-radius: 12px;
+  display: block;
   color: white;
+  align-items: center;
+  font-size: 18px;
 }
 
-#snow {
-    display: flex;
-    align-items: center;
-    display: flex;
-  position: relative;
-  height: 100vh; /* Adjust based on the section you want to cover */
-  width: 100%;
-  background: black; /* Background color, optional */
+.buttons {
+    position: absolute;
+  bottom: 20px;
+    
 }
-
-footer {
-  background-color: black;
+.btn {
+    margin-left: 1000px;
+    background-color: red;
+    color: white;
 }
 </style>
