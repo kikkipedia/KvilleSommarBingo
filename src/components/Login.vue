@@ -1,7 +1,8 @@
 <template>
     <div class="login">
-        <img src="../assets/bingologo.png" alt="logo" class="bingologo"/>
-        
+        <img src="@/assets/tramsAb.jpg" style="width: 100%"/>
+        PRESENTERAR STOLT
+        <img src="@/assets/bingologo.png" class="bingologo" alt="Bingo logo"/>
         <v-btn color="#7400FF" @click="openLogin = true" v-if="!openLogin">Logga in med email</v-btn>
         <v-dialog v-model="openReset" width="90%">
             <v-btn
@@ -16,6 +17,7 @@
             </v-card>
         </v-dialog>
         <v-form @submit.prevent="userSubmit" v-if="openLogin">
+
             <v-text-field
                 v-model="email"
                 label="Email"
@@ -29,10 +31,10 @@
                 required
                 :rules="[rules.required]"
             ></v-text-field>
-            <p v-if="errorMsg != ''">{{ errorMsg }}! Nånting gick fel! Dubbelkolla lösenordet eller skapa ny användare</p>
+            <p v-if="errorMsg != ''" style="color: red">{{ errorMsg }}! Nånting gick fel!</p>
             <v-btn type="submit" color="#00FF00">Play bingo!</v-btn>
         </v-form>
-        <p>or you just <span class="link" @click="openReset = true">forgot your password?</span></p>
+        <p><span class="link" @click="openReset = true">glömt lösenord?</span></p>
         <v-btn color="pink" @click="openRegister = true" v-if="!openRegister" size="small">Registrera</v-btn>
         <Register v-if="openRegister"/>
     </div>
@@ -72,6 +74,7 @@ const userSubmit = () => {
             store.isAuth = true;
             fetchUserById(userCredential.user.uid)
                 .then((response) => {
+                    console.log(response);
                     localStorage.setItem('userName', response);
                     store.isAuth = true;
                     location.reload();
@@ -98,6 +101,7 @@ const userSubmit = () => {
 .bingologo {
     width: 150px;
     margin: 0 auto;
+    display: block;
 }
 
 p {

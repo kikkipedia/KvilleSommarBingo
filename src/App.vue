@@ -1,7 +1,6 @@
 <template>
-    <nav>
-        
-        <ul v-if="store.isAuth">
+    <nav> 
+        <ul>
             <li><v-icon large @click="openMap = true">mdi-map-legend</v-icon> </li>
             <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
             <li><v-icon large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
@@ -35,7 +34,7 @@
             @click="openMap = false"
           ></v-btn>
         <v-card>
-            <div><Map/></div>
+            <div class="map-container"><Map/></div>
         </v-card>
       </v-dialog>
 
@@ -52,7 +51,7 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="openBingoClosed" width="90%">
+      <!-- <v-dialog v-model="openBingoClosed" width="90%">
         <v-card class="its-over">
           <v-card-text>
             <h2>Slut på Sommarbingo!</h2>
@@ -62,11 +61,8 @@
 
           </v-card-text>
         </v-card>
-      </v-dialog>
-      <RouterView v-if="$route.name == 'live'">
-        <LiveBingo />
-      </RouterView>
-      <RouterView v-else>
+      </v-dialog> -->
+      <RouterView>
         <Login v-if="!uid"/>
          <HomeView />
       </RouterView>
@@ -132,10 +128,7 @@ onMounted(async () => {
   const items = await getBingoItems()
   descriptions.value = items
   sortItems()
-  localStorage.removeItem('userId')
-  localStorage.removeItem('userName')
-  store.isAuth = false
-  openBingoClosed.value = true
+  
 })
 
 
@@ -152,7 +145,9 @@ nav {
     padding: 0.5rem;
 }
 
-
+.v-card {
+  overflow: hidden !important;
+}
 
 .mdi:before, .mdi-set {
     font-size: 2rem;
@@ -170,6 +165,13 @@ li {
   cursor: pointer;
   padding: 0.5rem;
   float: right;
+}
+
+.map-container {
+  width: 100%;
+  height: 80%;
+  margin: auto;
+  padding: 0.5rem;
 }
 
 .logo {

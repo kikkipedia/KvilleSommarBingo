@@ -15,7 +15,7 @@
                 </v-dialog>
             <!-- If userId in local storage -->
              <div v-if="userId" class="welcome"> 
-                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> -->
+                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> 
                 <!-- if bingo id in local storage -->
                 
                 <div style="text-align: left;">
@@ -25,21 +25,21 @@
 
             
             <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} (kan vara bra att spara!)</p>
-        <!-- Visible if showShuffle is true -->
-        <div class="btn-container" v-if="!showSheet && showShuffle">
-            <v-btn
-                color="#00FF00"
-                size="large"
-                :loading="loading"
-                @click="randomizeSheet"
-                
-            >
-                Generera bricka!
-                <template v-slot:loader>
-                    <v-progress-linear indeterminate></v-progress-linear>
-                </template>
-            </v-btn>
-        </div>
+            <!-- Visible if showShuffle is true -->
+            <div class="btn-container" v-if="!showSheet && showShuffle">
+                <v-btn
+                    color="#00FF00"
+                    size="large"
+                    :loading="loading"
+                    @click="randomizeSheet"
+                    
+                >
+                    Generera bricka!
+                    <template v-slot:loader>
+                        <v-progress-linear indeterminate></v-progress-linear>
+                    </template>
+                </v-btn>
+            </div>
 
             <!-- here the sheet will render -->
         <Sheet :bingo-sheet="bingoSheet" :bingo-id="bingoId" v-show="showSheet"/>
@@ -66,7 +66,7 @@
             </v-card>
         </v-dialog>
 
-         <div class="buttons">
+         <div class="buttons" v-if="store.isAuth">
             <v-btn class="fetchOld"  @click="fetchByIdWarning = true" size="x-small" color="#7400FF" v-if="!showSheet">Hämta tidigare bricka</v-btn>
             <v-btn color="#00FF00" v-else @click="randomizeSheet">Ny bricka</v-btn>
             </div>
@@ -93,7 +93,7 @@ const rules: Rules = {
 };
 const user = ref()
 const loading = ref(false)
-const showShuffle= ref(true) //get new bingo sheet - hidden when playing for non-cheating
+const showShuffle= ref(false) //get new bingo sheet - hidden when playing for non-cheating
 const bingoSheet = ref<BingoSheet>()
 const bingoId = ref() //id for bingoSheet, stored in localStorage
 const userId = ref() //id for user, stored in localStorage
@@ -101,7 +101,6 @@ const showSheet = ref(false) //show sheet
 const bingoItems = ref<BingoItem[]>([]) //BingoItems from database
 const resetWarning = ref(false) //show warning before reset
 const fetchByIdWarning = ref(false) //show warning before fetching by id
-
 const row1 = ref<BingoItem[]>([]) //rows for the bingo sheet
 const row2 = ref<BingoItem[]>([])
 const row3 = ref<BingoItem[]>([])
@@ -225,9 +224,7 @@ const sheetCheck = () => {
             showSheet.value = false
         }
     }
-    else {
-        showShuffle.value = true
-    }
+    else showShuffle.value = true //show shuffle button
 }
 
 onMounted(async ()  => {

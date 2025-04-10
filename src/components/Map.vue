@@ -104,7 +104,7 @@ onMounted(async () => {
 
 #map {
     width: 100%;
-    height: 100%;
+    height: 450px;
 }
 .box {
     display: inline-block;
