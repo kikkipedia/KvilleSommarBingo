@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div v-if="!store.isAuth">
+        <Login/>
+    </div>
+    <div v-else>
          <!-- Warning before reset -->
                 <v-dialog  v-model="resetWarning" width="90%">
                     <v-card
@@ -83,6 +86,7 @@ import { type BingoItem, type BingoSheet } from '@/types';
 import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from '@/db';
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
+import Login from '@/components/Login.vue';
 
 interface Rules {
     required: (value: any) => boolean | string;

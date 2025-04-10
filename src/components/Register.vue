@@ -54,6 +54,7 @@ const userName = ref();
 const password = ref('');
 const userCredentials = ref();
 const showSnackbar = ref(false);
+const team = ref(''); //röda vita rosen
 
 const error = ref(null);
 

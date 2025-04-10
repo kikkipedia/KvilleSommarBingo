@@ -1,9 +1,13 @@
 <template>
     <nav> 
         <ul>
-            <li><v-icon large @click="openMap = true">mdi-map-legend</v-icon> </li>
-            <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
+          <li><v-icon large @click="$router.push('/')">mdi-home-flood</v-icon></li>
+            
+          <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
+            <li><router-link to="/map"><v-icon large>mdi-map-legend</v-icon></router-link></li>
+            
             <li><v-icon large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
+            <li><v-icon large >mdi-flag-checkered</v-icon></li>
         </ul>
     </nav>
     <div class="main">
@@ -63,8 +67,7 @@
         </v-card>
       </v-dialog> -->
       <RouterView>
-        <Login v-if="!uid"/>
-         <HomeView />
+        
       </RouterView>
     </div>
     <footer>
@@ -143,6 +146,19 @@ nav {
     height: 60px;
     margin: auto;
     padding: 0.5rem;
+}
+
+nav li {
+  padding-right: 0.5rem;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  max-height: 50px;
 }
 
 .v-card {
