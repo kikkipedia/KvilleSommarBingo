@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
-import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore, saveLocation, getTeamFlags } from '@/db';
+import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore, saveLocation, getTeamFlags, deleteFlag } from '@/db';
 import { useBingoStore } from '@/stores';
 import ConfettiExplosion from "vue-confetti-explosion";
 import 'animate.css';
@@ -134,6 +134,8 @@ const bingoClick = async (index: number, row: number, id: string) => {
         //substract again
         else {
             minusBingoItemCount(item!.id)
+            //update the sheet in db
+            updateSheetInDb(props.bingoSheet, props.bingoId)
         }
         
     }
@@ -195,10 +197,10 @@ const randomSave = (id: string) => {
 
       console.log('Distance to flag:', distance);
 
-      if (distance <= 15) {
+      if (distance <= 20) {
         alert("You captured the flag!!");
         console.log(flag.item, 'captured!');
-        //await deleteFlag(id);
+        await deleteFlag(id);
       }
 
       return;

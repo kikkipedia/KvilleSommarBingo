@@ -2,7 +2,7 @@
 
 import { set } from "firebase/database";
 import { db } from "./firebase.ts";
-import { collection, addDoc, getDocs, getDoc, setDoc, doc, arrayUnion } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, setDoc, doc, arrayUnion, deleteDoc } from "firebase/firestore";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import "firebase/auth";
 import { GeoPoint } from "firebase/firestore";
@@ -193,12 +193,16 @@ export const saveLocation = async (id, team, lat, long) => { //TODO save flag lo
 }
 
 export const getTeamFlags = async (team) => {
-  console.log("team", team)
+  if(team === 'redTeam') {
+    team = 'whiteTeam'
+  }
+  else if(team === 'whiteTeam') {
+    team = 'redTeam'
+  }
   const itemsArray = [];
   const querySnapshot = await getDocs(collection(db, "flags"));
   querySnapshot.forEach((doc) => {
-    console.log(doc.data())
-    //only fetch the flags for the team 
+    //only fetch the flags for the OTHER team 
     if (doc.data().team === team) {
       const addId = { ...doc.data(), id: doc.id };
       itemsArray.push(addId);
@@ -208,20 +212,31 @@ export const getTeamFlags = async (team) => {
 }
 
 export const deleteFlag = async (id) => {
-  const docRef = doc(db, "flags", id);
-  //delete the document
-  await setDoc(docRef, {}, { merge: true });
-  console.log("Flag captured!: ", docRef.id);
-  updateTeamScore(localStorage.getItem('team'))
+  const querySnapshot = await getDocs(collection(db, "flags"));
+  let flagId = null;
+  querySnapshot.forEach((docSnap) => {
+    if (docSnap.data().item === id) {
+      flagId = docSnap.id;
+    }
+  });
+
+  if (flagId) {
+    const docRef = doc(db, "flags", flagId);
+    await deleteDoc(docRef);
+    console.log(`Flag with id ${flagId} deleted`);
+    updateTeamScore(localStorage.getItem('team'));
+  } else {
+    console.warn(`No flag found with item = ${id}`);
+  }
 }
 
 const updateTeamScore = async (team) => {
   const docRef = doc(db, "teams", team);
-  let score = await getDoc(docRef);
-  score = score.data().score;
+  let teamData = await getDoc(docRef);
+  let score = teamData.data().points;
   const newScore = score + 1;
   await setDoc(docRef, {
-    score: newScore
+    points: newScore
   }, { merge: true });
   console.log("Document updated with ID: ", docRef.id);
 }
