@@ -76,6 +76,8 @@ const userSubmit = () => {
                 .then((response) => {
                     console.log(response);
                     localStorage.setItem('userName', response);
+                    store.team = response.team;
+                    localStorage.setItem('team', response.team);
                     store.isAuth = true;
                     location.reload();
                 });

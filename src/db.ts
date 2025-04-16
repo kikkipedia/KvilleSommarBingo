@@ -2,7 +2,7 @@
 
 import { set } from "firebase/database";
 import { db } from "./firebase.ts";
-import { collection, addDoc, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, setDoc, doc, arrayUnion } from "firebase/firestore";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import "firebase/auth";
 import { GeoPoint } from "firebase/firestore";
@@ -58,23 +58,39 @@ const fetchSheetById = async (id) => {
   }
 }
 
-const saveNewUser = async (id, name) => {
-  //check if already exists
-  const docRef = doc(db, "users", id);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
-    return
+//save user in team collection under members array
+const addUserToTeam = async (userId, teamId) => {
+  const teamRef = doc(db, "teams", teamId);
+
+  // ensure the document exists (create if missing)
+  const teamSnap = await getDoc(teamRef);
+  if (!teamSnap.exists()) {
+    await setDoc(teamRef, { members: [] }); // create the doc if not found
   }
-  else {
-  const docRef = await setDoc(doc(db, "users", id), {
-    name: name,
-    score: 0
+  // now safely update it
+  await setDoc(teamRef, {
+    members: arrayUnion({ id: userId })
+  }, { merge: true });
+
+  console.log(`User ${userId} added to team ${teamId}`);
+};
+
+const saveNewUser = async (id, name, team) => {
+  const userRef = doc(db, "users", id);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    console.log("User already exists:", userSnap.data());
+    return;
+  }
+  await setDoc(userRef, {
+    name,
+    score: 0,
+    team
   });
-  console.log("Document written with ID: ", docRef.id);
-}
-  return id;
-}
+  await addUserToTeam(id, team);
+  console.log("User saved with ID:", userRef.id);
+  return id, team;
+};
 
 const getAllUsers = async () => {
   const userArray = [];
@@ -163,43 +179,37 @@ export const signInWithGoogle = async () => {
       else{
         const docRef = await setDoc(doc(db, "users", user.uid), {
           name: user.displayName,
-          score: 0
+          score: 0,
+          team: Math.random() < 0.5 ? "red" : "white"
         });
         
       }
       //set local storage
       localStorage.setItem('userName', user.displayName)
       localStorage.setItem('userId', user.uid)
+      localStorage.setItem('team', user.team)
       location.reload()
       })    
   })
 }
 
-export const saveLocation = async (id, lat, long) => {
+export const saveLocation = async (id, lat, long) => { //TODO save flag location
   //fetch bingoItem
-  const docRef = doc(db, "bingoItems", id);
-  let item = await getDoc(docRef);
-  item = item.data();
+  //const docRef = doc(db, "bingoItems", id);
+  //let item = await getDoc(docRef);
+  //item = item.data();
   //get all item.locations and set new array if empty
-  if (!item.locations) {
-    item.locations = [];
-  }
-  let locations = item.locations; //array of geopoints
+  //if (!item.locations) {
+    //item.locations = [];
+  //}
+  //let locations = item.locations; //array of geopoints
   //add new geopoint to array as firebase geopoint
-  locations.push({lat: lat, long: long});
+  //locations.push({lat: lat, long: long});
   //update item.locations in db
-  await setDoc(docRef, {
-    locations: locations
-  }, { merge: true });
+  // await setDoc(docRef, {
+  //   locations: locations
+  // }, { merge: true });
 
 }
 
-export const countSheets = async () => {
-  const querySnapshot = await getDocs(collection(db, "bingoSheets"));
-  let count = 0;
-  querySnapshot.forEach((doc) => {
-    count++;
-  });
-  return console.log(count);
-}
 export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount, getBingoItemById };

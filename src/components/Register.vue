@@ -69,9 +69,15 @@ const rules: Rules = {
 };
 
 const saveUserInDb = async(id: string) =>{
+    //random team red or white
+    team.value = Math.random() < 0.5 ? "redTeam" : "whiteTeam";
+    store.setTeam(team.value)
+    localStorage.setItem('team', team.value)
     //save new user in db
-    const response = await saveNewUser(id, userName.value)
+    const response = await saveNewUser(id, userName.value, team.value)
     localStorage.setItem('userId', response)
+    
+    console.log('in register:', response)
 }
 
 
@@ -83,7 +89,7 @@ const userSubmit = async () => {
         const user = userCredential.user;
         //save as post in db
         saveUserInDb(user.uid)
-        sendEmail()
+        //sendEmail()
         setUser()
         localStorage.setItem('userId', user.uid);
   })

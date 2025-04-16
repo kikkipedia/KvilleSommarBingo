@@ -29,6 +29,11 @@ export const useBingoStore = defineStore('bingoStore', () => {
     bingoId.value = newBingoId
   }
 
+  const team = ref('')
+  function setTeam(newTeam: string) {
+    team.value = newTeam
+  }
 
-  return { name, setName, bingo, setBingo, isAuth, setAuth, setBingoId, bingoId }
+
+  return { name, setName, bingo, setBingo, isAuth, setAuth, setBingoId, bingoId, team, setTeam }
 })

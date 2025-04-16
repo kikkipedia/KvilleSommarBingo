@@ -18,7 +18,7 @@
                 </v-dialog>
             <!-- If userId in local storage -->
              <div v-if="userId" class="welcome"> 
-                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> 
+                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2>  {{ store.team }}
                 <!-- if bingo id in local storage -->
                 
                 <div style="text-align: left;">
@@ -237,6 +237,7 @@ onMounted(async ()  => {
     if (userCheck != null) {
         store.setAuth(userCheck)
         user.value = localStorage.getItem('userName')
+        store.setTeam(localStorage.getItem('team'))
         if(user.value){
             store.setName(user.value)
         }
@@ -278,7 +279,7 @@ watch(() => store.name, (name) => {
 watch(() => showSheet.value, () => {
     if (showSheet.value == true) {
         //make logo smaller
-        document.getElementById('logo')!.style.width = '40%'
+        //document.getElementById('logo')!.style.width = '40%'
     }
 })
 

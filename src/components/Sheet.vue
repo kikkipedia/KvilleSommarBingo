@@ -119,32 +119,27 @@ const bingoClick = async (index: number, row: number, id: string) => {
             confetti.value = true
             //update the item count
             const itemId = item!.id
-            //updateBingoItemCount(itemId)
+            updateBingoItemCount(itemId)
+            //check if the item is a flag TODO
             //wait 2000ms
             setTimeout(() => {
                 confetti.value = false
             }, 2000)
-            //get geolocation
-            // navigator.geolocation.getCurrentPosition((position) => {
-            //     const lat = position.coords.latitude
-            //     const long = position.coords.longitude
-            //     console.log(lat, long)
-            //     saveLocation(id, lat, long)
-            // })
+            //update the sheet in db
+            updateSheetInDb(props.bingoSheet, props.bingoId)
+            //check if bingo
+            checkBingo(itemId)   
         }
-        //substract agains
+        //substract again
         else {
-            //minusBingoItemCount(item!.id)
+            minusBingoItemCount(item!.id)
         }
-        //update the sheet in db
-        updateSheetInDb(props.bingoSheet, props.bingoId)
-        //check if bingo
-        checkBingo()
+        
     }
     else return
     }
 
-const checkBingo = () => {
+const checkBingo = (itemId) => {
     if (props.bingoSheet) {
         const rows = [row1, row2, row3, row4, row5, row6, row7, row8, row9, row10]
         let bingo = false
@@ -157,13 +152,36 @@ const checkBingo = () => {
                 //save the sheet in db
                 updateSheetInDb(props.bingoSheet, props.bingoId)
             }
+            
         })
         props.bingoSheet.bingo = bingo
+        if (bingo) {
+            return
+        }
+        else randomSave(itemId) //if no bingo - save location(flag) randomly
     }
 
 }
+// one of 20 bingo clicks should save location
+const randomSave = (id) => {
+    const random = Math.floor(Math.random() * 20) + 1
+    console.log('random numb', random)
+    if (random === 1) {
+        //get geolocation
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude
+            const long = position.coords.longitude
+            const team  = store.team
+            console.log(lat, long)
+            //send id, team, lat, long to saveLocation function
+            saveLocation(id, team, lat, long)
+        })
+    }
+    else return
+}
 
-//todo add bingo popup
+//TODO popup if checked item is a flag takover
+
 
 
 //watch for bingo in bingoSheet
@@ -173,7 +191,7 @@ watch(() => props.bingoSheet?.bingo, () => {
             props.bingoSheet.bingo = true
             store.bingo = true
             //update user score
-            //updateUserScore(localStorage.getItem('userId') as string)
+            updateUserScore(localStorage.getItem('userId') as string)
             //wait 5s then set bingo to false in store
             setTimeout(() => {
                 store.bingo = false
