@@ -89,7 +89,7 @@ const saveNewUser = async (id, name, team) => {
   });
   await addUserToTeam(id, team);
   console.log("User saved with ID:", userRef.id);
-  return id, team;
+  return id;
 };
 
 const getAllUsers = async () => {
@@ -119,24 +119,11 @@ const fetchUserById = async (id) => {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     console.log("Document data:", docSnap.data());
-    return docSnap.data().name;
+    return docSnap.data()
   } else {
     // docSnap.data() will be undefined in this case
     console.log("No such document!");
   }
-}
-
-const fetchUserByName = async (name) => {
-  const querySnapshot = await getDocs(collection(db, "users"));
-  let user = null;
-  //find user by name
-  querySnapshot.forEach((doc) => {
-    if (doc.data().name === name) {
-      user = { ...doc.data(), id: doc.id }
-    }
-  });
-  return user;
-
 }
 
 const updateBingoItemCount = async (id) => {
@@ -193,23 +180,51 @@ export const signInWithGoogle = async () => {
   })
 }
 
-export const saveLocation = async (id, lat, long) => { //TODO save flag location
-  //fetch bingoItem
-  //const docRef = doc(db, "bingoItems", id);
-  //let item = await getDoc(docRef);
-  //item = item.data();
-  //get all item.locations and set new array if empty
-  //if (!item.locations) {
-    //item.locations = [];
-  //}
-  //let locations = item.locations; //array of geopoints
-  //add new geopoint to array as firebase geopoint
-  //locations.push({lat: lat, long: long});
-  //update item.locations in db
-  // await setDoc(docRef, {
-  //   locations: locations
-  // }, { merge: true });
+export const saveLocation = async (id, team, lat, long) => { //TODO save flag location
+  //draw a circle around the location with radius 10m
 
+  const docRef = await addDoc(collection(db, "flags"), {
+    item: id,
+    team: team,
+    location: new GeoPoint(lat, long)
+
+  });
+  return docRef.id;
 }
+
+export const getTeamFlags = async (team) => {
+  console.log("team", team)
+  const itemsArray = [];
+  const querySnapshot = await getDocs(collection(db, "flags"));
+  querySnapshot.forEach((doc) => {
+    console.log(doc.data())
+    //only fetch the flags for the team 
+    if (doc.data().team === team) {
+      const addId = { ...doc.data(), id: doc.id };
+      itemsArray.push(addId);
+    }
+  });
+  return itemsArray;
+}
+
+export const deleteFlag = async (id) => {
+  const docRef = doc(db, "flags", id);
+  //delete the document
+  await setDoc(docRef, {}, { merge: true });
+  console.log("Flag captured!: ", docRef.id);
+  updateTeamScore(localStorage.getItem('team'))
+}
+
+const updateTeamScore = async (team) => {
+  const docRef = doc(db, "teams", team);
+  let score = await getDoc(docRef);
+  score = score.data().score;
+  const newScore = score + 1;
+  await setDoc(docRef, {
+    score: newScore
+  }, { merge: true });
+  console.log("Document updated with ID: ", docRef.id);
+}
+
 
 export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount, getBingoItemById };

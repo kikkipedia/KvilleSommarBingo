@@ -1,19 +1,5 @@
 <template>
     <div class="container">
-        <!-- <div class="select">
-            <v-select
-                v-model="selectedItems"
-                :items="selectMenu"
-                item-title="name"
-                label="Select item"
-                multiple
-                chips
-                hint="Välj en eller flera kryssrutor"
-            ></v-select>
-        </div> -->
-<!--         <div class="legend">
-            <p v-for="marker in markers"><span class="box" :style="{backgroundColor: marker.color}"></span>{{marker.item}}</p>
-        </div> -->
          <div id="map">map</div>
     </div>
 </template>
@@ -23,7 +9,8 @@ import "leaflet/dist/leaflet.css"
 import L from 'leaflet';
 import { onMounted, ref } from 'vue';
 import { type BingoItem } from '../types';
-import { getBingoItemById, getBingoItems } from '../db';
+import { getBingoItemById, getTeamFlags } from '../db';
+import { useBingoStore } from '../stores';
 
 
 const items = ref<BingoItem[]>([]);
@@ -32,6 +19,7 @@ const selectMenu = ref<{name: string, id: string}[]>([]);
 const selectedItems = ref<BingoItem[]>([]);
 const markers = ref<{color: string, item: string, id: string}[]>([]);
 
+const store = useBingoStore()
 
 onMounted(async () => {
     const map = L.map('map').setView([57.71947276091643, 11.94729384049893], 16);
@@ -40,58 +28,46 @@ onMounted(async () => {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
     //then fetch all items
-    items.value = await getBingoItems();
+    items.value = await getTeamFlags(localStorage.getItem('team'));
+    console.log(items.value);
+
+    const redFlagIcon = L.icon({
+        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Red_flag_waving.svg/32px-Red_flag_waving.svg.png',
+        iconSize: [32, 32], // size of the icon
+        iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
+        popupAnchor: [0, -32] // point from which the popup should open relative to the iconAnchor
+    });
+
+        // Create the white flag icon
+    const whiteFlagIcon = L.icon({
+        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/White_flag_waving.svg/32px-White_flag_waving.svg.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    });
     
     //then set markers
     items.value.forEach(item => {
-        //set random marker icon
-        const leafletColors = ['red', 'blue', 'green', 'yellow', 'orange', 'black',];
-        const randomcolor = leafletColors[Math.floor(Math.random() * leafletColors.length)]
-        const icon = L.icon({
-            iconUrl: `https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${randomcolor}.png`,
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
-            iconSize: [15, 25],
-            iconAnchor: [12, 25],
-            popupAnchor: [1, -34],
-            shadowSize: [25, 25]
-        });
-        if(item.locations) {
-            markers.value.push({
-            color: randomcolor,
-            item: item.item,
-            id: item.id
-        });
-            item.locations.forEach(location => {
-                var marker = L.marker([location.lat, location.long], {
-                    icon: icon
-                })
-                .addTo(map);
-                marker.bindPopup(`<b>${item.item}</b>`).openPopup();
-        });
-        //remove markers with no locations
-        } else {
-            markers.value = markers.value.filter(marker => marker.id !== item.id);
+        const geoPoint = item.location;
+        const lat = geoPoint.latitude || geoPoint._lat;
+        const lng = geoPoint.longitude || geoPoint._long;
 
-    }
-    });
+        L.marker([lat, lng], {
+            icon: whiteFlagIcon,
+        })
+        .addTo(map)
+        .bindPopup(`Flag for ${item.item}`);
+
+        L.circle([lat, lng], {
+            radius: 15,
+            color: 'blue',
+            fillColor: '#3f51b5',
+            fillOpacity: 0.2,
+        }).addTo(map);
+    })
+        
 });
 
-
-// watch(() => selectedItems, () => {
-//     markers.value = [];
-//     selectedItems.value.forEach(item => {
-//         items.value.forEach(bingoItem => {
-//             if(bingoItem.id === item.id) {
-//                 bingoItem.locations?.forEach(location => {
-//                     markers.value.push({
-//                         color: '#' + Math.floor(Math.random()*16777215).toString(16),
-//                         item: bingoItem.item
-//                     });
-//                 });
-//             }
-//         });
-//     });
-// });
 
 </script>
 

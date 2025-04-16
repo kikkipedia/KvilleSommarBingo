@@ -49,10 +49,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { type BingoItem } from '@/types';
-import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore, saveLocation } from '@/db';
+import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore, saveLocation, getTeamFlags } from '@/db';
 import { useBingoStore } from '@/stores';
 import ConfettiExplosion from "vue-confetti-explosion";
 import 'animate.css';
+import L from 'leaflet';
 
 //define props
 const props = defineProps({
@@ -163,22 +164,57 @@ const checkBingo = (itemId) => {
 
 }
 // one of 20 bingo clicks should save location
-const randomSave = (id) => {
-    const random = Math.floor(Math.random() * 20) + 1
-    console.log('random numb', random)
-    if (random === 1) {
-        //get geolocation
-        navigator.geolocation.getCurrentPosition((position) => {
-            const lat = position.coords.latitude
-            const long = position.coords.longitude
-            const team  = store.team
-            console.log(lat, long)
-            //send id, team, lat, long to saveLocation function
-            saveLocation(id, team, lat, long)
-        })
+const randomSave = (id: string) => {
+  // declare lat/long in wider scope
+  let lat: number;
+  let long: number;
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    lat = position.coords.latitude;
+    long = position.coords.longitude;
+    console.log('User position:', lat, long);
+
+    const response = await getTeamFlags(store.team);
+    const flag = response.find((item) => item.item === id);
+
+    if (flag) {
+      console.log('Found flag:', flag);
+
+      if (flag.team === store.team) {
+        console.log('Flag belongs to the same team, skipping.');
+        return;
+      }
+
+      const userLatLng = L.latLng(lat, long);
+      const markerLatLng = L.latLng(
+        flag.location.latitude || flag.location._lat,
+        flag.location.longitude || flag.location._long
+      );
+
+      const distance = userLatLng.distanceTo(markerLatLng);
+
+      console.log('Distance to flag:', distance);
+
+      if (distance <= 15) {
+        alert("You captured the flag!!");
+        console.log(flag.item, 'captured!');
+        //await deleteFlag(id);
+      }
+
+      return;
     }
-    else return
-}
+
+    // No flag found → fallback to random chance
+    const random = Math.floor(Math.random() * 20) + 1;
+    console.log('random number for capture attempt:', random);
+
+    if (random === 1) {
+      console.log('🎯 Capturing location!');
+      saveLocation(id, store.team, lat, long);
+    }
+  });
+};
+
 
 //TODO popup if checked item is a flag takover
 

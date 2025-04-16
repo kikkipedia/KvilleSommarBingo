@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, nextTick } from 'vue'
 import { type BingoItem, type BingoSheet } from '@/types';
-import { saveNewSheetToDb, getBingoItems, fetchSheetById, fetchUserByName } from '@/db';
+import { saveNewSheetToDb, getBingoItems, fetchSheetById } from '@/db';
 import { useBingoStore } from '@/stores/index';
 import Sheet from '@/components/Sheet.vue';
 import Login from '@/components/Login.vue';
@@ -168,6 +168,8 @@ const reset = () => {
     localStorage.removeItem('bingoId')
     localStorage.removeItem('userName')
     localStorage.removeItem('userId')
+    localStorage.removeItem('team')
+    localStorage.removeItem('bingo')
     bingoId.value = ''
     user.value = ''
     userId.value = ''
@@ -247,16 +249,7 @@ onMounted(async ()  => {
             sheetCheck()
         }
         else {
-            const userIdCheck = await fetchUserByName(user.value)
-            if(!userIdCheck ){
-                reset()
-            }
-            //@ts-ignore
-            store.setAuth(userIdCheck)
-            //@ts-ignore
-            userId.value = userIdCheck.id
-            localStorage.setItem('userId', userId.value)
-            sheetCheck()
+            reset()
         }
     }
     sheetCheck()
