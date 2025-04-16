@@ -167,7 +167,7 @@ export const signInWithGoogle = async () => {
         const docRef = await setDoc(doc(db, "users", user.uid), {
           name: user.displayName,
           score: 0,
-          team: Math.random() < 0.5 ? "red" : "white"
+          team: Math.random() < 0.5 ? "redTeam" : "whiteTeam"
         });
         
       }
@@ -226,5 +226,16 @@ const updateTeamScore = async (team) => {
   console.log("Document updated with ID: ", docRef.id);
 }
 
+export const fetchTeamById = async (id) => {
+  const docRef = doc(db, "teams", id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+    return docSnap.data()
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+  }
+}
 
 export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount, getBingoItemById };

@@ -7,7 +7,7 @@
             <li><router-link to="/map"><v-icon large>mdi-map-legend</v-icon></router-link></li>
             
             <li><v-icon large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
-            <li><v-icon large >mdi-flag-checkered</v-icon></li>
+            <li><v-icon large @click="$router.push('/team')">mdi-flag-checkered</v-icon></li>
         </ul>
     </nav>
     <div class="main">
@@ -131,7 +131,12 @@ onMounted(async () => {
   const items = await getBingoItems()
   descriptions.value = items
   sortItems()
-  
+  //check if uid
+  if (localStorage.getItem('userId') == null) {
+    store.isAuth = false
+  } else {
+    store.isAuth = true
+  }
 })
 
 
