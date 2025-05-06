@@ -68,7 +68,16 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }
+
+/* on the element (or globally) */
+html, body {
+  overflow-y: hidden !important;
+}
+
+
+
 
 h1 {
   font-family: "Chakra Petch", sans-serif;
@@ -91,4 +100,8 @@ h2 {
   text-decoration: none;
   transition: color 0.5s;
   cursor: pointer;
+}
+
+.main {
+  max-width: 100%;
 }

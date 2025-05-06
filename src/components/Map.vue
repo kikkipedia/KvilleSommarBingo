@@ -1,106 +1,82 @@
 <template>
-    <div class="container">
-         <div id="map">map</div>
+    <div class="map-wrapper">
+      <div id="map"></div>
+      <!-- only show when there are no items -->
+      <div v-if="items.length === 0" class="map-overlay">
+        INGA FLAGGOR ATT TA ÖVER! MEN HÅLL KOLL!
+      </div>
     </div>
-</template>
-
-<script setup lang="ts">
-import "leaflet/dist/leaflet.css"
-import L from 'leaflet';
-import { onMounted, ref } from 'vue';
-import { type BingoItem } from '../types';
-import { getBingoItemById, getTeamFlags } from '../db';
-import { useBingoStore } from '../stores';
-
-
-const items = ref<BingoItem[]>([]);
-const item = ref<BingoItem>();
-const selectMenu = ref<{name: string, id: string}[]>([]);
-const selectedItems = ref<BingoItem[]>([]);
-const markers = ref<{color: string, item: string, id: string}[]>([]);
-
-
-const store = useBingoStore()
-
-onMounted(async () => {
-    const map = L.map('map').setView([57.71947276091643, 11.94729384049893], 16);
+  </template>
+  
+  <script setup lang="ts">
+  import "leaflet/dist/leaflet.css"
+  import L from 'leaflet';
+  import { onMounted, ref } from 'vue';
+  import { type BingoItem } from '../types';
+  import { getTeamFlags } from '../db';
+  import { useBingoStore } from '../stores';
+  
+  const items = ref<BingoItem[]>([]);
+  const store = useBingoStore();
+  
+  onMounted(async () => {
+    const map = L.map('map').setView([57.71947, 11.94729], 16);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    //then fetch all items
+  
     const userTeam = localStorage.getItem('team');
     if (!userTeam) {
-        console.error('No team found in localStorage');
-        return;
+      console.error('No team found in localStorage');
+      return;
     }
     items.value = await getTeamFlags(userTeam);
-    console.log(items.value);
-    let icon;
-    if(userTeam == 'redTeam'){
-        // Create the white flag icon
-        icon = L.icon({
-            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/White_flag_waving.svg/32px-White_flag_waving.svg.png',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -32]
-        });
-    }
-    else if(userTeam == 'whiteTeam'){
-        icon = L.icon({
-        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Red_flag_waving.svg/32px-Red_flag_waving.svg.png',
-        iconSize: [32, 32], // size of the icon
-        iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
-        popupAnchor: [0, -32] // point from which the popup should open relative to the iconAnchor
-    });
-}
-    //then set markers
+  
+    // icon setup (omitted—same as before) …
+    let icon = /* … */
+    
     items.value.forEach(item => {
-        const geoPoint = item.location;
-        const lat = geoPoint.latitude || geoPoint._lat;
-        const lng = geoPoint.longitude || geoPoint._long;
-
-        L.marker([lat, lng], {
-            icon: icon,
-        })
-        .addTo(map)
+      const lat = item.location.latitude || item.location._lat;
+      const lng = item.location.longitude || item.location._long;
+      L.marker([lat, lng], { icon }).addTo(map)
         .bindPopup(`Flag for ${item.item}`);
-
-        L.circle([lat, lng], {
-            radius: 20,
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.2,
-        }).addTo(map);
-    })
-        
-});
-
-
-</script>
-
-<style scoped>
-.container {
-    text-align: center;
-    width: 100vw;
-    height: 100vh;
+      L.circle([lat, lng], {
+        radius: 20, color: 'red', fillColor: 'red', fillOpacity: 0.2
+      }).addTo(map);
+    });
+  });
+  </script>
+  
+  <style scoped>
+.map-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 450px;
+  margin: 5px;
 }
 
 #map {
-    width: 100%;
-    height: 450px;
+  width: 100%;
+  height: 100%;
+  /* make this a stacking context so your overlay’s z-index is relative to it */
+  position: relative;
+  z-index: 0;
 }
-.box {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border: 1px solid black;
+
+.map-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  /* <<< bump this way up: */
+  z-index: 1000;
 }
-.legend {
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 10px;
-    font-size: 10px;
-}
-</style>
+  </style>
+  

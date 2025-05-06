@@ -200,6 +200,7 @@ export const getTeamFlags = async (team) => {
     team = 'redTeam'
   }
   const itemsArray = [];
+  try {
   const querySnapshot = await getDocs(collection(db, "flags"));
   querySnapshot.forEach((doc) => {
     //only fetch the flags for the OTHER team 
@@ -208,6 +209,9 @@ export const getTeamFlags = async (team) => {
       itemsArray.push(addId);
     }
   });
+} catch (error) {
+  console.error("Error fetching flags: ", error);
+}
   return itemsArray;
 }
 

@@ -1,15 +1,44 @@
 <template>
-    <nav> 
-        <ul>
-          <li><v-icon large @click="$router.push('/')">mdi-home-flood</v-icon></li>
-            
-          <li><v-icon large @click="openInfo = true">mdi-information-outline</v-icon></li>
-            <li><router-link to="/map"><v-icon large>mdi-map-legend</v-icon></router-link></li>
-            
-            <li><v-icon large @click="openStats = true">mdi-chart-box-outline</v-icon></li>
-            <li><v-icon large @click="$router.push('/team')">mdi-flag-checkered</v-icon></li>
-        </ul>
-    </nav>
+    <nav>
+    <ul>
+      <li>
+        <router-link to="/" exact v-slot="{ isActive }">
+          <v-icon
+            large
+            class="my-icon"
+          >
+            mdi-home-flood
+          </v-icon>
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/map" exact v-slot="{ isActive }">
+          <v-icon
+            large
+            :class="[
+              'my-icon', 
+              { 'my-icon--active': isActive }
+            ]"
+          >
+            mdi-map-legend
+          </v-icon>
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/team" exact v-slot="{ isActive }">
+          <v-icon
+            large
+            :class="[
+              'my-icon', 
+              { 'my-icon--active': isActive }
+            ]"
+          >
+            mdi-flag-checkered
+          </v-icon>
+        </router-link>
+      </li>
+    </ul>
+  </nav>
     <div class="main">
       <v-dialog v-model="openInfo" width="90%">
         <v-card>
@@ -147,10 +176,10 @@ nav {
     justify-content: space-between;
     background-color: #7400FF;
     width: 100% !important;
-    color: white;
     height: 60px;
     margin: auto;
     padding: 0.5rem;
+    color: white;
 }
 
 nav li {
@@ -165,7 +194,12 @@ nav ul {
   padding: 0;
   max-height: 50px;
 }
-
+.my-icon {
+  color: white;             /* inactive */
+}
+.my-icon--active {
+  color: hsla(160, 100%, 37%, 1) !important;/* whatever “other” color you like */
+}
 .v-card {
   overflow: hidden !important;
 }
@@ -205,7 +239,6 @@ li {
 
 a {
   text-decoration: none;
-  color: #00FF00;
 
 }
 
