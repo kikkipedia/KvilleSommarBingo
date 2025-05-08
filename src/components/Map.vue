@@ -6,6 +6,15 @@
         INGA FLAGGOR ATT TA ÖVER! MEN HÅLL KOLL!
       </div>
     </div>
+    <div class="info">
+      <h2 v-if="store.team == 'whiteTeam'">Röda flaggor</h2>
+      <h2 v-else>Vita flaggor</h2>
+      <ul class="list-group">
+        <li v-for="item in items" :key="item.id" class="list-group-item">
+          {{ item.item }} - {{ item.location.latitude }}, {{ item.location.longitude }}
+        </li>
+      </ul>
+    </div>
   </template>
   
   <script setup lang="ts">
@@ -77,6 +86,12 @@
   font-weight: bold;
   /* <<< bump this way up: */
   z-index: 1000;
+}
+
+.info {
+  text-align: left;
+  margin: 5px;
+  padding: 5px;
 }
   </style>
   
