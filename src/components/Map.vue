@@ -7,6 +7,7 @@
       </div>
     </div>
     <div class="info">
+      <p>Se <router-link to="/team"> alla medlemmar</router-link></p>
       <h2 v-if="store.team == 'whiteTeam'">Röda flaggor</h2>
       <h2 v-else>Vita flaggor</h2>
       <ul class="list-group">
@@ -27,6 +28,20 @@
   
   const items = ref<BingoItem[]>([]);
   const store = useBingoStore();
+
+  //different icons for different teams
+  const redFlagIcon = L.divIcon({
+    className: 'leaflet-div-icon',    // suppress default icon styling
+    html: '<span class="material-symbols-outlined filled">flag</span>',
+    iconSize: [32, 32],               // adjust to your font-size
+    iconAnchor: [16, 32],             // bottom-center the “point”
+  });
+  const outlineFlagIcon = L.divIcon({
+    className: 'leaflet-div-icon',
+    html: '<span class="material-symbols-outlined">flag</span>',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+  });
   
   onMounted(async () => {
     const map = L.map('map').setView([57.71947, 11.94729], 16);
@@ -42,12 +57,18 @@
     }
     items.value = await getTeamFlags(userTeam);
   
-    // icon setup (omitted—same as before) …
-    let icon = /* … */
+    // icon setup
+    let icon: L.DivIcon;
     
     items.value.forEach(item => {
       const lat = item.location.latitude || item.location._lat;
       const lng = item.location.longitude || item.location._long;
+      //white team gets red flags
+      if (store.team == 'whiteTeam') {
+        icon = redFlagIcon;
+      } else {
+        icon = outlineFlagIcon;
+      }
       L.marker([lat, lng], { icon }).addTo(map)
         .bindPopup(`Flag for ${item.item}`);
       L.circle([lat, lng], {
@@ -92,6 +113,11 @@
   text-align: left;
   margin: 5px;
   padding: 5px;
+}
+
+.leaflet-div-icon {
+  background: none;
+  border: none;
 }
   </style>
   

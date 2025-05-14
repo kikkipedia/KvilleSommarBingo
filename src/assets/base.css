@@ -105,3 +105,19 @@ h2 {
 .main {
   max-width: 100%;
 }
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL'  0,
+    'wght'  400,
+    'GRAD'  0,
+    'opsz'  48;
+  font-size: 3rem;
+  color: "black";  /* let color apply to the stroke */
+}
+
+.material-symbols-outlined.filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+    color: red;
+    font-size: 3rem;
+}

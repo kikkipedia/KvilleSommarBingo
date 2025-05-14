@@ -18,7 +18,11 @@
                 </v-dialog>
             <!-- If userId in local storage -->
              <div v-if="userId" class="welcome"> 
-                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2>  {{ store.team }}
+                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> 
+                <!-- different flag color for different team-->
+                 <span v-if="store.team == 'whiteTeam'" class="material-symbols-outlined">flag</span>
+                <span
+                    v-else-if="store.team == 'readTeam'" class="material-symbols-outlined filled">flag</span>
                 <!-- if bingo id in local storage -->
                 
                 <div style="text-align: left;">
@@ -239,7 +243,8 @@ onMounted(async ()  => {
     if (userCheck != null) {
         store.setAuth(userCheck)
         user.value = localStorage.getItem('userName')
-        store.setTeam(localStorage.getItem('team'))
+        const team = localStorage.getItem('team') || '';
+        store.setTeam(team);
         if(user.value){
             store.setName(user.value)
         }
@@ -339,9 +344,7 @@ p {
     margin: 0 auto;
     width: 100px;
 }
-.fetchOld {
 
-}
 
 
 </style>
