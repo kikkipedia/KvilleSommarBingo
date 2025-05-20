@@ -1,6 +1,10 @@
 <template>
     <div v-if="store.isAuth && store.team" class="container">
-        {{ team }}, {{ teamArray.points }} poäng
+       <!-- different flag color for different team-->
+                 <span v-if="store.team == 'whiteTeam'" class="material-symbols-outlined">flag</span>
+                <span
+                    v-else-if="store.team == 'readTeam'" class="material-symbols-outlined filled">flag</span>
+        {{ teamArray?.points }} poäng
         <h2>Medlemmar:</h2>
         <p v-for="member in members">{{ member.name }}</p>
     </div>
@@ -10,11 +14,12 @@
 import { ref, onMounted } from 'vue';
 import { useBingoStore } from '@/stores';
 import { fetchTeamById, fetchUserById } from '@/db';
+import type { Team, User } from '@/types';
 
 const store = useBingoStore()
 const team = ref('')
-const teamArray = ref([])
-const members = ref([])
+const teamArray = ref<Team | null>(null)
+const members = ref<User[]>([])
 
 onMounted(() => {
   (async () => {
@@ -31,7 +36,12 @@ onMounted(() => {
         console.error('Team not found in database')
         return
       }
-      teamArray.value = response
+      // Map Firestore DocumentData to Team type
+      teamArray.value = {
+        id: response.id, //this is whiteTeam or redTeam
+        members: response.members,
+        points: response.points
+      }
       await fetchMembers()
     } catch (err) {
       console.error('Failed to load team data:', err)
@@ -42,7 +52,7 @@ onMounted(() => {
 const fetchMembers = async () => {
   try {
     //member ids are in teamArray.value.members
-    const mem = teamArray.value.members
+    const mem = teamArray.value?.members
     if (!mem) {
       console.error('No members found in team data')
       return
@@ -54,7 +64,12 @@ const fetchMembers = async () => {
         console.error(`Member ${memberId} not found in database`)
         continue
       }
-      members.value.push(response)
+      // Map Firestore DocumentData to User type
+      members.value.push({
+        id: response.id,
+        name: response.name,
+        score: response.score
+      })
     }
   } catch (err) {
     console.error('Failed to load member data:', err)

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 <template>
     <div class="map-wrapper">
       <div id="map"></div>
@@ -7,26 +9,31 @@
       </div>
     </div>
     <div class="info">
+      <p>Du är medlem i det <span v-if="store.team == 'redTeam'">RÖDA LAGET</span><span v-else>VITA LAGET</span> och ni ska ta det andra lagets flaggor!</p>
+      <p>Detta görs genom att stå inom flaggans radie och lyckas kryssa samma sak som laget som tog flaggan gjorde.</p>
+      <p>Ni samlar poäng ihop och vinner fina priser i grupp!</p>
       <p>Se <router-link to="/team"> alla medlemmar</router-link></p>
       <h2 v-if="store.team == 'whiteTeam'">Röda flaggor</h2>
       <h2 v-else>Vita flaggor</h2>
       <ul class="list-group">
         <li v-for="item in items" :key="item.id" class="list-group-item">
-          {{ item.item }} - {{ item.location.latitude }}, {{ item.location.longitude }}
+          {{ item.location.latitude }}, {{ item.location.longitude }} <v-icon color="black" @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>
+
         </li>
       </ul>
     </div>
   </template>
   
-  <script setup lang="ts">
+  <script setup>
   import "leaflet/dist/leaflet.css"
   import L from 'leaflet';
   import { onMounted, ref } from 'vue';
-  import { type BingoItem } from '../types';
-  import { getTeamFlags } from '../db';
+  //import { type BingoItem } from '../types';
+  import { getTeamFlags, getBingoItemById } from '../db';
   import { useBingoStore } from '../stores';
+
   
-  const items = ref<BingoItem[]>([]);
+  const items = ref([])
   const store = useBingoStore();
 
   //different icons for different teams
@@ -42,13 +49,28 @@
     iconSize: [32, 32],
     iconAnchor: [16, 32],
   });
+
+  let map = ref(null);
+
+  // Zoom function
+  function zoomToPlace(item) {
+    console.log(item);
+    const lat = item.location.latitude || item.location._lat;
+    const lng = item.location.longitude || item.location._long;
+
+    if (map.value) {
+      map.value.setView([lat, lng], 18, { animate: true });
+    }
+  }
   
   onMounted(async () => {
-    const map = L.map('map').setView([57.71947, 11.94729], 16);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+    map.value = L.map('map').setView([57.71947, 11.94729], 16);
+    if (map.value) {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map.value);
+    }
   
     const userTeam = localStorage.getItem('team');
     if (!userTeam) {
@@ -56,26 +78,37 @@
       return;
     }
     items.value = await getTeamFlags(userTeam);
-  
+
     // icon setup
-    let icon: L.DivIcon;
+    let icon;
     
-    items.value.forEach(item => {
+    items.value.forEach(async item => {
       const lat = item.location.latitude || item.location._lat;
       const lng = item.location.longitude || item.location._long;
+      // items.item is and name should be fetched and added to the item
+      const name = await getBingoItemById(item.item);
+      if (!name) {
+        return;
+      }
       //white team gets red flags
       if (store.team == 'whiteTeam') {
         icon = redFlagIcon;
       } else {
         icon = outlineFlagIcon;
       }
-      L.marker([lat, lng], { icon }).addTo(map)
-        .bindPopup(`Flag for ${item.item}`);
-      L.circle([lat, lng], {
-        radius: 20, color: 'red', fillColor: 'red', fillOpacity: 0.2
-      }).addTo(map);
+     if (!map.value) return;
+
+    L.marker([lat, lng], { icon }).addTo(map.value)
+      .bindPopup(`${name.item}`);
+
+    L.circle([lat, lng], {
+      radius: 20, color: 'red', fillColor: 'red', fillOpacity: 0.2
+    }).addTo(map.value);
+     
     });
   });
+
+ 
   </script>
   
   <style scoped>
@@ -87,7 +120,7 @@
 }
 
 #map {
-  width: 100%;
+  width: 98%;
   height: 100%;
   /* make this a stacking context so your overlay’s z-index is relative to it */
   position: relative;
@@ -97,7 +130,7 @@
 .map-overlay {
   position: absolute;
   top: 0; left: 0;
-  width: 100%;  height: 100%;
+  width: 98%;  height: 100%;
   background: rgba(0,0,0,0.6);
   display: flex;
   align-items: center;
@@ -118,6 +151,10 @@
 .leaflet-div-icon {
   background: none;
   border: none;
+}
+
+.leaflet-div-icon {
+  display: none !important;
 }
   </style>
   

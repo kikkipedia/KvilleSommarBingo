@@ -78,6 +78,7 @@ const saveUserInDb = async(id: string) =>{
     localStorage.setItem('userId', response)
     
     console.log('in register:', response)
+    location.reload()
 }
 
 
@@ -92,6 +93,7 @@ const userSubmit = async () => {
         //sendEmail()
         setUser()
         localStorage.setItem('userId', user.uid);
+        //location.reload()
   })
   .catch((error) => {
     error.code;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 <template>
     <div class="bingoSheet" >
         <ConfettiExplosion v-if="confetti" :particleSize="10" :duration="1500" :colors="colors"/>
@@ -43,6 +44,15 @@
                 <span class="animate__animated animate__bounceIn">BINGO!</span>
                 </v-card>
             </v-overlay>
+            <!--popup card if flag -->
+            <v-overlay v-model="flagPopup" class="">
+                <v-card
+                    class="mx-auto my-8 bingocard"
+                    elevation="16"
+                >
+                <span class="animate__animated animate__bounceIn">Du har satt en flagga!</span>
+                </v-card>
+            </v-overlay>
         </div>
 </template>
 
@@ -80,6 +90,7 @@ const explode = ref(false)
 const colors = ['#6200ea', '#03a9f4', '#4caf50', '#ffeb3b', '#ff5722', '#795548', '#9c27b0', '#e91e63', '#00bcd4', '#009688', '#8bc34a', '#cddc39', '#ff9800', '#ff5722', '#607d8b']
 
 const overlay = ref(false)
+const flagPopup = ref(false)
 
 //on Mounted check if Id is in local storage
 onMounted(() => {
@@ -120,7 +131,7 @@ const bingoClick = async (index: number, row: number, id: string) => {
             confetti.value = true
             //update the item count
             const itemId = item!.id
-            updateBingoItemCount(itemId)
+            //updateBingoItemCount(itemId)
             //check if the item is a flag TODO
             //wait 2000ms
             setTimeout(() => {
@@ -142,7 +153,7 @@ const bingoClick = async (index: number, row: number, id: string) => {
     else return
     }
 
-const checkBingo = (itemId) => {
+const checkBingo = (itemId: string) => {
     if (props.bingoSheet) {
         const rows = [row1, row2, row3, row4, row5, row6, row7, row8, row9, row10]
         let bingo = false
@@ -200,7 +211,7 @@ const randomSave = (id: string) => {
       if (distance <= 20) {
         alert("You captured the flag!!");
         console.log(flag.item, 'captured!');
-        await deleteFlag(id);
+        await deleteFlag(id as string);
       }
 
       return;
@@ -211,8 +222,11 @@ const randomSave = (id: string) => {
     console.log('random number for capture attempt:', random);
 
     if (random === 1) {
-      console.log('🎯 Capturing location!');
       saveLocation(id, store.team, lat, long);
+      flagPopup.value = true;
+      setTimeout(() => {
+        flagPopup.value = false;
+      }, 3000);
     }
   });
 };

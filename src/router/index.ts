@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Statistics from '@/components/Statistics..vue'
+// @ts-ignore
+import Map from '@/components/Map.vue' 
 //import PswdReset from '../components/PswdReset.vue'
 
 const router = createRouter({
@@ -20,16 +23,22 @@ const router = createRouter({
       name: 'reset-password',
       component: () => import('../components/PswdReset.vue')
     },
+    
     {
       path: '/map',
       name: 'map',
-      component: () => import('../components/Map.vue')
+      component: Map
     },
     {
       path: '/team',
       name: 'team',
       component: () => import('../views/TeamView.vue')
-    }
+    },
+    {
+      path: '/stats',
+      name: 'stats',
+      component: Statistics
+    },
   ]
 })
 

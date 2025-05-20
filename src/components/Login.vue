@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 <template>
     <div class="login">
         <img src="@/assets/tramsAb.jpg" style="width: 100%"/>
@@ -75,11 +77,15 @@ const userSubmit = () => {
             fetchUserById(userCredential.user.uid)
                 .then((response) => {
                     console.log(response);
-                    localStorage.setItem('userName', response.name);
-                    store.setTeam(response.team);
-                    localStorage.setItem('team', response.team);
-                    store.isAuth = true;
-                    location.reload();
+                    if (response) {
+                        localStorage.setItem('userName', response.name);
+                        store.setTeam(response.team);
+                        localStorage.setItem('team', response.team);
+                        store.isAuth = true;
+                        location.reload();
+                    } else {
+                        errorMsg.value = 'User data not found';
+                    }
                 });
             
         })

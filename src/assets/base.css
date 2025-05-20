@@ -73,7 +73,7 @@ body {
 
 /* on the element (or globally) */
 html, body {
-  overflow-y: hidden !important;
+  /* overflow-y: hidden !important; */
 }
 
 

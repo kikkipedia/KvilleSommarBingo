@@ -85,7 +85,7 @@ const saveNewUser = async (id, name, team) => {
   await setDoc(userRef, {
     name,
     score: 0,
-    team
+    team,
   });
   await addUserToTeam(id, team);
   console.log("User saved with ID:", userRef.id);

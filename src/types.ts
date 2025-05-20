@@ -24,3 +24,9 @@ export type User = {
   score: number;
 };
 
+export type Team = {
+  id: string;
+  members: User[];
+  points: number;
+};
+

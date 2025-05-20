@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!store.isAuth">
+    <div v-if="!store.isAuth ">
         <Login/>
     </div>
     <div v-else>
@@ -22,7 +22,7 @@
                 <!-- different flag color for different team-->
                  <span v-if="store.team == 'whiteTeam'" class="material-symbols-outlined">flag</span>
                 <span
-                    v-else-if="store.team == 'readTeam'" class="material-symbols-outlined filled">flag</span>
+                    v-else-if="store.team == 'redTeam'" class="material-symbols-outlined filled">flag</span>
                 <!-- if bingo id in local storage -->
                 
                 <div style="text-align: left;">
@@ -74,8 +74,9 @@
         </v-dialog>
 
          <div class="buttons" v-if="store.isAuth">
-            <v-btn class="fetchOld"  @click="fetchByIdWarning = true" size="x-small" color="#7400FF" v-if="!showSheet">Hämta tidigare bricka</v-btn>
-            <v-btn color="#00FF00" v-else @click="randomizeSheet">Ny bricka</v-btn>
+            <p><v-btn class="fetchOld"  @click="fetchByIdWarning = true" size="x-small" color="#7400FF" v-if="!showSheet">Hämta tidigare bricka</v-btn></p>
+            
+            <!-- <v-btn color="#00FF00" v-if="store.bingo || !store.bingoId" @click="randomizeSheet">Ny bricka</v-btn> -->
             </div>
         <br/>
             <v-btn class="reset" size="x-small" color="#7400FF" @click="resetWarning = true" v-if="user" >Återställ</v-btn>
@@ -240,7 +241,7 @@ const sheetCheck = () => {
 onMounted(async ()  => {
     //check localStorage for user info
     const userCheck = localStorage.getItem('userId')
-    if (userCheck != null) {
+    if (userCheck != null ) {
         store.setAuth(userCheck)
         user.value = localStorage.getItem('userName')
         const team = localStorage.getItem('team') || '';
@@ -248,7 +249,7 @@ onMounted(async ()  => {
         if(user.value){
             store.setName(user.value)
         }
-        //local storage has user id or else fetch it
+        //local storage has user id or else fetch it or save it
         if(localStorage.getItem('userId') != null){
             userId.value = localStorage.getItem('userId')
             sheetCheck()
@@ -344,7 +345,6 @@ p {
     margin: 0 auto;
     width: 100px;
 }
-
 
 
 </style>

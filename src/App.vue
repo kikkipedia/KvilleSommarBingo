@@ -112,6 +112,7 @@ import { watch, ref, onMounted } from 'vue';
 import {getBingoItems } from './db'
 import { type BingoItem } from './types';
 import Statistics from './components/Statistics..vue';
+//@ts-ignore
 import Map from './components/Map.vue';
 import Login from './components/Login.vue';
 import HomeView from './views/HomeView.vue';
