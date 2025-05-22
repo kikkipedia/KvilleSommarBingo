@@ -44,12 +44,26 @@
                 <span class="animate__animated animate__bounceIn">BINGO!</span>
                 </v-card>
             </v-overlay>
-            <!--popup card if flag -->
-            <v-overlay v-model="flagPopup" class="">
+            <!--popup card if flag is taken -->
+            <v-overlay v-model="flagPopup" class="flag-catch-overlay" persistent scrim="transparent">
                 <v-card
                     elevation="16"
                 >
-                <span class="">Du har satt en flagga!</span>
+                <div class="flag-catch-animation">
+                    🏁<br />
+                    <span class="message">FLAGGA TAGEN!</span>
+                </div>
+                </v-card>
+            </v-overlay>
+            <!-- popup if flag is put down-->
+            <v-overlay v-model="setFlag" class="flag-catch-overlay" persistent scrim="transparent">
+                <v-card
+                    elevation="16"
+                >
+                <div class="flag-catch-animation">
+                    🏁<br />
+                    <span class="message">FLAGGA SATT!</span>
+                </div>
                 </v-card>
             </v-overlay>
         </div>
@@ -90,6 +104,7 @@ const colors = ['#6200ea', '#03a9f4', '#4caf50', '#ffeb3b', '#ff5722', '#795548'
 
 const overlay = ref(false)
 const flagPopup = ref(false)
+const setFlag = ref(true)
 
 //on Mounted check if Id is in local storage
 onMounted(() => {
@@ -131,13 +146,6 @@ const bingoClick = async (index: number, row: number, id: string) => {
             //update the item count
             const itemId = item!.id
             updateBingoItemCount(itemId)
-            //check if the item is a flag 
-            // const flags = await getTeamFlags(store.team)
-            // const flag = flags.find((item) => item.item === itemId)
-            // if (flag) {
-            //     await deleteFlag(itemId)
-            // }
-            //wait 2000ms
             setTimeout(() => {
                 confetti.value = false
             }, 2000)
@@ -195,10 +203,12 @@ const randomSave = (id: string) => {
     const flag = response.find((item) => item.item === id);
 
     if (flag) {
-      console.log('Found flag:', flag);
+      flagPopup.value = true;
+      setTimeout(() => {
+        flagPopup.value = false;
+      }, 5000); // auto-hide
 
       if (flag.team === store.team) {
-        console.log('Flag belongs to the same team, skipping.');
         return;
       }
 
@@ -227,20 +237,18 @@ const randomSave = (id: string) => {
         // No flag found → fallback to random chance
         const random = Math.floor(Math.random() * 20) + 1;
         console.log('random number for capture attempt:', random);
-
+        //set flag!
         if (random === 1) {
         saveLocation(id, store.team, lat, long);
-        flagPopup.value = true;
+        setFlag.value = true;
         setTimeout(() => {
-            flagPopup.value = false;
-        }, 3000);
+            setFlag.value = false;
+        }, 5000);
         }
     }
   });
 };
 
-
-//TODO popup if checked item is a flag takover
 
 
 
@@ -336,6 +344,65 @@ td {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.flag-catch-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.flag-catch-animation {
+    width: 300px;
+  font-size: 48px;
+  text-align: center;
+  color: rgb(2, 111, 26);
+  animation: popIn 0.4s ease, fadeOut 5s ease forwards;
+  text-shadow: 0 0 10px #51514c;
+}
+
+.flag-catch-animation .message {
+  display: block;
+  font-size: 24px;
+  margin-top: 8px;
+  font-weight: bold;
+  animation: pulseText 1s infinite;
+  
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulseText {
+  0%, 100% {
+    transform: scale(1);
+    color: rgb(0, 255, 8);
+  }
+  50% {
+    transform: scale(1.2);
+    color: white;
+  }
 }
 
 </style>
