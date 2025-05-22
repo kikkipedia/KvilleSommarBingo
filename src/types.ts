@@ -30,3 +30,11 @@ export type Team = {
   points: number;
 };
 
+export type Flag = {
+  id: string;
+  item: string;
+  location: {latitude: number, longitude: number, _lat: number, _long: number};
+  team: string;
+  name: string;
+};
+

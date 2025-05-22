@@ -47,10 +47,9 @@
             <!--popup card if flag -->
             <v-overlay v-model="flagPopup" class="">
                 <v-card
-                    class="mx-auto my-8 bingocard"
                     elevation="16"
                 >
-                <span class="animate__animated animate__bounceIn">Du har satt en flagga!</span>
+                <span class="">Du har satt en flagga!</span>
                 </v-card>
             </v-overlay>
         </div>
@@ -213,7 +212,6 @@ const randomSave = (id: string) => {
         console.log(flag.item, 'captured!');
         await deleteFlag(id as string);
       }
-
       return;
     }
 

@@ -15,6 +15,7 @@
       <p>Se <router-link to="/team"> alla medlemmar</router-link></p>
       <h2 v-if="store.team == 'whiteTeam'">Röda flaggor</h2>
       <h2 v-else>Vita flaggor</h2>
+      <span v-if="items.length === 0">Inga flaggor att ta just nu!</span>
       <ul class="list-group">
         <li v-for="item in items" :key="item.id" class="list-group-item">
           {{ item.location.latitude }}, {{ item.location.longitude }} <v-icon color="black" @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>

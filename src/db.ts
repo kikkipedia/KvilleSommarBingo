@@ -180,7 +180,7 @@ export const signInWithGoogle = async () => {
   })
 }
 
-export const saveLocation = async (id, team, lat, long) => { //TODO save flag location
+export const saveLocation = async (id, team, lat, long) => { 
   //draw a circle around the location with radius 10m
 
   const docRef = await addDoc(collection(db, "flags"), {

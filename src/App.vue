@@ -12,6 +12,15 @@
         </router-link>
       </li>
       <li>
+        <v-icon
+          large
+          class="logo"
+          @click="openStats = true"
+        >
+          mdi-chart-box-outline
+        </v-icon>
+      </li>
+      <li>
         <router-link to="/map" exact v-slot="{ isActive }">
           <v-icon
             large
@@ -60,17 +69,6 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="openMap" width="100%">
-        <v-btn
-            color="rgb(10, 150, 125)"
-            icon="mdi-close"
-            @click="openMap = false"
-          ></v-btn>
-        <v-card>
-            <div class="map-container"><Map/></div>
-        </v-card>
-      </v-dialog>
-
       <v-dialog v-model="openStats" width="90%">
         <v-btn
             color="rgb(10, 150, 125)"
@@ -112,12 +110,6 @@ import { watch, ref, onMounted } from 'vue';
 import {getBingoItems } from './db'
 import { type BingoItem } from './types';
 import Statistics from './components/Statistics..vue';
-//@ts-ignore
-import Map from './components/Map.vue';
-import Login from './components/Login.vue';
-import HomeView from './views/HomeView.vue';
-import TopList from './components/TopList.vue';
-import LiveBingo from './components/LiveBingo.vue';
 
 
 const store = useBingoStore()
@@ -125,7 +117,6 @@ const name = ref('')
 
 const openInfo = ref(false)
 const openStats = ref(false)
-const openMap = ref(false)  
 const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 const componentKey = ref(0)
 const openBingoClosed = ref(false)
