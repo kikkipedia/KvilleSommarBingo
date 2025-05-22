@@ -103,7 +103,7 @@
       .bindPopup(`${name.item}`);
 
     L.circle([lat, lng], {
-      radius: 20, color: 'red', fillColor: 'red', fillOpacity: 0.2
+      radius: 30, color: 'red', fillColor: 'red', fillOpacity: 0.2
     }).addTo(map.value);
      
     });

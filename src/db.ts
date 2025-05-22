@@ -192,6 +192,22 @@ export const saveLocation = async (id, team, lat, long) => {
   return docRef.id;
 }
 
+export const fetchOwnFlags = async (team) => {
+  const itemsArray = [];
+  try {
+  const querySnapshot = await getDocs(collection(db, "flags"));
+  querySnapshot.forEach((doc) => {
+    if (doc.data().team === team) {
+      const addId = { ...doc.data(), id: doc.id };
+      itemsArray.push(addId);
+    }
+  })
+} catch (error) {
+  console.error("Error fetching flags: ", error);
+}
+  return itemsArray;
+}
+
 export const getTeamFlags = async (team) => {
   if(team === 'redTeam') {
     team = 'whiteTeam'

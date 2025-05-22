@@ -130,8 +130,13 @@ const bingoClick = async (index: number, row: number, id: string) => {
             confetti.value = true
             //update the item count
             const itemId = item!.id
-            //updateBingoItemCount(itemId)
-            //check if the item is a flag TODO
+            updateBingoItemCount(itemId)
+            //check if the item is a flag 
+            // const flags = await getTeamFlags(store.team)
+            // const flag = flags.find((item) => item.item === itemId)
+            // if (flag) {
+            //     await deleteFlag(itemId)
+            // }
             //wait 2000ms
             setTimeout(() => {
                 confetti.value = false
@@ -207,24 +212,29 @@ const randomSave = (id: string) => {
 
       console.log('Distance to flag:', distance);
 
-      if (distance <= 20) {
-        alert("You captured the flag!!");
+      if (distance <= 30) {
         console.log(flag.item, 'captured!');
+        flagPopup.value = true;
         await deleteFlag(id as string);
+      }
+      else {
+        console.log('distance too far', distance);
+        return;
       }
       return;
     }
+    else {
+        // No flag found → fallback to random chance
+        const random = Math.floor(Math.random() * 20) + 1;
+        console.log('random number for capture attempt:', random);
 
-    // No flag found → fallback to random chance
-    const random = Math.floor(Math.random() * 20) + 1;
-    console.log('random number for capture attempt:', random);
-
-    if (random === 1) {
-      saveLocation(id, store.team, lat, long);
-      flagPopup.value = true;
-      setTimeout(() => {
-        flagPopup.value = false;
-      }, 3000);
+        if (random === 1) {
+        saveLocation(id, store.team, lat, long);
+        flagPopup.value = true;
+        setTimeout(() => {
+            flagPopup.value = false;
+        }, 3000);
+        }
     }
   });
 };

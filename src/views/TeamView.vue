@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useBingoStore } from '@/stores';
-import { fetchTeamById, fetchUserById, getTeamFlags } from '@/db';
-import type { Team, User } from '@/types';
+import { fetchTeamById, fetchUserById, fetchOwnFlags, getBingoItemById } from '@/db';
+import type { Team, User, Flag } from '@/types';
 
 const store = useBingoStore()
 const team = ref('')
@@ -85,13 +85,16 @@ const fetchMembers = async () => {
 
 const fetchFlags = async () => {
   try {
-    const response = await getTeamFlags(team.value)
+    const response = await fetchOwnFlags(team.value)
     if (!response) {
-      console.error('Team not found in database')
       return
     }
-    // Map Firestore DocumentData to Team type
-    flags.value = response.flags
+    flags.value = response as [Flag]
+    if (!flags.value) {
+      console.error('No flags found in team data')
+      return
+    }
+    else {
     flags.value.forEach(async item => {
       // items.item is and name should be fetched and added to the item
       const name = await getBingoItemById(item.item);
@@ -102,8 +105,8 @@ const fetchFlags = async () => {
         //add to flag
         item.name = name.item
       }
-
     })
+  }
     console.log('Flags:', flags.value)
   } catch (err) {
     console.error('Failed to load flag data:', err)
