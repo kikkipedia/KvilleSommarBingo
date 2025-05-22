@@ -271,4 +271,18 @@ export const fetchTeamById = async (id: string) => {
   return docSnap.data();   // the object you expect
 }
 
+export const fetchAdressByCoords = async (lat, long) => {
+  const api = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`;
+  const response = await fetch(api);
+  const data = await response.json();
+  if (data.status === "OK") {
+    //only return the street + nymber
+    const address = data.results[0].address_components[1].long_name+ ' ' + data.results[0].address_components[0].long_name;
+    return address
+  } else {
+    console.error("Error fetching address: ", data.status);
+    return null;
+  }
+}
+
 export { saveNewSheetToDb, saveNewUser, fetchUserById, getBingoItems, updateSheetInDb, updateBingoItemCount, updateUserScore, fetchUserByName, getAllUsers, fetchSheetById, minusBingoItemCount, getBingoItemById };

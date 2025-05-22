@@ -5,10 +5,10 @@
       <span v-else-if="store.team == 'readTeam'" class="material-symbols-outlined filled">flag</span>
       <p>{{ teamArray?.points }} poäng</p>
       <div class="teamMembers">
-        <h2>Era flaggor:</h2>
-        <p v-for="item in flags">{{item.name }}, {{ item.location.latitude }}, {{ item.location.longitude }}</p>
+        <h2>Era flaggor som andra laget kan ta:</h2>
+        <p v-for="item in flags"><b>{{item.name }},</b> <em>{{ item.adress }}</em></p>
       </div>
-      <div class="teamMembers">
+      <div class="teamMembers column">
         <h2>Medlemmar:</h2>
         <p v-for="member in members">{{ member.name }}</p>
       </div>  
@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useBingoStore } from '@/stores';
-import { fetchTeamById, fetchUserById, fetchOwnFlags, getBingoItemById } from '@/db';
+import { fetchTeamById, fetchUserById, fetchOwnFlags, getBingoItemById, fetchAdressByCoords } from '@/db';
 import type { Team, User, Flag } from '@/types';
 
 const store = useBingoStore()
@@ -26,6 +26,7 @@ const team = ref('')
 const teamArray = ref<Team | null>(null)
 const members = ref<User[]>([])
 const flags = ref<Flag[]>([])
+const address = ref('')
 
 onMounted(() => {
   (async () => {
@@ -98,12 +99,14 @@ const fetchFlags = async () => {
     flags.value.forEach(async item => {
       // items.item is and name should be fetched and added to the item
       const name = await getBingoItemById(item.item);
-      if (!name) {
+      const flagAddress = await getAddress(item.location._lat, item.location._long);
+      if (!name || !flagAddress) {
         return;
       }
       else {
         //add to flag
         item.name = name.item
+        item.adress = flagAddress
       }
     })
   }
@@ -113,7 +116,19 @@ const fetchFlags = async () => {
   }
 }
 
-
+const getAddress = async (lat: number, long: number) => {
+  try {
+    const response = await fetchAdressByCoords(lat, long)
+    if (!response) {
+      console.error('User not found in database')
+      return null
+    }
+    return response
+  } catch (err) {
+    console.error('Failed to load address data:', err)
+    return null
+  }
+}
 
 </script>
 
@@ -124,5 +139,11 @@ const fetchFlags = async () => {
   padding-left: 5px;
   text-align: left;
   margin-top: 20px;
+}
+
+.teamMembers.column {
+  flex-direction: column;
+  columns: 2;
+  column-gap: 20px;
 }
 </style>

@@ -36,5 +36,6 @@ export type Flag = {
   location: {latitude: number, longitude: number, _lat: number, _long: number};
   team: string;
   name: string;
+  adress: string;
 };
 
