@@ -104,7 +104,7 @@ const colors = ['#6200ea', '#03a9f4', '#4caf50', '#ffeb3b', '#ff5722', '#795548'
 
 const overlay = ref(false)
 const flagPopup = ref(false)
-const setFlag = ref(true)
+const setFlag = ref(false)
 
 //on Mounted check if Id is in local storage
 onMounted(() => {
