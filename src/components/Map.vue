@@ -18,7 +18,7 @@
       <span v-if="items.length === 0">Inga flaggor att ta just nu!</span>
       <ul class="list-group">
         <li v-for="item in items" :key="item.id" class="list-group-item">
-          {{ item.location.latitude }}, {{ item.location.longitude }} <v-icon color="black" @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>
+          {{ item.name }} <v-icon color="black" @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>
 
         </li>
       </ul>
@@ -32,30 +32,30 @@
   //import { type BingoItem } from '../types';
   import { getTeamFlags, getBingoItemById } from '../db';
   import { useBingoStore } from '../stores';
+  import { onBeforeMount } from 'vue';
+  import redFlag from '@/assets/redFlag.png';
+  import outlineFlag from '@/assets/whiteFlag.png';
 
   
   const items = ref([])
   const store = useBingoStore();
 
   //different icons for different teams
-  const redFlagIcon = L.divIcon({
-    className: 'leaflet-div-icon',    // suppress default icon styling
-    html: '<span class="material-symbols-outlined filled">flag</span>',
-    iconSize: [32, 32],               // adjust to your font-size
-    iconAnchor: [16, 32],             // bottom-center the “point”
+  const redFlagIcon = L.icon({
+    iconSize: [32, 52],               // adjust to your font-size
+    iconAnchor: [28,52],         // bottom-center the “point”
+    iconUrl: redFlag //
   });
-  const outlineFlagIcon = L.divIcon({
-    className: 'leaflet-div-icon',
-    html: '<span class="material-symbols-outlined">flag</span>',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
+  const outlineFlagIcon = L.icon({
+    iconSize: [32, 52],
+    iconAnchor: [28, 52],
+    iconUrl: outlineFlag, 
   });
 
   let map = ref(null);
 
   // Zoom function
   function zoomToPlace(item) {
-    console.log(item);
     const lat = item.location.latitude || item.location._lat;
     const lng = item.location.longitude || item.location._long;
 
@@ -63,6 +63,18 @@
       map.value.setView([lat, lng], 18, { animate: true });
     }
   }
+
+  //before mount, get team from local Storage and fetch flags
+  onBeforeMount(() => {
+    const userTeam = localStorage.getItem('team');
+    if (!userTeam) {
+      console.error('No team found in localStorage');
+      return;
+    }
+    else {
+      store.team = userTeam; // set the team in the store
+    }
+  });
   
   onMounted(async () => {
     map.value = L.map('map').setView([57.71947, 11.94729], 16);
@@ -72,6 +84,7 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map.value);
     }
+    
   
     const userTeam = localStorage.getItem('team');
     if (!userTeam) {
@@ -88,6 +101,7 @@
       const lng = item.location.longitude || item.location._long;
       // items.item is and name should be fetched and added to the item
       const name = await getBingoItemById(item.item);
+      item.name = name.item; // add the name to the item
       if (!name) {
         return;
       }
@@ -157,5 +171,25 @@
 .leaflet-div-icon {
   display: none !important;
 }
+
+.custom-flag-icon {
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+li {
+  float: left;
+  justify-content: center;
+}
+
+li .v-icon {
+  padding-left: 20px;
+}
+
   </style>
   

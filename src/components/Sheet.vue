@@ -194,6 +194,11 @@ const randomSave = (id: string) => {
   let lat: number;
   let long: number;
 
+  //force user to allow location access
+    if (!navigator.geolocation) {
+        alert('Din webbläsare stöder inte geolocation. Settings > Privacy & Security > Location Services måste vara aktiverat.');
+    }
+
   navigator.geolocation.getCurrentPosition(async (position) => {
     lat = position.coords.latitude;
     long = position.coords.longitude;
@@ -221,13 +226,14 @@ const randomSave = (id: string) => {
       const distance = userLatLng.distanceTo(markerLatLng);
 
       console.log('Distance to flag:', distance);
-
+      //make sure distance is within 30 meters
       if (distance <= 30) {
         console.log(flag.item, 'captured!');
         flagPopup.value = true;
         await deleteFlag(id as string);
       }
       else {
+        flagPopup.value = false;
         console.log('distance too far', distance);
         return;
       }
