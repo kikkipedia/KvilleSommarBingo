@@ -4,7 +4,7 @@
     <div class="login">
         <img src="@/assets/tramsAb.jpg" style="width: 100%"/>
         PRESENTERAR STOLT
-        <img src="@/assets/bingologo.png" class="bingologo" alt="Bingo logo"/>
+        <img src="@/assets/bingologo25.png" class="bingologo" alt="Bingo logo"/>
         <v-btn color="#7400FF" @click="openLogin = true" v-if="!openLogin">Logga in med email</v-btn>
         <v-dialog v-model="openReset" width="90%">
             <v-btn
@@ -104,16 +104,29 @@ const userSubmit = () => {
     text-align: center;
     max-width: 80%;
     margin: 0 auto;
+    font-family: 'Libre Franklin', sans-serif;
+    font-size: 1.2rem;
+    padding: 1rem;
+    font-weight: bold;
 }
 
 .bingologo {
-    width: 150px;
+    width: 180px;
     margin: 0 auto;
     display: block;
+    padding-bottom: 20px;
+    padding-top: 10px;
 }
 
 p {
     margin-top: 1rem;
     margin-bottom: 1rem;
+}
+
+.link {
+    color: #7400FF;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.8rem;
 }
 </style>

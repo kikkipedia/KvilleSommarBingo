@@ -1,14 +1,15 @@
 <template>
-    <nav>
+    <nav v-if="store.isAuth">
     <ul>
       <li>
         <router-link to="/" exact v-slot="{ isActive }">
-          <v-icon
+           <v-icon
             large
             class="my-icon"
           >
             mdi-home-flood
           </v-icon>
+
         </router-link>
       </li>
       <li>
@@ -53,7 +54,6 @@
         <v-card>
           <v-btn
             icon="mdi-close"
-            color="rgb(10, 150, 125)"
             @click="openInfo = false"
           ></v-btn>
           <v-card-text>
@@ -71,7 +71,6 @@
 
       <v-dialog v-model="openStats" width="90%">
         <v-btn
-            color="rgb(10, 150, 125)"
             icon="mdi-close"
             @click="openStats = false"
           ></v-btn>
@@ -81,18 +80,29 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+      <!--rules 2025-->
 
-      <!-- <v-dialog v-model="openBingoClosed" width="90%">
-        <v-card class="its-over">
+      <v-dialog v-model="openRules" width="90%">
+        <v-card>
           <v-card-text>
-            <h2>Slut på Sommarbingo!</h2>
-            <p>Sommaren är över, uteserveringarna har demonterats.</p>
-            <p>Det blir såklart avslutningsfest på Pastan i november!</p>
-            <p><router-link to="/toplist" @click="openBingoClosed=false">Här</router-link> kan du kika på resultaten så länge!</p>
-
+            <h2>Nytt 2025</h2>
+            <ul>
+              <li>Du måste registrera dig på nytt!</li>
+              <li>När du registrerar dig slumpas du in i ett lag. Röda eller vita laget! Tänk röda/vita rosen.</li>
+              <li>Ibland när du kryssar sätts en flagga ner. Denna ska det andra laget ta, genom att kryssa samma sak inom en radie på 30m.</li>
+              <li>Då får laget 1p.</li>
+              <li>En flagga kan inte sättas utanför Kville!</li>
+              <li>För att delta i Capture the flag måste du tillåta platsspårning i din webläsare</li>
+              <li>Karta <v-icon small>mdi-map-legend</v-icon>  och teamsida <v-icon small>mdi-flag-checkered</v-icon> nås via ikonerna högst upp.</li>
+            </ul>
           </v-card-text>
+          <v-btn
+            @click="openRules = false"
+            color="#7400FF"
+            class="ma-6"
+          >OK</v-btn>
         </v-card>
-      </v-dialog> -->
+      </v-dialog>
       <RouterView>
         
       </RouterView>
@@ -121,6 +131,7 @@ const descriptions = ref<BingoItem[]>([]) //BingoItems from database
 const componentKey = ref(0)
 const openBingoClosed = ref(false)
 const showButton = ref(false)
+const openRules = ref(false)
 
 //get name from store
 watch(() => store.name, (nam) => {
@@ -155,6 +166,8 @@ onMounted(async () => {
   //check if uid
   if (localStorage.getItem('userId') == null) {
     store.isAuth = false
+    //open info about this year's bingo
+    openRules.value = true
   } else {
     store.isAuth = true
   }
@@ -174,6 +187,11 @@ nav {
     color: white;
 }
 
+.logoLiten {
+  height: 50px;
+  width: auto;
+}
+
 nav li {
   padding-right: 0.5rem;
 }
@@ -187,10 +205,10 @@ nav ul {
   max-height: 50px;
 }
 .my-icon {
-  color: white;             /* inactive */
+  color: white;   
 }
 .my-icon--active {
-  color: hsla(160, 100%, 37%, 1) !important;/* whatever “other” color you like */
+  color: hsla(160, 100%, 37%, 1) !important;
 }
 .v-card {
   overflow: hidden !important;
@@ -206,12 +224,13 @@ ul {
   padding: 0;
   overflow: hidden;
   width: 100%;
+  border: 4px solid #7400FF;
+  font-family:'Roboto Mono', monospace;
 }
 li {
   list-style: none;
-  cursor: pointer;
   padding: 0.5rem;
-  float: right;
+  float: left;
 }
 
 .map-container {
@@ -268,23 +287,6 @@ h2 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #7400FF;
-}
-
-.its-over {
-  background-color: #7400FF;
-  color: white;
-  border: 5px solid #00FF00;
-}
-
-.its-over a {
-  font-size: large;
-  font-weight: bold;
-}
-
-.its-over h2 {
-  font-size: 2rem;
-  font-weight: bold;
-  color: white
 }
 
 footer {

@@ -93,6 +93,7 @@ const userSubmit = async () => {
         //sendEmail()
         setUser()
         localStorage.setItem('userId', user.uid);
+        store.isAuth = true;
         //location.reload()
   })
   .catch((error) => {

@@ -9,9 +9,9 @@
       </div>
     </div>
     <div class="info">
-      <p>Du är medlem i det <span v-if="store.team == 'redTeam'">RÖDA LAGET</span><span v-else>VITA LAGET</span> och ni ska ta det andra lagets flaggor!</p>
+<!--       <p>Du är medlem i det <span v-if="store.team == 'redTeam'">RÖDA LAGET</span><span v-else>VITA LAGET</span> och ni ska ta det andra lagets flaggor!</p>
       <p>Detta görs genom att stå inom flaggans radie och lyckas kryssa samma sak som laget som tog flaggan gjorde.</p>
-      <p>Ni samlar poäng ihop och vinner fina priser i grupp!</p>
+      <p>Ni samlar poäng ihop och vinner fina priser i grupp!</p> -->
       <p>Se <router-link to="/team"> alla medlemmar</router-link></p>
       <h2 v-if="store.team == 'whiteTeam'">Röda flaggor</h2>
       <h2 v-else>Vita flaggor</h2>
@@ -165,6 +165,7 @@
   font-weight: bold;
   /* <<< bump this way up: */
   z-index: 1000;
+
 }
 
 .info {
@@ -201,5 +202,8 @@ li .v-icon {
   padding-left: 20px;
 }
 
+ul {
+  border: none
+}
   </style>
   

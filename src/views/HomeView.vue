@@ -7,12 +7,12 @@
                 <v-dialog  v-model="resetWarning" width="90%">
                     <v-card
                         prepend-icon="mdi-alert"
-                        text="By resetting you will lose all progress and have to start over, and there is no way back. Are you sure?"
+                        text="Om du väljer att återställa kommer du förlora din bricka och behöva logga in på nytt. Du kan dock hämta din bricka om du har kvar ID. Är du säker?"
                         title="Warning!"
                     >
                         <v-card-actions>
-                            <v-btn color="#EB00D7" @click="resetWarning = false">Cancel</v-btn>
-                            <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Reset</v-btn>
+                            <v-btn color="#EB00D7" @click="resetWarning = false">Skippa</v-btn>
+                            <v-btn color="#EB00D7" @click="resetWarning = false; reset()">Återställ</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -26,12 +26,12 @@
                 <!-- if bingo id in local storage -->
                 
                 <div style="text-align: left;">
-                    <p class="bingoInfo" v-if="showSheet == true">Vid Bingo ring personsökaren <b>0740119540 </b> och lämna telefonnummer och vänta på att bli uppringd av vår vinsttelefon</p>
+                    <p class="bingoInfo" v-if="store.bingo">Vid Bingo ring personsökaren <b>0740119540 </b>, lämna telefonnummer och vänta på att bli uppringd av vår vinsttelefon</p>
                 </div> 
             </div>
 
             
-            <p class="bingoId" v-if="bingoId && !store.bingo == true">Din brickas ID är: {{ bingoId }} (kan vara bra att spara!)</p>
+            <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} (kan vara bra att spara!)</p>
             <!-- Visible if showShuffle is true -->
             <div class="btn-container" v-if="!showSheet && showShuffle">
                 <v-btn
@@ -53,7 +53,7 @@
 
         <v-dialog v-model="fetchByIdWarning" width="90%">
             <v-btn
-                size="small"
+                size="x-small"
                 icon="mdi-close"
                 color="rgb(10, 150, 125)"
                 @click="fetchByIdWarning = false"/>
@@ -275,12 +275,6 @@ watch(() => store.name, (name) => {
     componentKey.value ++
 })
 
-watch(() => showSheet.value, () => {
-    if (showSheet.value == true) {
-        //make logo smaller
-        //document.getElementById('logo')!.style.width = '40%'
-    }
-})
 
 </script>
 

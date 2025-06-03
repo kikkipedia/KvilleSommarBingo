@@ -3,14 +3,24 @@
        <!-- different flag color for different team-->
       <span v-if="store.team == 'whiteTeam'" class="material-symbols-outlined">flag</span>
       <span v-else-if="store.team == 'readTeam'" class="material-symbols-outlined filled">flag</span>
-      <p>{{ teamArray?.points }} poäng</p>
+      <p class="points">Poäng: {{ teamArray?.points }}</p>
       <div class="teamMembers">
-        <h2>Era flaggor som andra laget kan ta:</h2>
+        <h2>Era nedsatta flaggor just nu:</h2>
         <p v-for="item in flags"><b>{{item.name }},</b> <em>{{ item.adress }}</em></p>
       </div>
-      <div class="teamMembers column">
+      <div class="teamMembers">
         <h2>Medlemmar:</h2>
-        <p v-for="member in members">{{ member.name }}</p>
+         <v-row no-gutters>
+          <v-col
+            v-for="n in members"
+            cols="6"
+            sm="4"
+          >
+            <v-sheet class="memberlist">
+              {{ n.name }}
+            </v-sheet>
+          </v-col>
+        </v-row>
       </div>  
     </div>
 </template>
@@ -139,11 +149,20 @@ const getAddress = async (lat: number, long: number) => {
   padding-left: 5px;
   text-align: left;
   margin-top: 20px;
+  font-family: 'Libre Franklin', sans-serif;
 }
 
-.teamMembers.column {
-  flex-direction: column;
-  columns: 2;
-  column-gap: 20px;
+
+
+.memberlist {
+  font-family: 'Libre Franklin', sans-serif;
+  font-weight: bold;
+  
+}
+
+.points {
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 1.5rem;
+  background-color: #00FF00;
 }
 </style>
