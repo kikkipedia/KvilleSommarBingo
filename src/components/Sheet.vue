@@ -47,12 +47,16 @@
             <!--popup card if flag is taken -->
             <v-overlay v-model="flagPopup" class="flag-catch-overlay" persistent scrim="transparent">
                 <v-card
-                    elevation="16"
+                    elevation="10"
                 >
                 <div class="flag-catch-animation">
                     🏁<br />
                     <span class="message">FLAGGA TAGEN!</span>
+                    <v-btn @click="flagPopup = false">
+                    Yay!
+                </v-btn>
                 </div>
+                
                 </v-card>
             </v-overlay>
             <!-- popup if flag is put down-->
@@ -63,6 +67,9 @@
                 <div class="flag-catch-animation">
                     🏁<br />
                     <span class="message">FLAGGA SATT!</span>
+                    <v-btn @click="setFlag = false">
+                    Yay!
+                </v-btn>
                 </div>
                 </v-card>
             </v-overlay>
@@ -71,7 +78,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { type BingoItem } from '@/types';
+import { type BingoItem, type Flag } from '@/types';
 import { minusBingoItemCount, updateBingoItemCount, updateSheetInDb, updateUserScore, saveLocation, getTeamFlags, deleteFlag } from '@/db';
 import { useBingoStore } from '@/stores';
 import ConfettiExplosion from "vue-confetti-explosion";
@@ -189,95 +196,106 @@ const checkBingo = (itemId: string) => {
     }
 
 }
-// one of 20 bingo clicks should save location
-const randomSave = (id: string) => {
-  // declare lat/long in wider scope
-  let lat: number;
-  let long: number;
-
-  //force user to allow location access
+const getUserLocation = (): Promise<GeolocationPosition> => {
+  return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-        alert('Din webbläsare stöder inte geolocation. Settings > Privacy & Security > Location Services måste vara aktiverat.');
-    }
-
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    lat = position.coords.latitude;
-    long = position.coords.longitude;
-    console.log('User position:', lat, long);
-    const response = await getTeamFlags(store.team);
-    const flag = response.find((item) => item.item === id);
-
-    if (flag) {
-      flagPopup.value = true;
-      setTimeout(() => {
-        flagPopup.value = false;
-      }, 5000); // auto-hide
-
-      if (flag.team === store.team) {
-        return;
-      }
-
-      const userLatLng = L.latLng(lat, long);
-      const markerLatLng = L.latLng(
-        flag.location.latitude || flag.location._lat,
-        flag.location.longitude || flag.location._long
-      );
-
-      const distance = userLatLng.distanceTo(markerLatLng);
-
-      console.log('Distance to flag:', distance);
-      //make sure distance is within 30 meters
-      if (distance <= 30) {
-        console.log(flag.item, 'captured!');
-        flagPopup.value = true;
-        await deleteFlag(id as string);
-      }
-      else {
-        flagPopup.value = false;
-        console.log('distance too far', distance);
-        return;
-      }
+      alert('Din webbläsare stöder inte geolocation. Settings > Privacy & Security > Location Services måste vara aktiverat.');
+      reject('Geolocation not supported.');
       return;
     }
-    else {
-        const random = Math.floor(Math.random() * 20) + 1;
-        console.log('random number for capture attempt:', random);
-        //set flag!
-        if (random === 1) {
-            //first check if within kville
-            if( !checkBorders(lat, long)) {
-                return;
-            }
-            else {
-                saveLocation(id, store.team, lat, long);
-                setFlag.value = true;
-                setTimeout(() => {
-                    setFlag.value = false;
-                }, 5000);
-                    }
-        }
-    
-}
+
+    navigator.geolocation.getCurrentPosition(resolve, (error) => {
+      console.error("Geolocation error:", error);
+      alert("Kunde inte hämta din position. Kontrollera platsinställningarna.");
+      reject(error);
+    });
   });
 };
 
-const checkBorders = (lat: number, long: number) => {
-    //get extent from geojson
-    const userPoint = point([long, lat]); //opposite for turf
-    let borderPolygon: any = null;
-    fetch('/assets/kvilleBorders.json')
-    .then(res => res.json())
-    .then(data => {
-        borderPolygon = data;
-    });
-    const areaPolygon = polygon([borderPolygon.geometry.coordinates]);
-    //check if lat/long is within borders of Kville
-    if (booleanPointInPolygon(userPoint, areaPolygon)) {
-        return  true;
+const handleExistingFlag = async (flag: Flag, lat: number, long: number, id: string) => {
+
+  if (flag.team === store.team) {
+    console.log("Already owned flag. No action needed.");
+    return;
+  }
+
+  const userLatLng = L.latLng(lat, long);
+  const markerLatLng = L.latLng(
+    flag.location.latitude || flag.location._lat,
+    flag.location.longitude || flag.location._long
+  );
+
+  const distance = userLatLng.distanceTo(markerLatLng);
+  console.log('Distance to flag:', distance);
+
+  if (distance <= 30) {
+    console.log(`${flag.item} captured!`);
+    flagPopup.value = true;
+    await deleteFlag(id);
+  } else {
+    console.log("Too far from flag. Distance:", distance);
+    flagPopup.value = false;
+  }
+};
+
+const trySetRandomFlag = (id: string, lat: number, long: number) => {
+  const random = Math.floor(Math.random() * 20) + 1;
+  console.log('Random roll:', random);
+
+  if (random === 1) {
+    const withinBounds = checkBorders(lat, long);
+    console.log("Within allowed area:", withinBounds);
+
+    if (!withinBounds) return;
+    saveLocation(id, store.team, lat, long);
+    setFlag.value = true;
+    setTimeout(() => setFlag.value = false, 5000);
+    console.log("New flag set at", lat, long);
+  }
+};
+
+const randomSave = async (id: string) => {
+  try {
+    const position = await getUserLocation();
+    const lat = position.coords.latitude;
+    const long = position.coords.longitude;
+
+    console.log("User location:", lat, long);
+
+    const response = await getTeamFlags(store.team);
+    const flag = response.find(item => item.item === id);
+
+    if (flag) {
+      await handleExistingFlag(flag, lat, long, id);
+    } else {
+      trySetRandomFlag(id, lat, long);
     }
-    else {
+  } catch (error) {
+    console.error("Error in randomSave:", error);
+  }
+};
+
+
+const checkBorders = (lat: number, long: number) => {
+    
+    //get extent from geojson
+    const KVILLE_BOUNDS = {
+        minLat: 57.713840934733405,
+        maxLat: 57.72011020026795,
+        minLng: 11.943897873882559,
+        maxLng: 11.953817312223217,
+    };
+    //check if lat/long is within borders of Kville
+    const withinLat = lat >= KVILLE_BOUNDS.minLat && lat <= KVILLE_BOUNDS.maxLat;
+    const withinLng = long >= KVILLE_BOUNDS.minLng && long <= KVILLE_BOUNDS.maxLng;
+
+    if(!withinLat || !withinLng) {
+        console.log("Coordinates are outside the allowed area.");
         return false;
     }
+    else
+    return true;
+    
 }
 
 
@@ -383,11 +401,12 @@ td {
 }
 
 .flag-catch-animation {
-    width: 300px;
+width: 300px;
+    height: 300px;
   font-size: 48px;
   text-align: center;
-  color: rgb(2, 111, 26);
-  animation: popIn 0.4s ease, fadeOut 5s ease forwards;
+    border: 5px solid #00FF00;
+    padding: 10px;
   text-shadow: 0 0 10px #51514c;
 }
 
@@ -426,7 +445,7 @@ td {
 @keyframes pulseText {
   0%, 100% {
     transform: scale(1);
-    color: rgb(0, 255, 8);
+    color: #6200ea;
   }
   50% {
     transform: scale(1.2);

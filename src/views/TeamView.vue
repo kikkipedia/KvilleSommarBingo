@@ -148,8 +148,9 @@ const getAddress = async (lat: number, long: number) => {
   flex-direction: column;
   padding-left: 5px;
   text-align: left;
-  margin-top: 20px;
+  margin: 20px;
   font-family: 'Libre Franklin', sans-serif;
+  border: 2px solid #00FF00;
 }
 
 
