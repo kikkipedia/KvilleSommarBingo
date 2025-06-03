@@ -35,3 +35,8 @@ coverage
 *.firebase/hosting
 
 *.cache
+
+/tiles/
+.geojson
+
+/public/tiles/

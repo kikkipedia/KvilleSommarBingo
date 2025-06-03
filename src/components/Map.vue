@@ -77,15 +77,25 @@
   });
   
   onMounted(async () => {
-    map.value = L.map('map').setView([57.71947, 11.94729], 16);
+    map.value = L.map('map').setView([57.71760575194973, 11.948177775196955], 15);
+
+    //set max zoom out
+    map.value.setMinZoom(15);
+
     if (map.value) {
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer(`https://api.maptiler.com/maps/streets-v2-light/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAP_TILE_KEY}`, {
         maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
       }).addTo(map.value);
     }
     
-  
+    //add the kville border tiles
+    L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+      tms: false,       // Use true only if your tile folder is flipped Y-wise
+      maxZoom: 19,
+      opacity: 0.8      // Adjust overlay visibility
+    }).addTo(map.value);
+
     const userTeam = localStorage.getItem('team');
     if (!userTeam) {
       console.error('No team found in localStorage');
@@ -117,7 +127,7 @@
       .bindPopup(`${name.item}`);
 
     L.circle([lat, lng], {
-      radius: 30, color: 'red', fillColor: 'red', fillOpacity: 0.2
+      radius: 30, color: '#6900FF', fillColor: '#6900FF', fillOpacity: 0.2
     }).addTo(map.value);
      
     });
@@ -130,7 +140,7 @@
 .map-wrapper {
   position: relative;
   width: 100vw;
-  height: 450px;
+  height: 600px;
   margin: 5px;
 }
 

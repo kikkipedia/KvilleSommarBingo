@@ -77,6 +77,7 @@ import { useBingoStore } from '@/stores';
 import ConfettiExplosion from "vue-confetti-explosion";
 import 'animate.css';
 import L from 'leaflet';
+import { booleanPointInPolygon, point, polygon } from '@turf/turf';
 
 //define props
 const props = defineProps({
@@ -203,7 +204,6 @@ const randomSave = (id: string) => {
     lat = position.coords.latitude;
     long = position.coords.longitude;
     console.log('User position:', lat, long);
-
     const response = await getTeamFlags(store.team);
     const flag = response.find((item) => item.item === id);
 
@@ -240,22 +240,45 @@ const randomSave = (id: string) => {
       return;
     }
     else {
-        // No flag found → fallback to random chance
         const random = Math.floor(Math.random() * 20) + 1;
         console.log('random number for capture attempt:', random);
         //set flag!
         if (random === 1) {
-        saveLocation(id, store.team, lat, long);
-        setFlag.value = true;
-        setTimeout(() => {
-            setFlag.value = false;
-        }, 5000);
+            //first check if within kville
+            if( !checkBorders(lat, long)) {
+                return;
+            }
+            else {
+                saveLocation(id, store.team, lat, long);
+                setFlag.value = true;
+                setTimeout(() => {
+                    setFlag.value = false;
+                }, 5000);
+                    }
         }
-    }
+    
+}
   });
 };
 
-
+const checkBorders = (lat: number, long: number) => {
+    //get extent from geojson
+    const userPoint = point([long, lat]); //opposite for turf
+    let borderPolygon: any = null;
+    fetch('/assets/kvilleBorders.json')
+    .then(res => res.json())
+    .then(data => {
+        borderPolygon = data;
+    });
+    const areaPolygon = polygon([borderPolygon.geometry.coordinates]);
+    //check if lat/long is within borders of Kville
+    if (booleanPointInPolygon(userPoint, areaPolygon)) {
+        return  true;
+    }
+    else {
+        return false;
+    }
+}
 
 
 //watch for bingo in bingoSheet
