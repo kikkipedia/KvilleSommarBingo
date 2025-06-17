@@ -120,7 +120,6 @@ const fetchFlags = async () => {
       }
     })
   }
-    console.log('Flags:', flags.value)
   } catch (err) {
     console.error('Failed to load flag data:', err)
   }

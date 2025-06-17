@@ -41,7 +41,8 @@
                     class="mx-auto my-8 bingocard"
                     elevation="16"
                 >
-                <span class="animate__animated animate__bounceIn">BINGO!</span>
+                <!-- <span class="animate__animated animate__bounceIn">BINGO!</span> -->
+                <span class="animate__animated animate__bounceIn"><img src="@/assets/bingogif.gif" alt="Bingo" /></span>
                 </v-card>
             </v-overlay>
             <!--popup card if flag is taken -->
@@ -84,7 +85,6 @@ import { useBingoStore } from '@/stores';
 import ConfettiExplosion from "vue-confetti-explosion";
 import 'animate.css';
 import L from 'leaflet';
-import { booleanPointInPolygon, point, polygon } from '@turf/turf';
 
 //define props
 const props = defineProps({
@@ -272,8 +272,11 @@ const randomSave = async (id: string) => {
         trySetRandomFlag(id, lat, long);
       }
     }
-    else return //no flags
-    
+    if (!position) {
+      console.warn("Could not retrieve location. Maybe user denied permission.");
+      return;
+    }
+
   } catch (error) {
     console.error("Error in randomSave:", error);
   }
@@ -369,19 +372,8 @@ td {
 }
 
 .bingocard {
-    background-color: rgb(10, 150, 125);;
-    color: white;
-    font-size: 10rem;
-    font-family: "Jersey 10 Charted", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    margin-top: 1rem;
-    width: 400px;
-    height: 200px;
+    height: 300px;
+    width: 300px;
 }
 
 .overlay {

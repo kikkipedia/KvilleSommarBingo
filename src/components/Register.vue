@@ -76,8 +76,6 @@ const saveUserInDb = async(id: string) =>{
     //save new user in db
     const response = await saveNewUser(id, userName.value, team.value)
     localStorage.setItem('userId', response)
-    
-    console.log('in register:', response)
     location.reload()
 }
 

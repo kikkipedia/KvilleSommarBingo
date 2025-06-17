@@ -76,7 +76,6 @@ const userSubmit = () => {
             store.isAuth = true;
             fetchUserById(userCredential.user.uid)
                 .then((response) => {
-                    console.log(response);
                     if (response) {
                         localStorage.setItem('userName', response.name);
                         store.setTeam(response.team);
