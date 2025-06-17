@@ -257,19 +257,23 @@ const trySetRandomFlag = (id: string, lat: number, long: number) => {
 const randomSave = async (id: string) => {
   try {
     const position = await getUserLocation();
-    const lat = position.coords.latitude;
-    const long = position.coords.longitude;
+    if(position){
+      const lat = position.coords.latitude;
+      const long = position.coords.longitude;
 
-    console.log("User location:", lat, long);
+      console.log("User location:", lat, long);
 
-    const response = await getTeamFlags(store.team);
-    const flag = response.find(item => item.item === id);
+      const response = await getTeamFlags(store.team);
+      const flag = response.find(item => item.item === id);
 
-    if (flag) {
-      await handleExistingFlag(flag, lat, long, id);
-    } else {
-      trySetRandomFlag(id, lat, long);
+      if (flag) {
+        await handleExistingFlag(flag, lat, long, id);
+      } else {
+        trySetRandomFlag(id, lat, long);
+      }
     }
+    else return //no flags
+    
   } catch (error) {
     console.error("Error in randomSave:", error);
   }

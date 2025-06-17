@@ -7,22 +7,21 @@
       <div v-if="items.length === 0" class="map-overlay">
         INGA FLAGGOR ATT TA ÖVER! MEN HÅLL KOLL!
       </div>
-    </div>
-    <div class="info">
-<!--       <p>Du är medlem i det <span v-if="store.team == 'redTeam'">RÖDA LAGET</span><span v-else>VITA LAGET</span> och ni ska ta det andra lagets flaggor!</p>
-      <p>Detta görs genom att stå inom flaggans radie och lyckas kryssa samma sak som laget som tog flaggan gjorde.</p>
-      <p>Ni samlar poäng ihop och vinner fina priser i grupp!</p> -->
-      <p>Se <router-link to="/team"> alla medlemmar</router-link></p>
-      <h2 v-if="store.team == 'whiteTeam'">Röda flaggor</h2>
-      <h2 v-else>Vita flaggor</h2>
-      <span v-if="items.length === 0">Inga flaggor att ta just nu!</span>
-      <ul class="list-group">
-        <li v-for="item in items" :key="item.id" class="list-group-item">
-          {{ item.name }} <v-icon color="black" @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>
-
+    <!-- Floating legend -->
+    <div class="map-legend" v-if="items.length">
+      <ul class="legend-list">
+        <li v-for="item in items" :key="item.id" class="legend-item">
+          {{ item.name }}
+          <v-icon color="black" small @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>
         </li>
       </ul>
     </div>
+  </div>
+
+  <!-- Optional: other static page info -->
+  <div class="info">
+    <p>Se <router-link to="/team">alla medlemmar</router-link></p>
+  </div>
   </template>
   
   <script setup>
@@ -77,7 +76,15 @@
   });
   
   onMounted(async () => {
-    map.value = L.map('map').setView([57.71760575194973, 11.948177775196955], 15);
+    map.value = L.map('map', {
+    // dragging: false,            // disable drag/pan
+    // scrollWheelZoom: false,     // disable mouse wheel zoom
+    // //doubleClickZoom: false,     // optional
+    // boxZoom: false,             // optional
+    // keyboard: false,            // optional
+    // tap: false,                 // disable tap-based drag on touch
+    touchZoom: true             // allow pinch zoom!
+  }).setView([57.71760575194973, 11.948177775196955], 15);
 
     //set max zoom out
     map.value.setMinZoom(15);
@@ -150,6 +157,7 @@
   /* make this a stacking context so your overlay’s z-index is relative to it */
   position: relative;
   z-index: 0;
+  touch-action: pinch-zoom;
 }
 
 .map-overlay {
@@ -204,6 +212,50 @@ li .v-icon {
 
 ul {
   border: none
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.7); /* more transparent */
+  padding: 8px 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  font-size: 0.85rem;
+  max-width: 180px;
+}
+
+.legend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;               /* optional: adds breathing room */
+  padding: 2px 0;
+  white-space: nowrap;    /* keeps text in one line */
+}
+
+.legend-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.legend-item .v-icon {
+  font-size: 14px; /* smaller icon */
+  cursor: pointer;
+  padding-left: 8px;
+}
+
+.mdi:before, .mdi-set {
+  font-size: 1.3rem;
 }
   </style>
   
