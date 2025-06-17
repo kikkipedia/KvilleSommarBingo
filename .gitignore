@@ -52,3 +52,5 @@ coverage
 .pnp.*
 .yarnrc.yml
 yarn.lock
+
+hosting.*

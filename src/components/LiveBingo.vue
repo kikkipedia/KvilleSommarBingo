@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import bingoitems from '../assets/liveBingoItems.json';
+//import bingoitems from '../assets/liveBingoItems.json';
 import 'animate.css';
 import type { BingoItem } from '../types';
 
@@ -33,7 +33,7 @@ const dragnaNr = ref<BingoItem[]>([]);
 const itemNow = ref();
 
 onMounted(() => {
-    items.value = bingoitems as any
+    //items.value = bingoitems as any
 })
 
 const getNext = () => {
@@ -64,7 +64,7 @@ const getNext = () => {
 const reset = () => {
     dragnaNr.value = [];
     itemNow.value = null;
-    items.value = bingoitems as any
+    //items.value = bingoitems as any
 }
    
 </script>
