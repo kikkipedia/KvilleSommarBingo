@@ -54,3 +54,4 @@ coverage
 yarn.lock
 
 hosting.*
+*.cache
