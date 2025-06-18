@@ -183,6 +183,7 @@ const checkBingo = (itemId: string) => {
                 explode.value = true
                 overlay.value = true
                 localStorage.setItem('bingo', 'true')
+                store.setBingo(true)
                 //save the sheet in db
                 updateSheetInDb(props.bingoSheet, props.bingoId)
             }
@@ -199,16 +200,35 @@ const checkBingo = (itemId: string) => {
 const getUserLocation = (): Promise<GeolocationPosition> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      alert('Din webbläsare stöder inte geolocation. Settings > Privacy & Security > Location Services måste vara aktiverat.');
-      reject('Geolocation not supported.');
-      return;
+      alert('Din webbläsare stöder inte geolocation.');
+      return reject('Geolocation not supported.');
     }
 
-    navigator.geolocation.getCurrentPosition(resolve, (error) => {
-      console.error("Geolocation error:", error);
-      alert("Kunde inte hämta din position. Kontrollera platsinställningarna.");
-      reject(error);
-    });
+    navigator.geolocation.getCurrentPosition(
+      resolve,
+      (error) => {
+        switch (error.code) {
+          case 1:
+            alert("Platsåtkomst nekades. Tillåt plats i webbläsaren.");
+            break;
+          case 2:
+            alert("Kunde inte bestämma plats. Kontrollera att Wi-Fi är aktiverat och plats­tjänster är på");
+            break;
+          case 3:
+            alert("Platsförfrågan tog för lång tid. Försök igen.");
+            break;
+          default:
+            alert("Okänt fel vid hämtning av plats.");
+        }
+        console.error("Geolocation error:", error);
+        reject(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
   });
 };
 
@@ -317,10 +337,7 @@ watch(() => props.bingoSheet?.bingo, () => {
             store.bingo = true
             //update user score
             updateUserScore(localStorage.getItem('userId') as string)
-            //wait 5s then set bingo to false in store
-            setTimeout(() => {
-                store.bingo = false
-            }, 5000)
+            
         }
         else {
             props.bingoSheet.bingo = false

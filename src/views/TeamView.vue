@@ -1,9 +1,12 @@
 <template>
     <div v-if="store.isAuth && store.team" class="container">
        <!-- different flag color for different team-->
-      <span v-if="store.team == 'whiteTeam'" class="material-symbols-outlined">flag</span>
-      <span v-else-if="store.team == 'readTeam'" class="material-symbols-outlined filled">flag</span>
-      <p class="points">Poäng: {{ teamArray?.points }}</p>
+        <div class="scoreboard">
+          <span  class="material-symbols-outlined filledWhite">flag</span> {{ whitePoints }} -  
+          {{ redPoints }}<span  class="material-symbols-outlined filled">flag</span> 
+        </div>
+      
+      <!-- <p class="points">Poäng: {{ teamArray?.points }}</p> -->
       <div class="teamMembers">
         <h2>Era nedsatta flaggor just nu:</h2>
         <p v-for="item in flags"><b>{{item.name }},</b> <em>{{ item.adress }}</em></p>
@@ -36,7 +39,8 @@ const team = ref('')
 const teamArray = ref<Team | null>(null)
 const members = ref<User[]>([])
 const flags = ref<Flag[]>([])
-const address = ref('')
+const whitePoints = ref(0)
+const redPoints = ref(0)
 
 onMounted(() => {
   (async () => {
@@ -61,6 +65,7 @@ onMounted(() => {
       }
       await fetchMembers()
       await fetchFlags()
+      await getTeamPoints()
     } catch (err) {
       console.error('Failed to load team data:', err)
     }
@@ -139,6 +144,16 @@ const getAddress = async (lat: number, long: number) => {
   }
 }
 
+const getTeamPoints = async () => {
+  const white = await fetchTeamById('whiteTeam')
+  const red = await fetchTeamById('redTeam')
+  if (!white || !red) {
+    console.error('Failed to fetch team points')
+    return
+  }
+  whitePoints.value = white.points
+  redPoints.value = red.points
+}
 </script>
 
 <style scoped>
@@ -164,5 +179,17 @@ const getAddress = async (lat: number, long: number) => {
   font-family: 'Press Start 2P', sans-serif;
   font-size: 1.5rem;
   background-color: #00FF00;
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 1.5rem;
+  background-color: #00FF00;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 </style>

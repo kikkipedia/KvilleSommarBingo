@@ -18,7 +18,7 @@
                 </v-dialog>
             <!-- If userId in local storage -->
              <div v-if="userId" class="welcome"> 
-                <h2 v-if="showSheet == false">Välkommen {{ user }}</h2> 
+                <h2 v-if="showSheet == false">Välkommen {{ user }}, du tillhör <span :class="store.team">{{ store.team === 'whiteTeam' ? 'VITA ' : 'RÖDA ' }}</span>laget</h2> 
                 <!-- different flag color for different team-->
                  <span v-if="store.team == 'whiteTeam'" class="material-symbols-outlined">flag</span>
                 <span
@@ -26,14 +26,14 @@
                 <!-- if bingo id in local storage -->
                 
                 <div style="text-align: left;">
-                    <p class="bingoInfo" v-if="store.bingo">Vid Bingo ring personsökaren <b>0740119540 </b>, lämna telefonnummer och vänta på att bli uppringd av vår vinsttelefon</p>
+                    <p class="bingoInfo">Vid Bingo ring personsökaren <b>0740119540 </b>& lämna telefonnummer</p>
                 </div> 
             </div>
 
             
             <p class="bingoId" v-if="bingoId">Din brickas ID är: {{ bingoId }} (kan vara bra att spara!)</p>
             <!-- Visible if showShuffle is true -->
-            <div class="btn-container" v-if="!showSheet && showShuffle">
+            <div class="btn-container" v-if="showShuffle" :key="componentKey">
                 <v-btn
                     color="#00FF00"
                     size="large"
@@ -263,12 +263,14 @@ onMounted(async ()  => {
 })
 
 //if bingo - show shuffle button
-watch(() => store.bingo, () => {
-    if(bingoSheet && store.bingo){
-        showShuffle.value = true
+import { storeToRefs } from 'pinia'
+const { bingo } = storeToRefs(store)
 
-    }
-})
+watch(bingo, (newVal) => {
+  if (newVal) {
+    showShuffle.value = true
+  }
+}, { immediate: true })
 
 watch(() => store.name, (name) => {
     user.value = name
@@ -340,5 +342,12 @@ p {
     width: 100px;
 }
 
-
+.whiteTeam {
+  color: black;
+  background: white;
+}
+.redTeam {
+  color: white;
+  background: red;
+}
 </style>

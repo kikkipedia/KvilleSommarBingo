@@ -46,7 +46,6 @@
 import { ref, watch } from 'vue';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { useBingoStore } from '@/stores';
-import  router from '@/router';
 import { saveNewUser } from '@/db';
 
 const email = ref('');
@@ -101,24 +100,6 @@ const userSubmit = async () => {
   });
     
 }   
-
-const sendEmail = () => {
-    const actionCodeSettings = {
-        url: 'http://kvillebingo.web.app/', 
-        handleCodeInApp: true,
-    };
-    const auth = getAuth();
-    //send email verification
-    if (auth.currentUser) {
-        sendEmailVerification(auth.currentUser, actionCodeSettings)
-        .then(() => {
-            console.log('Email verification sent');
-            showSnackbar.value = true;
-            redirectHome();
-            
-     });
-    }
-}
 
 const setUser = () => {
     //set in local storage and store
