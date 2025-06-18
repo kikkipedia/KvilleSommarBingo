@@ -300,4 +300,31 @@ footer {
   margin: auto;
   position: relative;
 }
+
+@media (max-width: 340px) {
+  nav {
+    flex-direction: column;
+  }
+
+  .map-container {
+    height: 60%;
+  }
+
+  footer {
+    font-size: 0.7rem;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .bingoInfo p{
+    font-size: 0.8rem;
+    margin: 2px;
+  }
+  .bingoId p{
+    font-size: 0.5rem;
+    margin: 2px;
+  }
+}
 </style>
