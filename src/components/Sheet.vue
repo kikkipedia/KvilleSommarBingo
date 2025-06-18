@@ -244,14 +244,17 @@ const trySetRandomFlag = (id: string, lat: number, long: number) => {
 
   if (random === 1) {
     const withinBounds = checkBorders(lat, long);
-    console.log("Within allowed area:", withinBounds);
+    //console.log("Within allowed area:", withinBounds);
 
     if (!withinBounds) return;
-    saveLocation(id, store.team, lat, long);
-    setFlag.value = true;
-    setTimeout(() => setFlag.value = false, 5000);
-    console.log("New flag set at", lat, long);
+    else {
+      saveLocation(id, store.team, lat, long);
+      setFlag.value = true;
+      setTimeout(() => setFlag.value = false, 5000);
+      //console.log("New flag set at", lat, long);
+    }    
   }
+  else return
 };
 
 const randomSave = async (id: string) => {

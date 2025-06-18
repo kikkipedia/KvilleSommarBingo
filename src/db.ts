@@ -181,14 +181,14 @@ export const signInWithGoogle = async () => {
 }
 
 export const saveLocation = async (id, team, lat, long) => { 
-  //draw a circle around the location with radius 10m
-
   const docRef = await addDoc(collection(db, "flags"), {
     item: id,
     team: team,
     location: new GeoPoint(lat, long)
 
   });
+  //give team one point
+  await updateTeamScore(team);
   return docRef.id;
 }
 
@@ -243,10 +243,18 @@ export const deleteFlag = async (id) => {
   if (flagId) {
     const docRef = doc(db, "flags", flagId);
     await deleteDoc(docRef);
-    console.log(`Flag with id ${flagId} deleted`);
-    updateTeamScore(localStorage.getItem('team'));
+    //console.log(`Flag with id ${flagId} deleted`);
+    await updateTeamScore(localStorage.getItem('team'));
+    //minus for the other team
+    if(localStorage.getItem('team') === 'redTeam') {
+      await teamMinusOne('whiteTeam');
+    }
+    else if(localStorage.getItem('team') === 'whiteTeam') {
+      await teamMinusOne('redTeam');
+    }
   } else {
-    console.warn(`No flag found with item = ${id}`);
+    return
+    //console.warn(`No flag found with item = ${id}`);
   }
 }
 
@@ -259,6 +267,22 @@ const updateTeamScore = async (team) => {
     points: newScore
   }, { merge: true });
   console.log("Document updated with ID: ", docRef.id);
+}
+
+export const teamMinusOne = async (team) => {
+  const docRef = doc(db, "teams", team);
+  let teamData = await getDoc(docRef);
+  let score = teamData.data().points;
+  //if score is 0, do not minus
+  if (score > 0) {
+    const newScore = score - 1;
+    await setDoc(docRef, {
+      points: newScore
+    }, { merge: true });
+    console.log("Document updated with ID: ", docRef.id);
+  } else {
+    return
+  }
 }
 
 export const fetchTeamById = async (id: string) => {
