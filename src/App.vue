@@ -219,9 +219,7 @@ nav ul {
 .my-icon--active {
   color: hsla(160, 100%, 37%, 1) !important;
 }
-.v-card {
-  
-}
+
 
 .mdi:before, .mdi-set {
     font-size: 2rem;
