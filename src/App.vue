@@ -15,6 +15,15 @@
       <li>
         <v-icon
           large
+          class="logo logoLiten"
+          @click="openInfo = true"
+        >
+          mdi-information-outline
+        </v-icon>
+      </li>
+      <li>
+        <v-icon
+          large
           class="logo"
           @click="openStats = true"
         >
@@ -57,7 +66,7 @@
             @click="openInfo = false"
           ></v-btn>
           <v-card-text>
-            <h2>Vadå Sturis?</h2>
+            <h2>Vadå Hecky är hes?</h2>
             <p style="color: #7400FF;">Här finns en lista som kan vara till hjälp när man inte fattar vad i helvete en ruta betyder.</p>
             <hr/>
             <div v-for="item in descriptions">
@@ -211,7 +220,7 @@ nav ul {
   color: hsla(160, 100%, 37%, 1) !important;
 }
 .v-card {
-  overflow: hidden !important;
+  
 }
 
 .mdi:before, .mdi-set {

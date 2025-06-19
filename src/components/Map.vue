@@ -19,9 +19,9 @@
   </div>
 
   <!-- Optional: other static page info -->
-  <div class="info">
+<!--   <div class="info">
     <p>Se <router-link to="/team">alla medlemmar</router-link></p>
-  </div>
+  </div> -->
   </template>
   
   <script setup>

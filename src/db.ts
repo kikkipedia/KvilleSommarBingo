@@ -10,7 +10,7 @@ import { auth } from './firebase.ts'
 
 const getBingoItems = async () => {
   const itemsArray = [];
-  const querySnapshot = await getDocs(collection(db, "bingoItems"));
+  const querySnapshot = await getDocs(collection(db, "bingoItems2025"));
   querySnapshot.forEach((doc) => {
     const addId = { ...doc.data(), id: doc.id };
     itemsArray.push(addId);
@@ -19,7 +19,7 @@ const getBingoItems = async () => {
 }
 
 const getBingoItemById = async (id) => {
-  const docRef = doc(db, "bingoItems", id);
+  const docRef = doc(db, "bingoItems2025", id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const item = docSnap.data();
@@ -31,7 +31,7 @@ const getBingoItemById = async (id) => {
 
 
 const saveNewSheetToDb = async (sheet) => {
-  const docRef = await addDoc(collection(db, "bingoSheets"), {
+  const docRef = await addDoc(collection(db, "bingoSheets2025"), {
     sheet
   });
   console.log("Document written with ID: ", docRef.id);
@@ -39,7 +39,7 @@ const saveNewSheetToDb = async (sheet) => {
 }
 
 const updateSheetInDb = async (sheet, id) => {
-  const docRef = doc(db, "bingoSheets", id);
+  const docRef = doc(db, "bingoSheets2025", id);
   await setDoc(docRef, {
     sheet
   });
@@ -48,7 +48,7 @@ const updateSheetInDb = async (sheet, id) => {
 }
 
 const fetchSheetById = async (id) => {
-  const docRef = doc(db, "bingoSheets", id);
+  const docRef = doc(db, "bingoSheets2025", id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const sheet = docSnap.data().sheet;
@@ -127,7 +127,7 @@ const fetchUserById = async (id) => {
 }
 
 const updateBingoItemCount = async (id) => {
-  const docRef = doc(db, "bingoItems", id);
+  const docRef = doc(db, "bingoItems2025", id);
   let countBefore = await getDoc(docRef);
   countBefore = countBefore.data().count;
   const newCount = countBefore + 1;
@@ -140,7 +140,7 @@ const updateBingoItemCount = async (id) => {
 }
 
 const minusBingoItemCount = async (id) => {
-  const docRef = doc(db, "bingoItems", id);
+  const docRef = doc(db, "bingoItems2025", id);
   let countBefore = await getDoc(docRef);
   countBefore = countBefore.data().count;
   const newCount = countBefore - 1;
