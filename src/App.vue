@@ -83,13 +83,13 @@
       <!--rules 2025-->
 
       <v-dialog v-model="openRules" width="90%">
-        <v-card>
-          <v-card-text>
+        <v-card style="overflow-y: auto;">
+          <v-card-text class="infotext">
             <h2>Nytt 2025</h2>
             <ul>
               <li>Du måste registrera dig på nytt!</li>
               <li>När du registrerar dig slumpas du in i ett lag. Röda eller vita laget! Tänk röda/vita rosen.</li>
-              <li>Ibland när du kryssar sätts en flagga ner. Denna ska det andra laget ta, genom att kryssa samma sak inom en radie på 30m.</li>
+              <li>Ibland när du kryssar sätts en flagga ner. Laget får då 1p! Denna flagga ska det andra laget ta - genom att kryssa samma sak inom en radie på 30m.</li>
               <li>Då får laget 1p.</li>
               <li>En flagga kan inte sättas utanför Kville!</li>
               <li>För att delta i Capture the flag måste du tillåta platsspårning i din webläsare</li>
@@ -222,7 +222,6 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
   width: 100%;
   border: 4px solid #7400FF;
   font-family:'Roboto Mono', monospace;
@@ -299,6 +298,11 @@ footer {
   background-color: #7400FF;
   margin: auto;
   position: relative;
+}
+
+.infotext li {
+  font-size: 12px;
+  padding: 3px;
 }
 
 @media (max-width: 340px) {
