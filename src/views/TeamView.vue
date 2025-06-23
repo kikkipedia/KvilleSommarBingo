@@ -102,61 +102,54 @@ onMounted(() => {
 
 const fetchMembers = async () => {
   try {
-    //member ids are in teamArray.value.members
-    const mem = teamArray.value?.members
-    if (!mem) {
-      console.error('No members found in team data')
-      return
-    }
-    //fetch every member for each member id in mem and add to members.value
-    for (const memberId of mem) {
-      const response = await fetchUserById(memberId.id)
-      if (!response) {
-        console.error(`Member ${memberId} not found in database`)
-        continue
-      }
-      // Map Firestore DocumentData to User type
-      members.value.push({
-        id: response.id,
-        name: response.name,
-        score: response.score
-      })
-    }
+    const mem = teamArray.value?.members;
+    if (!mem) return;
+
+    const promises = mem.map(memberId =>
+      fetchUserById(memberId.id)
+        .then(response => {
+          if (response) {
+            return {
+              id: response.id,
+              name: response.name,
+              score: response.score
+            } as User;
+          }
+          return null;
+        })
+    );
+
+    const results = await Promise.all(promises);
+    members.value = results.filter(Boolean) as User[];
   } catch (err) {
-    console.error('Failed to load member data:', err)
+    console.error('Failed to load member data:', err);
   }
-}
+};
 
 const fetchFlags = async () => {
   try {
-    const response = await fetchOwnFlags(team.value)
-    if (!response) {
-      return
-    }
-    flags.value = response as [Flag]
-    if (!flags.value) {
-      console.error('No flags found in team data')
-      return
-    }
-    else {
-    flags.value.forEach(async item => {
-      // items.item is and name should be fetched and added to the item
-      const name = await getBingoItemById(item.item);
-      const flagAddress = await getAddress(item.location._lat, item.location._long);
-      if (!name || !flagAddress) {
-        return;
-      }
-      else {
-        //add to flag
-        item.name = name.item
-        item.adress = flagAddress
-      }
-    })
-  }
+    const response = await fetchOwnFlags(team.value);
+    if (!response) return;
+
+    const updatedFlags = await Promise.all(
+      (response as Flag[]).map(async (item) => {
+        const [name, address] = await Promise.all([
+          getBingoItemById(item.item),
+          getAddress(item.location._lat, item.location._long)
+        ]);
+        return {
+          ...item,
+          name: name?.item || 'Okänt',
+          adress: address || 'Ingen adress'
+        };
+      })
+    );
+
+    flags.value = updatedFlags;
   } catch (err) {
-    console.error('Failed to load flag data:', err)
+    console.error('Failed to load flag data:', err);
   }
-}
+};
 
 const getAddress = async (lat: number, long: number) => {
   try {
@@ -173,15 +166,20 @@ const getAddress = async (lat: number, long: number) => {
 }
 
 const getTeamPoints = async () => {
-  const white = await fetchTeamById('whiteTeam')
-  const red = await fetchTeamById('redTeam')
-  if (!white || !red) {
-    console.error('Failed to fetch team points')
-    return
+  try {
+    const [white, red] = await Promise.all([
+      fetchTeamById('whiteTeam'),
+      fetchTeamById('redTeam')
+    ]);
+
+    if (!white || !red) throw new Error("One or both teams missing");
+
+    whitePoints.value = white.points;
+    redPoints.value = red.points;
+  } catch (err) {
+    console.error("Failed to fetch team points", err);
   }
-  whitePoints.value = white.points
-  redPoints.value = red.points
-}
+};
 </script>
 
 <style scoped>

@@ -34,7 +34,7 @@ const saveNewSheetToDb = async (sheet) => {
   const docRef = await addDoc(collection(db, "bingoSheets2025"), {
     sheet
   });
-  console.log("Document written with ID: ", docRef.id);
+  //console.log("Document written with ID: ", docRef.id);
   return docRef.id;
 }
 
@@ -43,7 +43,7 @@ const updateSheetInDb = async (sheet, id) => {
   await setDoc(docRef, {
     sheet
   });
-  console.log("Document updated with ID: ", docRef.id);
+  //console.log("Document updated with ID: ", docRef.id);
   return docRef.id;
 }
 
@@ -72,7 +72,7 @@ const addUserToTeam = async (userId, teamId) => {
     members: arrayUnion({ id: userId })
   }, { merge: true });
 
-  console.log(`User ${userId} added to team ${teamId}`);
+  //console.log(`User ${userId} added to team ${teamId}`);
 };
 
 const saveNewUser = async (id, name, team) => {
@@ -110,7 +110,7 @@ const updateUserScore = async (id) => {
   await setDoc(docRef, {
     score: newScore
   }, { merge: true });
-  console.log("Document updated with ID: ", docRef.id);
+  //console.log("Document updated with ID: ", docRef.id);
   return docRef.id;
 }
 
@@ -118,7 +118,7 @@ const fetchUserById = async (id) => {
   const docRef = doc(db, "users", id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
+    //console.log("Document data:", docSnap.data());
     return docSnap.data()
   } else {
     // docSnap.data() will be undefined in this case
@@ -161,7 +161,8 @@ export const signInWithGoogle = async () => {
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
+        //console.log("Document data:", docSnap.data());
+        // User already exists, do nothing
       }
       else{
         const docRef = await setDoc(doc(db, "users", user.uid), {
@@ -203,7 +204,7 @@ export const fetchOwnFlags = async (team) => {
     }
   })
 } catch (error) {
-  console.error("Error fetching flags: ", error);
+  //console.error("Error fetching flags: ", error);
 }
   return itemsArray;
 }
@@ -266,7 +267,7 @@ const updateTeamScore = async (team) => {
   await setDoc(docRef, {
     points: newScore
   }, { merge: true });
-  console.log("Document updated with ID: ", docRef.id);
+  //console.log("Document updated with ID: ", docRef.id);
 }
 
 export const teamMinusOne = async (team) => {
@@ -279,7 +280,7 @@ export const teamMinusOne = async (team) => {
     await setDoc(docRef, {
       points: newScore
     }, { merge: true });
-    console.log("Document updated with ID: ", docRef.id);
+    //console.log("Document updated with ID: ", docRef.id);
   } else {
     return
   }
