@@ -99,7 +99,7 @@
               <li>Du måste registrera dig på nytt!</li>
               <li>När du registrerar dig slumpas du in i ett lag. Röda eller vita laget! Tänk röda/vita rosen.</li>
               <li>Ibland när du kryssar sätts en flagga ner. Laget får då 1p! Denna flagga ska det andra laget ta - genom att kryssa samma sak inom en radie på 30m.</li>
-              <li>Då får laget 1p.</li>
+              <li>Då får laget 1p samtidigt som motståndarlaget får -1p.</li>
               <li>En flagga kan inte sättas utanför Kville!</li>
               <li>För att delta i Capture the flag måste du tillåta platsspårning i din webläsare</li>
               <li>Karta <v-icon small>mdi-map-legend</v-icon>  och teamsida <v-icon small>mdi-flag-checkered</v-icon> nås via ikonerna högst upp.</li>

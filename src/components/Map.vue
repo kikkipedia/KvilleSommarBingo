@@ -11,8 +11,9 @@
     <div class="map-legend" v-if="items.length">
       <ul class="legend-list">
         <li v-for="item in items" :key="item.id" class="legend-item">
-          {{ item.name }}
           <v-icon color="black" small @click="zoomToPlace(item)">mdi-crosshairs-gps</v-icon>
+          {{ item.name }}
+          
         </li>
       </ul>
     </div>
@@ -224,7 +225,7 @@ ul {
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   z-index: 1000;
   font-size: 0.85rem;
-  max-width: 180px;
+  max-width: 200px;
 }
 
 .legend-list {
