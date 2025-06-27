@@ -184,16 +184,22 @@ const checkBingo = (itemId: string) => {
         for (const row of rows) {
             if (row.value.every((item: BingoItem) => item.isChecked)) {
                 bingo = true
-                break  // ✅ stop checking once a bingo is found
+                break
             }
         }
 
-        if (bingo) {
+        if (bingo && !store.bingo) {
             explode.value = true
             overlay.value = true
             localStorage.setItem('bingo', 'true')
             store.setBingo(true)
+
+            const userId = localStorage.getItem('userId')
+            if (userId) {
+                updateUserScore(userId)
+            }
         }
+
         props.bingoSheet.bingo = bingo
         updateSheetInDb(props.bingoSheet, props.bingoId)
 
