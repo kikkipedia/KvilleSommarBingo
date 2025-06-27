@@ -142,7 +142,7 @@ const randomizeSheet = async () => {
 
     const shuffledArray = bingoItems.value.sort(() => Math.random() - 0.5) //shuffles the array
     //add shuffeled array to bingoSheet.items
-    const name = 'nyårbingo'
+    const name = localStorage.getItem('userName') || ''
     const timeStarted = new Date().toLocaleString('sv-SE')
     const bingo = false
     const bingoSheet2 = {name, timeStarted, bingo, items: [], rows: []  }
@@ -207,17 +207,28 @@ const fetchOldSheet = async () => {
 }
 
 const fetchById = async () => {
-    //fetch sheet from db from user input
-    bingoSheet.value = await fetchSheetById(bingoId.value) as BingoSheet
-    if(bingoSheet. value = undefined){
-        localStorage.removeItem('bingoId')
-        localStorage.removeItem('userName')
+  try {
+    //remove space from bingoId
+    bingoId.value = bingoId.value.trim();
+    if (!bingoId.value) {
+      alert("Ange ett giltigt ID för brickan.");
+      return;
     }
-    fetchByIdWarning.value = false
-    localStorage.setItem('bingoId', bingoId.value)
-    showSheet.value = true
-    location.reload()
-}
+    const result = await fetchSheetById(bingoId.value);
+    if (!result) {
+      alert("Ingen bricka hittades för ID: " + bingoId.value);
+      return;
+    }
+    bingoSheet.value = result as BingoSheet;
+    localStorage.setItem('bingoId', bingoId.value);
+    showSheet.value = true;
+    fetchByIdWarning.value = false;
+    location.reload();
+  } catch (err) {
+    console.error("Failed to fetch sheet:", err);
+    alert("Fel vid hämtning av bricka.");
+  }
+};
 
 const sheetCheck = () => {
     //check if exists in local storage
@@ -225,11 +236,11 @@ const sheetCheck = () => {
         bingoId.value = localStorage.getItem('bingoId')
         const hasBingo = localStorage.getItem('bingo')
         //fetch sheet from db
-        if(hasBingo == 'false' || hasBingo === null){
+        if(hasBingo === 'false' || hasBingo === null){
             //showSheet.value = true
             fetchOldSheet()
         }
-        else if(hasBingo == 'true'){ //if bingo is true show shuffle button
+        else if(hasBingo === 'true'){ //if bingo is true show shuffle button
             showShuffle.value = true
             store.bingo = true
             showSheet.value = false
@@ -258,7 +269,7 @@ onMounted(async ()  => {
             reset()
         }
     }
-    sheetCheck()
+    //sheetCheck()
     componentKey.value ++
 })
 

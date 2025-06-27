@@ -2,6 +2,9 @@
 <template>
     <div class="bingoSheet" >
         <ConfettiExplosion v-if="confetti" :particleSize="10" :duration="1500" :colors="colors"/>
+        <div v-if="!props.bingoSheet">
+          <p>Could not load your bingo sheet. Please try refreshing or contact support.</p>
+        </div>
              <table>
                 <tr>
                     <td v-for="doc, index in row1" :key="doc.id" @click="bingoClick(index, 1, doc.id)" v-bind:class="[doc.isChecked ? 'checked' : 'unchecked']">{{ doc.item }}</td>
@@ -122,8 +125,9 @@ onMounted(() => {
     else return
 })
 
-watch(() => props.bingoSheet, () => {
-    setRows()
+watch(() => props.bingoSheet, (newVal) => {
+  //console.log("bingoSheet updated:", newVal);
+  setRows()
 })
 
 const setRows = () => {
@@ -177,25 +181,26 @@ const checkBingo = (itemId: string) => {
     if (props.bingoSheet) {
         const rows = [row1, row2, row3, row4, row5, row6, row7, row8, row9, row10]
         let bingo = false
-        rows.forEach((row, index) => {
+        for (const row of rows) {
             if (row.value.every((item: BingoItem) => item.isChecked)) {
                 bingo = true
-                explode.value = true
-                overlay.value = true
-                localStorage.setItem('bingo', 'true')
-                store.setBingo(true)
-                //save the sheet in db
-                updateSheetInDb(props.bingoSheet, props.bingoId)
+                break  // ✅ stop checking once a bingo is found
             }
-            
-        })
-        props.bingoSheet.bingo = bingo
-        if (bingo) {
-            return
         }
-        else randomSave(itemId) //if no bingo - save location(flag) randomly
-    }
 
+        if (bingo) {
+            explode.value = true
+            overlay.value = true
+            localStorage.setItem('bingo', 'true')
+            store.setBingo(true)
+        }
+        props.bingoSheet.bingo = bingo
+        updateSheetInDb(props.bingoSheet, props.bingoId)
+
+        if (!bingo) {
+            randomSave(itemId)
+        }
+    }
 }
 const getUserLocation = (): Promise<GeolocationPosition> => {
   return new Promise((resolve, reject) => {
@@ -330,20 +335,34 @@ const checkBorders = (lat: number, long: number) => {
 
 
 //watch for bingo in bingoSheet
-watch(() => props.bingoSheet?.bingo, () => {
-    if (props.bingoSheet) {
-        if (props.bingoSheet.bingo) {
-            props.bingoSheet.bingo = true
-            store.bingo = true
-            //update user score
-            updateUserScore(localStorage.getItem('userId') as string)
-            
-        }
-        else {
-            props.bingoSheet.bingo = false
-        }
+watch(() => props.bingoSheet, (sheet) => {
+    if (!sheet || !sheet.items || sheet.items.length < 50) return;
+
+    // re-check if there really is bingo
+    const rows = [
+        sheet.items.slice(0, 5),
+        sheet.items.slice(5, 10),
+        sheet.items.slice(10, 15),
+        sheet.items.slice(15, 20),
+        sheet.items.slice(20, 25),
+        sheet.items.slice(25, 30),
+        sheet.items.slice(30, 35),
+        sheet.items.slice(35, 40),
+        sheet.items.slice(40, 45),
+        sheet.items.slice(45, 50),
+    ];
+
+    const isActuallyBingo = rows.some(row => row.every((item: BingoItem) => item.isChecked));
+
+    if (isActuallyBingo && !store.bingo) {
+        localStorage.setItem('bingo', 'true');
+        store.setBingo(true);
+        updateUserScore(localStorage.getItem('userId') as string);
+    } else if (!isActuallyBingo) {
+        store.setBingo(false);
+        localStorage.setItem('bingo', 'false');
     }
-})
+});
 
 </script>
 

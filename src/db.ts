@@ -51,10 +51,9 @@ const fetchSheetById = async (id) => {
   const docRef = doc(db, "bingoSheets2025", id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    const sheet = docSnap.data().sheet;
-    return sheet;
+    return docSnap.data().sheet;
   } else {
-    console.log("No such document!");
+    throw new Error("No bingo sheet found with ID: " + id);
   }
 }
 
