@@ -58,7 +58,7 @@
                 color="rgb(10, 150, 125)"
                 @click="fetchByIdWarning = false"/>
             <v-card text="Om du har kvar ditt ID, ange det nedan.">
-                <v-form @submit.prevent>
+                <v-form>
                     <v-text-field
                         v-model="bingoId"
                         label="Brickans ID"
@@ -130,6 +130,7 @@ const randomizeSheet = async () => {
   //empty local storage bingoId
     localStorage.removeItem('bingoId')
     localStorage.removeItem('bingo')
+    store.bingo = false
     loading.value = true
     bingoSheet.value = undefined
 
@@ -223,7 +224,7 @@ const fetchById = async () => {
     localStorage.setItem('bingoId', bingoId.value);
     showSheet.value = true;
     fetchByIdWarning.value = false;
-    location.reload();
+    //location.reload();
   } catch (err) {
     console.error("Failed to fetch sheet:", err);
     alert("Fel vid hämtning av bricka.");

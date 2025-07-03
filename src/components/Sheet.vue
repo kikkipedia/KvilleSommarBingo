@@ -342,32 +342,18 @@ const checkBorders = (lat: number, long: number) => {
 
 //watch for bingo in bingoSheet
 watch(() => props.bingoSheet, (sheet) => {
-    if (!sheet || !sheet.items || sheet.items.length < 50) return;
+  if (!sheet || !sheet.items || sheet.items.length < 50) return;
 
-    // re-check if there really is bingo
-    const rows = [
-        sheet.items.slice(0, 5),
-        sheet.items.slice(5, 10),
-        sheet.items.slice(10, 15),
-        sheet.items.slice(15, 20),
-        sheet.items.slice(20, 25),
-        sheet.items.slice(25, 30),
-        sheet.items.slice(30, 35),
-        sheet.items.slice(35, 40),
-        sheet.items.slice(40, 45),
-        sheet.items.slice(45, 50),
-    ];
+  const rows = Array.from({ length: 10 }, (_, i) => sheet.items.slice(i * 5, i * 5 + 5));
+  const isActuallyBingo = rows.some(row => row.every((item: BingoItem) => item.isChecked));
 
-    const isActuallyBingo = rows.some(row => row.every((item: BingoItem) => item.isChecked));
-
-    if (isActuallyBingo && !store.bingo) {
-        localStorage.setItem('bingo', 'true');
-        store.setBingo(true);
-        updateUserScore(localStorage.getItem('userId') as string);
-    } else if (!isActuallyBingo) {
-        store.setBingo(false);
-        localStorage.setItem('bingo', 'false');
-    }
+  if (isActuallyBingo) {
+    localStorage.setItem('bingo', 'true');
+    store.setBingo(true);
+  } else {
+    localStorage.setItem('bingo', 'false');
+    store.setBingo(false);
+  }
 });
 
 </script>
