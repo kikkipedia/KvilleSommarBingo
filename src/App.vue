@@ -176,9 +176,9 @@ onMounted(async () => {
   if (localStorage.getItem('userId') == null) {
     store.isAuth = false
     //open info about this year's bingo
-    openRules.value = true
+    //openRules.value = true
   } else {
-    store.isAuth = true
+    store.isAuth = false //set to false since bingo is over
   }
 })
 

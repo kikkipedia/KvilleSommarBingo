@@ -5,6 +5,9 @@
         <img src="@/assets/tramsAb.jpg" style="width: 100%"/>
         PRESENTERAR STOLT
         <img src="@/assets/bingologo25.png" class="bingologo" alt="Bingo logo"/>
+        TACK FÖR I ÅR!
+        <div v-if="store.isAuth">
+
         <v-btn color="#7400FF" @click="openLogin = true" v-if="!openLogin">Logga in med email</v-btn>
         <v-dialog v-model="openReset" width="90%">
             <v-btn
@@ -39,6 +42,7 @@
         <p><span class="link" @click="openReset = true">glömt lösenord?</span></p>
         <v-btn color="pink" @click="openRegister = true" v-if="!openRegister" size="small">Registrera</v-btn>
         <Register v-if="openRegister"/>
+    </div>
     </div>
 </template>
 
